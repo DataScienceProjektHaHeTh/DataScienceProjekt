@@ -32,8 +32,16 @@ Forschungsfragen:
 
 
 ----------Topic Nico----------
+The project analyzes how Trump-related news reporting (categorized by topic: trade policy, geopolitics, domestic politics) correlates with short-term price changes in three asset classes of varying volatility – MSCI World (low), Gold (medium), and Bitcoin (high) – during Trump's current legislative period starting January 2025. News data is sourced from The Guardian API, market data via yfinance. Articles are evaluated using keyword-frequency-based categorization; results are visualized in a web application.
 
+Research question 1: 
+To what extent does the frequency of Trump-related news coverage, categorized by topic (trade policy, geopolitics, domestic politics), correlate with short-term price changes (1–3 trading days) in MSCI World, Gold, and Bitcoin?
 
+Resarch question 2: 
+Do different asset classes (MSCI World, Gold, Bitcoin) show distinct or similar price reactions to the same categories of Trump-related news events, and what does this reveal about their role as safe-haven or risk assets?
+
+Research question 3: 
+Which news category (trade policy, geopolitics, or domestic politics) shows the strongest association with market movements across all three asset classes?
 
 
 
