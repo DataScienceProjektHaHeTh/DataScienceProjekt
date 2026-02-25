@@ -27,9 +27,10 @@ Forschungsfragen:
 		1. how much are flatprices corolated with the avarability of fast Public Transport twords CAU University?
 		2. how much are flatprices corolated with the avarability of lifestyle offers like Bars, Clubs, Cafés and so on?
 		3. What are the best Neighborhoods in Kiel for Students, favoring a fast public transport to Cau?
+
+	Nico: 
 		4. What are the bets Neighborhoods in Kiel for Students, looking for a fun Uni Experience, fokusing on cheep rent and a good lifestyle offer in their neihborhood?
-
-
+		5. Is there a correlation between flat offers looking for students and the distance to the university?
 
 ----------Topic Nico----------
 The project analyzes how Trump-related news reporting (categorized by topic: trade policy, geopolitics, domestic politics) correlates with short-term price changes in three asset classes of varying volatility – MSCI World (low), Gold (medium), and Bitcoin (high) – during Trump's current legislative period starting January 2025. News data is sourced from The Guardian API, market data via yfinance. Articles are evaluated using keyword-frequency-based categorization; results are visualized in a web application.
