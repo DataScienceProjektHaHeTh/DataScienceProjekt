@@ -1,6 +1,27 @@
 Topics:
 
+Presentaion Link
+https://docs.google.com/presentation/d/1bhjLeft2d6kuPGALf8DGK9hyBt5B9zPP4Mbu0lgY69o/edit?usp=sharing
+
 Topic Jan
+
+Idee: Studi Wohngegenden Analysieren in Kiel
+
+Verbindung von Wohnungspreisen in verschiedenen Gegenden in Kiel, mit Daten über Kneipen, Kioske, etc mit KVG Daten über die erreichbarkeit der CAU
+
+Datensetze:
+	https://www.kaggle.com/datasets/corrieaar/apartment-rental-offers-in-germany
+		Infos zu Mietanzeigen In Deutschland von Immosout24 zwischen 2018-09-22, 2019-05-10 und 2019-10-08.
+	Alternativ Kleinanzeigen Scraping
+	https://www.greix.de/chart?p=quarterly&d=ind&inf=false&tab=map&y=1995_2024&pr=ETW&co=false&ss=false&md=sqm&c=ME&sy=2024&my=1995_2024&nb=
+		Infos zu historischen Mietpreisen aus Großstädten (nicht Kiel)
+	https://overpass-turbo.eu/
+		Geo Daten zu Bars/ Kneipen, etc
+	https://opendata.schleswig-holstein.de/dataset/fahrplandaten
+		Daten über KVG Haltestellen, Fahrpläne etc.
+
+Forschungsfragen:
+
 
 Topic Nico
 
