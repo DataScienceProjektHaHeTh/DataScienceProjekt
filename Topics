@@ -31,10 +31,11 @@ How much are flatprices corolated with the avarability of lifestyle offers like 
 Reseearch question 3: (Jan)
 What are the best Neighborhoods in Kiel for Students, favoring a fast public transport to Cau?
 
-Reseearch question 4: (Jan)
+Reseearch question 4: (Nico)
 What are the bets Neighborhoods in Kiel for Students, looking for a fun Uni Experience, fokusing on cheep rent and a good lifestyle offer in their neihborhood?
 
-
+Research question 5: (Nico)
+In which way does distance to the unvisersity correlate with flat offers which are looking for students?
 
 ----------Topic Nico----------
 The project analyzes how Trump-related news reporting (categorized by topic: trade policy, geopolitics, domestic politics) correlates with short-term price changes in three asset classes of varying volatility – MSCI World (low), Gold (medium), and Bitcoin (high) – during Trump's current legislative period starting January 2025. News data is sourced from The Guardian API, market data via yfinance. Articles are evaluated using keyword-frequency-based categorization; results are visualized in a web application.
