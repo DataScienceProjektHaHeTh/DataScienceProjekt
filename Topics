@@ -37,6 +37,12 @@ What are the bets Neighborhoods in Kiel for Students, looking for a fun Uni Expe
 Research question 5: (Nico)
 In which way does distance to the unvisersity correlate with flat offers which are looking for students?
 
+Research question 6: (Fridjoff)
+Sind Bars mit günstigen Bierpreisen (in den unteren 20% im Vergleich zu allen Kieler Bars) in der Regel nah zu günstigen Mieten (unterm Kieler Durchschnittsstudentenmiete)?
+
+Research question 7: (Fridjoff)
+Wohnen Erstis im Schnitt mit weiterem Weg zur Uni als Studenten in höheren Semestern?
+
 ----------Topic Nico----------
 The project analyzes how Trump-related news reporting (categorized by topic: trade policy, geopolitics, domestic politics) correlates with short-term price changes in three asset classes of varying volatility – MSCI World (low), Gold (medium), and Bitcoin (high) – during Trump's current legislative period starting January 2025. News data is sourced from The Guardian API, market data via yfinance. Articles are evaluated using keyword-frequency-based categorization; results are visualized in a web application.
 
@@ -55,7 +61,11 @@ What is the average time that the markets need to react to different news types?
 Research question 5: (Jan)
 Is there a news threashold, like a minimum number of news articles on one topic befor the markets show a response on news? If yes what is that threshhold?
 
+Research question 6: (Fridjoff)
+Does the sentiment (positive, negative, neutral) of Trump-related news within each category (trade policy, geopolitics, domestic politics) influence the direction and magnitude of short-term price reactions in MSCI World, Gold, and Bitcoin?
 
+Research question 7: (Fridjoff)
+Are market reactions to Trump-related news asymmetric, meaning do negative news events trigger stronger short-term price movements than positive news events across MSCI World, Gold, and Bitcoin?
 
 ----------Topic Fidjoff----------
 
