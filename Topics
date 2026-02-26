@@ -9,39 +9,21 @@ https://docs.google.com/presentation/d/1bhjLeft2d6kuPGALf8DGK9hyBt5B9zPP4Mbu0lgY
 
 Idee: Studi Wohngegenden Analysieren in Kiel
 
-Verbindung von Wohnungspreisen in verschiedenen Gegenden in Kiel, mit Daten über Kneipen, Kioske, etc mit KVG Daten über die erreichbarkeit der CAU
+The poject analyzes the relationship between different types of transport, maynly Car, Bus and Bike in kiel, regarding different weather metrics like temperature, rain, snow and so on. The project will use data from official car traffic data, official KVG data, bike data from Nextbike and bike counting stations, as well as weather data from open Meteo Wetter API.
 
-Datensätze:
-	https://www.kaggle.com/datasets/corrieaar/apartment-rental-offers-in-germany
-		Infos zu Mietanzeigen In Deutschland von Immosout24 zwischen 2018-09-22, 2019-05-10 und 2019-10-08.
-	Alternativ Kleinanzeigen Scraping
-	https://www.greix.de/chart?p=quarterly&d=ind&inf=false&tab=map&y=1995_2024&pr=ETW&co=false&ss=false&md=sqm&c=ME&sy=2024&my=1995_2024&nb=
-		Infos zu historischen Mietpreisen aus Großstädten (nicht Kiel)
-	https://overpass-turbo.eu/
-		Geo Daten zu Bars/ Kneipen, etc
-	https://opendata.schleswig-holstein.de/dataset/fahrplandaten
-		Daten über KVG Haltestellen, Fahrpläne etc.
+Data sources:
+-Car data from 27 official car counting stations in Kiel 
 
-Research question 1: (Jan)
-How much are flatprices corolated with the avarability of fast Public Transport twords CAU University?
+-Bike data from official bike counting stations in Kiel
+	https://mobilithek.info/offers/784002906756923392
+-Bike data from Nextbike, a bike sharing company in Kiel
+	https://api.nextbike.net/api/doc.php?mode=classic-regular&apikey=
 
-Research question 2: (Jan)
-How much are flatprices corolated with the avarability of lifestyle offers like Bars, Clubs, Cafés and so on?
+-Bus data from KVG, the public transport company in Kiel
+	https://opendata.schleswig-holstein.de/dataset/passagiere-landverkehr-der-kieler-verkehrsgesellschaft
 
-Research question 3: (Jan)
-What are the best Neighborhoods in Kiel for Students, favoring a fast public transport to Cau?
-
-Reseearch question 4: (Nico)
-What are the bets Neighborhoods in Kiel for Students, looking for a fun Uni Experience, fokusing on cheep rent and a good lifestyle offer in their neihborhood?
-
-Research question 5: (Nico)
-In which way does distance to the unvisersity correlate with flat offers which are looking for students?
-
-Research question 6: (Fridjoff)
-Sind Bars mit günstigen Bierpreisen (in den unteren 20% im Vergleich zu allen Kieler Bars) in der Regel nah zu günstigen Mieten (unterm Kieler Durchschnittsstudentenmiete)?
-
-Research question 7: (Fridjoff)
-Wohnen Erstis im Schnitt mit weiterem Weg zur Uni als Studenten in höheren Semestern?
+-Weather data from open Meteo Wetter API
+	https://open-meteo.com/
 
 ----------Topic Nico----------
 The project analyzes how Trump-related news reporting (categorized by topic: trade policy, geopolitics, domestic politics) correlates with short-term price changes in three asset classes of varying volatility – MSCI World (low), Gold (medium), and Bitcoin (high) – during Trump's current legislative period starting January 2025. News data is sourced from The Guardian API, market data via yfinance. Articles are evaluated using keyword-frequency-based categorization; results are visualized in a web application.
