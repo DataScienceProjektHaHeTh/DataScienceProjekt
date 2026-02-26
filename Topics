@@ -44,7 +44,8 @@ Research question 7 (Fridjoff):
 How does average commuting distance to CAU differ between first-year students and students in higher semesters?
 
 ----------Topic Nico----------
-The project analyzes how Trump-related news reporting (categorized by topic: trade policy, geopolitics, domestic politics) correlates with short-term price changes in three asset classes of varying volatility – MSCI World (low), Gold (medium), and Bitcoin (high) – during Trump's current legislative period starting January 2025. News data is sourced from The Guardian API, market data via yfinance. Articles are evaluated using keyword-frequency-based categorization; results are visualized in a web application.
+The project analyzes how Trump-related news reporting (categorized by topic: trade policy, geopolitics, domestic politics) correlates with short-term price changes in three asset classes of varying volatility – MSCI World (low), Gold (medium), and Bitcoin (high) – during Trump's current legislative period starting January 2025. 
+News data is sourced from The Guardian API, market data via yfinance. Articles are evaluated using keyword-frequency-based categorization; results are visualized in a web application.
 
 Research question 1: (Nico)
 To what extent does the frequency of Trump-related news coverage, categorized by topic (trade policy, geopolitics, domestic politics), correlate with short-term price changes (1–3 trading days) in MSCI World, Gold, and Bitcoin?
