@@ -7,12 +7,14 @@ https://docs.google.com/presentation/d/1bhjLeft2d6kuPGALf8DGK9hyBt5B9zPP4Mbu0lgY
 
 ----------Topic Jan----------
 
-Idee: Studi Wohngegenden Analysieren in Kiel
-
 The poject analyzes the relationship between different types of transport, maynly Car, Bus and Bike in kiel, regarding different weather metrics like temperature, rain, snow and so on. The project will use data from official car traffic data, official KVG data, bike data from Nextbike and bike counting stations, as well as weather data from open Meteo Wetter API.
 
 Data sources:
--Car data from 27 official car counting stations in Kiel 
+Real Time Data on Cars, Bikes
+	https://www.kielregion.de/mobilitaetsregion/digitale-mobilitaet/verkehr-und-parken-in-kiel-mit-echtzeit-daten/
+
+-Car data from 27 official car counting stations in Kiel
+	https://www.bast.de/DE/Publikationen/Daten/Verkehrstechnik/DZ.html
 
 -Bike data from official bike counting stations in Kiel
 	https://mobilithek.info/offers/784002906756923392
@@ -24,6 +26,35 @@ Data sources:
 
 -Weather data from open Meteo Wetter API
 	https://open-meteo.com/
+
+
+Research question 1 (Jan)
+How do weather conditions influence the choice of transport in Kiel, and does "bad weather" cause a measurable shift from cycling to cars or public transit?
+
+Research question 2 (Jan)
+Does rain intensity (light <2mm, moderate 2-10mm, heavy >10mm) have a threshold effect on cycling rates, or is the reduction gradual?
+
+Research question 3 (Jan)
+How does temperature correlate with modal split across seasons — is there a specific temperature threshold (e.g. below 5°C) where cycling drops sharply and KVG ridership spikes?
+
+Research question 4 (Jan)
+Do weekday commuters and weekend recreational cyclists react differently to bad weather, suggesting that cycling necessity vs. choice plays a role in modal shift?
+
+Research question 5 (Jan)
+Which weather variable — temperature, precipitation, wind speed, or snowfall — is the strongest single predictor of reduced bike usage at Kiel's counting stations?
+
+Research question 6 (Jan)
+Is there a "compensation effect" where a drop in Nextbike (shared bikes) during bad weather is larger than the drop at fixed counting stations, suggesting casual riders avoid bikes more than regular cyclists?
+
+Research question 7 (Jan)
+How do extreme weather events (storms, ice, heavy snow) affect the three transport modes differently — do they suppress all modes equally or does one mode prove more resilient?
+
+Research question 8 (Jan)
+Does the weather-modal split relationship change over the years 2020–2024, potentially reflecting growing cycling infrastructure or post-COVID behavior shifts in Kiel?
+
+Research question 9 (Jan)
+Are there differences in how weather impacts transport choices across different months or seasons, and do these differences suggest that certain weather conditions are more tolerable for cycling during specific times of the year?
+
 
 ----------Topic Nico----------
 The project analyzes how Trump-related news reporting (categorized by topic: trade policy, geopolitics, domestic politics) correlates with short-term price changes in three asset classes of varying volatility – MSCI World (low), Gold (medium), and Bitcoin (high) – during Trump's current legislative period starting January 2025. 
