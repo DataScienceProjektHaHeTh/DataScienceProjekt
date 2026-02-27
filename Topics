@@ -114,3 +114,10 @@ To what extent does "Steam Profile Level" and community interaction (e.g., numbe
 
 Research question 6 (Jan):
 How does the ratio of "Consumable" items (Cases, Stickers, Graffitis) to "Skin" items (Weapons, Knives) change as an account ages?
+
+Research question 7 (Nico):
+Can a machine learning model trained on account age, playtime, Steam level, friend count, and activity density accurately predict inventory value bracket (e.g., <$50, $50–$500, >$500), and which features carry the most predictive weight?
+This synthesizes all prior RQs into a capstone modeling question
+
+Research question 8 (Nico):
+How does VAC ban history or account standing correlate with inventory composition — specifically, do flagged or recently banned accounts show atypical item distributions (e.g., unusually high proportions of high-value or liquid items) compared to clean accounts?
