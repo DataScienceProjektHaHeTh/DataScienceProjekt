@@ -1,0 +1,32 @@
+# --- Python / Pipenv ---
+# Virtual environments created by Pipenv
+.venv/
+bin/
+lib/
+share/
+Include/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# --- Jupyter Notebooks ---
+.ipynb_checkpoints
+*/.ipynb_checkpoints/*
+# Optional: Ignore auto-saved notebook files
+*-checkpoint.py
+
+# --- Data & Models (Crucial for Data Science) ---
+# Don't upload huge datasets or trained models to Git
+data/
+*.csv
+*.json
+*.pkl
+*.h5
+*.models
+outputs/
+
+# --- OS / IDE ---
+.DS_Store
+.vscode/
+.idea/
+__pycache__/
+*.py[cod]
