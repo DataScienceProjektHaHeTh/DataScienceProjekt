@@ -10,6 +10,7 @@ matplotlib = "*"
 scikit-learn = "*"
 jupyter = "*"
 yfinance = "*"
+dotenv = "*"
 
 [dev-packages]
 
