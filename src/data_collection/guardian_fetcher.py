@@ -42,3 +42,25 @@ else:
             })
 
     print("Gespeichert: data/raw/articles.csv")
+
+
+
+# --- Search queries by categorie---
+#   
+#   Trade policy 
+#   "q": "Trump AND (tariff OR tariffs OR \"trade war\" OR \"trade deal\" 
+#      OR import OR export OR customs OR \"trade deficit\" OR WTO 
+#      OR USMCA OR \"reciprocal tariff\" OR steel OR aluminum 
+#      OR Mexico OR Canada)"
+#
+#   Geopolitcs
+#   "q": "(Trump OR \"White House\" OR administration) AND (NATO OR Ukraine 
+#      OR Russia OR China OR military OR sanctions OR \"foreign policy\" 
+#      OR troops OR Pentagon OR \"Middle East\" OR Taiwan OR Korea 
+#      OR Greenland OR Panama)"
+#
+#   Domestic politics
+#   "q": "(Trump OR \"White House\" OR administration) AND (\"executive order\" 
+#      OR congress OR senate OR immigration OR deportation OR DOGE OR Musk 
+#      OR FBI OR DOJ OR \"supreme court\" OR budget OR \"national debt\" 
+#      OR federal)"
