@@ -9,8 +9,8 @@ API_KEY = os.getenv("guardianApiKey")
 
 params = {
     "q": "Trump",
-    "from-date": "2025-01-01",
-    "page-size": 5,
+    "from-date": "2025-01-20",
+    "page-size": 200,
     "order-by": "oldest",
     "show-fields": "bodyText",
     "api-key": API_KEY,
