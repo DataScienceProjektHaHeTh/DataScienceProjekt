@@ -7,7 +7,7 @@ load_dotenv()
 API_KEY = os.getenv("guardianApiKey")
 
 params = {
-    "q": "Trump AND tariff",
+    "q": "Trump",
     "from-date": "2025-01-01",
     "page-size": 5,
     "order-by": "oldest",

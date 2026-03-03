@@ -30,3 +30,6 @@ outputs/
 .idea/
 __pycache__/
 *.py[cod]
+
+# --- Sensible data ---
+.env 
