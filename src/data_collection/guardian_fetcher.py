@@ -1,6 +1,7 @@
 import requests
 import os
 from dotenv import load_dotenv
+import csv 
 
 load_dotenv()
 
@@ -22,11 +23,18 @@ if response.status_code != 200:
     print(response.text)
 else:
     articles = response.json()["response"]["results"]
-    print(f"[OK] {len(articles)} Artikel erhalten:\n")
-    for i, article in enumerate(articles, 1):
-        print(f"--- Artikel {i} ---")
-        print(f"Datum : {article['webPublicationDate'][:10]}")
-        print(f"Titel : {article['webTitle']}")
-        body = article.get("fields", {}).get("bodyText", "")
-        print(f"Text  : {body[:300]}...")
-        print()
+    print(f"[OK] {len(articles)} Artikel erhalten")
+
+    os.makedirs("data/raw", exist_ok=True)
+
+    with open("data/raw/articles.csv", "w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=["date", "title", "body"])
+        writer.writeheader()
+        for article in articles:
+            writer.writerow({
+                "date": article["webPublicationDate"][:10],
+                "title": article["webTitle"],
+                "body": article.get("fields", {}).get("bodyText", "")
+            })
+
+    print("Gespeichert: data/raw/articles.csv")
