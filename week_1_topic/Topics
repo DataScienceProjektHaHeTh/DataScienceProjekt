@@ -78,8 +78,8 @@ and which asset class shows the greatest sensitivity to this multi-topic overlap
 Research question 5:
 Is there a news threashold, like a minimum number of news articles in the guardian on one topic befor the markets show a response on news? If yes what is that threshhold?
 
-Research question 6: (like RQ 3)
-Does the sentiment (positive, negative, neutral) of Trump-related news within each category influence the direction and magnitude of short-term price reactions in MSCI World, Gold, and Bitcoin?
+Research question 6:
+How does the average price response lag between a measurable spike in Trump-related Guardian coverage and the peak market reaction differ across trade policy, geopolitics, and domestic politics – and which asset class (MSCI World, Gold, Bitcoin) consistently reacts fastest?
 
 Research question 7:
 Which of the three news categories (trade policy, geopolitics, domestic politics) among news in the guardian generates the highest average daily article volume in The Guardian 
