@@ -1,0 +1,23 @@
+RQs sorted into groups by similarity of evaluation methods:
+
+Group 1: Correlation Analysis -- RQ1, RQ7
+Pearson or Spearman correlation
+Shared daily timeline (article count and percentage price change)
+Computing correlation coefficient 
+RQ7 one more step for categories
+
+Group 2: Event study with defined event windows -- RQ2, RQ4
+Look at each window
+Average over all windows
+Reults in "reaction curve" which shows assets behaviour
+For RQ4 two buckets: only one categorie spikes vs multiple ones
+
+Group 3: Sentiment scoring and correlation -- RQ3 
+Sentiment score for each article
+VADER python sentiment libary 
+Result: what kind of news drives market movements
+
+Group4: Lag and threshold analysis -- RQ5, RQ6
+Cross correlation analysis with rolling windows for RQ6
+RQ5: bin article counts into ranges
+Compute average price movement for each bin
