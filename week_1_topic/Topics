@@ -11,7 +11,7 @@ Research question 1: (Nico)
 To what extent does the daily frequency of Trump-related news coverage in the guardian, categorized by topic (trade policy, geopolitics, domestic politics), correlate with cumulative 3-day price return of MSCI World, Gold, and Bitcoin following a coverage spike?
 
 Resarch question 2:
-How do MSCI World, Gold, and Bitcoin differ in the direction and magnitude of their price responses to identical Trump-related news events in the guardian (and what does this reveal about their respective roles as safe-haven versus risk assets)?
+How do MSCI World, Gold, and Bitcoin differ in the direction and magnitude of their cumulative 3-day price returns following identical Trump-related news events in the Guardian across all three news categories?
 
 Research question 3:
 How does the sentiment polarity (positive vs. negative) of Trump-related Guardian articles within each news category relate to 
