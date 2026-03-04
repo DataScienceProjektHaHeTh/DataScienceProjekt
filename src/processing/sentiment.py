@@ -1,8 +1,18 @@
 import pandas as pd
+import json
 from transformers import pipeline
 
-#load the csv file into a pandas dataframe
-df = pd.read_csv('data/processed/articles_cleaned.csv')
+#load the json file
+with open('data/raw/guardian_articles.json', 'r') as f:
+    raw_data = json.load(f)
+
+#flatten the structure into a dataframe
+df = pd.DataFrame([{
+    "date": article['webPublicationDate'][:10],
+    "title": article['webTitle'],
+    "body": article.get('fields', {}).get('bodyText', ''),
+}for article in raw_data])
+
 
 #initialize the sentiment analysis pipeline
 sentiment = pipeline("sentiment-analysis")
