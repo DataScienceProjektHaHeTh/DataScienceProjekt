@@ -1,6 +1,7 @@
 import pandas as pd
 import json
-from transformers import pipeline
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+from multiprocessing import Pool
 
 #load the json file
 with open('data/raw/guardian_articles.json', 'r') as f:
@@ -14,16 +15,39 @@ df = pd.DataFrame([{
 }for article in raw_data])
 
 
-#initialize the sentiment analysis pipeline
-sentiment = pipeline("sentiment-analysis")
 
-#apply the sentiment analysis pipeline to the 'content' column of the dataframe
-results = sentiment(df['body'].tolist(), batch_size=32, truncation=True, max_length=256)
+#function calling Vader on the Text, return the Score
+def get_sentiment_scores(text):
+    #initialize the sentiment analysis pipeline
+    sia = SentimentIntensityAnalyzer()
+    return sia.polarity_scores(text)
 
-#add the results to the dataframe
-df['sentiment'] = [result['label'] for result in results]
-df['confidence'] = [result['score'] for result in results]
+#Function for turning the Vader score into a "usefull" label
+def get_sentiment_label(score):
+    if score >= 0.05:
+        return 'positive'
+    elif score <= -0.05:
+        return 'negative'
+    else:
+        return 'neutral'
+    
+compound_list =  []
+i = 0
+#Use multiprocessing to speed up the sentiment analysis
+with Pool() as pool:
+    compound_list = pool.map(get_sentiment_scores, df['body'].tolist())
 
+#add the compount values to the df
+df['compound'] = compound_list
+
+#get the labels
+sentiment_labels = []
+for score in df['compound']:
+    label = get_sentiment_label(score)
+    sentiment_labels.append(label)
+
+#add labels to the df
+df["sentiment"] = sentiment_labels
 
 print(df.head())
 #save the dataframe to a new csv file
