@@ -1,5 +1,6 @@
 import pandas as pd
 import json
+import time
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 from multiprocessing import Pool
 
@@ -20,7 +21,8 @@ df = pd.DataFrame([{
 def get_sentiment_scores(text):
     #initialize the sentiment analysis pipeline
     sia = SentimentIntensityAnalyzer()
-    return sia.polarity_scores(text)
+    scores = sia.polarity_scores(text)
+    return scores["compound"]
 
 #Function for turning the Vader score into a "usefull" label
 def get_sentiment_label(score):
@@ -31,11 +33,14 @@ def get_sentiment_label(score):
     else:
         return 'neutral'
     
+start = time.time()
 compound_list =  []
-i = 0
 #Use multiprocessing to speed up the sentiment analysis
 with Pool() as pool:
     compound_list = pool.map(get_sentiment_scores, df['body'].tolist())
+
+end = time.time()
+print(f"Sentiment analysis completed in {end - start:.2f} seconds")
 
 #add the compount values to the df
 df['compound'] = compound_list
