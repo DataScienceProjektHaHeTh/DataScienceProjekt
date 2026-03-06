@@ -3,11 +3,13 @@ import dash
 
 app = Dash(__name__, use_pages=True, suppress_callback_exceptions=True)
 
+#define the app layout, like the top navbar)
 app.layout = html.Div([
     # Navigation Bar
     html.Nav([
         html.Div([
             html.Span("DS Project", className="nav-logo"),
+            #Link Items in the Navbar, 
             html.Div([
                 dcc.Link("Home",            href="/",                className="nav-link"),
                 dcc.Link("About Project",   href="/about-project",   className="nav-link"),

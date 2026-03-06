@@ -3,6 +3,7 @@ from dash import html
 
 dash.register_page(__name__, path="/about-team", name="Team")
 
+#function to create team member cards
 def team_card(name, role, bio, emoji="👤"):
     return html.Div([
         html.Div(emoji, className="team-avatar"),
@@ -15,6 +16,7 @@ layout = html.Div([
     html.H1("Meet the Team"),
     html.P("The people behind this project.", className="page-subtitle"),
 
+    #Insert Pictures?
     html.Div([
         team_card(
             name="Hansen, Jan Ole",

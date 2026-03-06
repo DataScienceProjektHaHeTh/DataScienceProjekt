@@ -14,6 +14,7 @@ layout = html.Div([
         ),
     ], className="section"),
 
+    #RQs
     html.Section([
         html.H2("Goals & Research Questions"),
         html.P("This project aims to answer the following research questions:"),
@@ -28,6 +29,7 @@ layout = html.Div([
         ], className="rq-list"),
     ], className="section"),
 
+
     html.Section([
         html.H2("Continuous Definitions within the RQs"),
         html.Ul([
@@ -39,6 +41,7 @@ layout = html.Div([
     ], className="Continious definitions within the RQs"),
 
 
+    #balance Text length better
     html.Section([
         html.H2("Datasets"),
         html.Div([

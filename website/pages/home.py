@@ -1,17 +1,19 @@
 import dash
 from dash import html
 
+#setup the site for navigation
 dash.register_page(__name__, path="/", name="Home")
 
 layout = html.Div([
 
-    # Hero Section
+    # Main Section / Hero
     html.Section([
-        html.H1("Project Title", className="hero-title"),
+        html.H1("Project Title", className="hero-title", style = {"color": "#ffffff"}),
         html.P(
             "Analyzing the effects of Trump related news on movements in the Stock Market.",
             className="hero-subtitle"
         ),
+        #Info Charts
         html.Div([
             html.Span("WiSe 2025/26", className="badge"),
             html.Span("CAU Kiel", className="badge"),
@@ -22,6 +24,7 @@ layout = html.Div([
     # Key Findings
     html.Section([
         html.H2("Key Findings"),
+        #card items
         html.Div([
             html.Div([
                 html.Div("🔍", className="card-icon"),
