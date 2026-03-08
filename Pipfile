@@ -11,6 +11,8 @@ scikit-learn = "*"
 jupyter = "*"
 yfinance = "*"
 dotenv = "*"
+dash = "*"
+vadersentiment = "*"
 
 [dev-packages]
 
