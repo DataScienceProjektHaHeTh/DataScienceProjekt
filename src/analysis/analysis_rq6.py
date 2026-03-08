@@ -142,3 +142,9 @@ def get_peak_lag_summary(results: dict) -> pd.DataFrame:
         })
         rows.append(row)
     return pd.DataFrame(rows).set_index("category")
+
+
+if __name__ == "__main__":
+    results = run_rq6()
+    print("\n── PEAK LAG SUMMARY ──")
+    print(get_peak_lag_summary(results).to_string())
