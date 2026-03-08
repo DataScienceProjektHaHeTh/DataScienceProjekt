@@ -33,3 +33,6 @@ __pycache__/
 
 # --- Sensible data ---
 .env 
+
+# --- LLMs ---
+.claude
