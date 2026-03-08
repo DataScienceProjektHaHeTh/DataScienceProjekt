@@ -102,3 +102,7 @@ def get_threshold_summary(results: dict) -> pd.DataFrame:
             "threshold": data["threshold"],
         })
     return pd.DataFrame(rows)
+
+if __name__ == "__main__":
+    results = run_rq5(start_date="2025-01-20")
+    print(get_threshold_summary(results))

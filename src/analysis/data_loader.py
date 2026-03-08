@@ -39,11 +39,14 @@ def load_guardian_counts() -> pd.DataFrame:
         ]
 
         # count articles per day
+        # Note: value_counts() in pandas >=2.0 always names the result 'count',
+        # so we must restore the category name explicitly.
         counts = (
             pd.Series(dates, name=category)
             .value_counts()
             .rename_axis("date")
             .sort_index()
+            .rename(category)
         )
         series_list.append(counts)
 
