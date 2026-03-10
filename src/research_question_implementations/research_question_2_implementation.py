@@ -7,6 +7,7 @@
 
 import pandas as pd
 import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 from glob import glob
 
 def get_spike_days_of_single_class(news_data):
@@ -48,15 +49,15 @@ def get_shared_spike_days(spike_days_list):
                 if gap >= MIN_GAP_DAYS:
                     filtered_spike_days.append(date)
                     last_kept_date = date   
-                else:
-                    print(f"Skipping spike day {date} due to proximity to last kept spike day {last_kept_date} (gap: {gap} days)")
+                #else:
+                    #print(f"Skipping spike day {date} due to proximity to last kept spike day {last_kept_date} (gap: {gap} days)")
 
 
         return filtered_spike_days
 
     #Intersection of all spike day lists to find shared spike days across all news categories
     shared = sorted(set.intersection(*[set(lst.index) for lst in spike_days_list]))
-    print(f"Shared spike days across all news categories: {shared}")
+    #print(f"Shared spike days across all news categories: {shared}")
 
     return remove_duplicate_spike_days(shared)
 
@@ -69,7 +70,7 @@ def load_price_data(filepath):
 
     return daily_close
 
-def calculate_price_return(spike_days, daily_close, days_after = 3):
+def calculate_price_return(spike_days, daily_close, days_after = 3, pre_event_days = 5):
 
     def get_nearest_price(daily_close, date):
         for offset in range(4):  # try today, +1, +2, +3 days
@@ -79,39 +80,52 @@ def calculate_price_return(spike_days, daily_close, days_after = 3):
                 continue
         return None  # no data found within 3 days
 
-    #calculate the normal x-day price return, to see if the price returns following the spike days are significantly different from the normal price returns
-    all_returns = daily_close.pct_change(periods = days_after) * 100
-    normal_returns = all_returns.mean()
-    normal_std = all_returns.std()
-
     results = []
 
     for spike_day in spike_days:
         date = pd.to_datetime(spike_day)
         date_end = date + pd.Timedelta(days = days_after)
 
-        
-        price_start = daily_close.loc[date]
-        price_end = get_nearest_price(daily_close, date_end)
+        #get the price the day before the spike day to calculate the normal return distribution
+        price_anchor = get_nearest_price(daily_close, date - pd.Timedelta(days = 1))
+        price_day0 = get_nearest_price(daily_close, date)
+        price_end = get_nearest_price(daily_close, date + pd.Timedelta(days = days_after))
 
-        if price_start == None or price_end == None:
-            print(f"Missing price data for spike day {spike_day} or end date {date_end}. Skipping this spike day.")
+        if any(p is None for p in [price_anchor, price_day0, price_end]):
+            #print(f"⚠️ Skipping {spike_day} — missing price data")
             continue
 
-        #calculate the x-day price return as a percentage
-        raw_return = (price_end - price_start) / price_start * 100
-        #how much does the price return following the spike deviate from the normal x-day return?
-        abnormal_return = raw_return - normal_returns
+        #calculate pre event returns to establish a normal return distribution
+        pre_event_returns = []
+        for d in range(1, pre_event_days + 1):
+            p_start = get_nearest_price(daily_close, date - pd.Timedelta(days = d + 1))
+            p_end = get_nearest_price(daily_close, date - pd.Timedelta(days = d))
+            if p_start is not None and p_end is not None:
+                pre_event_returns.append((p_end - p_start) / p_start * 100)
+        
+        expected_daily_return = sum(pre_event_returns) / len(pre_event_returns) if pre_event_returns else 0
 
-        z_score = abnormal_return / normal_std
+        #calculate the normal x day return based on the expected daily return
+        raw_return_day0 = (price_day0 - price_anchor) / price_anchor * 100
+        raw_return_end = (price_end - price_anchor) / price_day0 * 100
+
+        #expected total drift over the full window
+        expected_total = expected_daily_return * (days_after +1)
+
+        abnormal_return = raw_return_end - expected_total
+
+        normal_std = daily_close.pct_change().std() * 100
+        z_score = abnormal_return / normal_std if normal_std > 0 else 0
 
         #add all information to the results list
         results.append({
-            "date": date.strftime("%Y-%m-%d"),
-            "raw_return": round(raw_return, 2),
-            "abnormal_return": round(abnormal_return, 2),
-            "z_score": round(z_score, 2),
-            "significant": abs(z_score) > 1.3
+            "date":             date.strftime("%Y-%m-%d"),
+            "return_day0_%":    round(raw_return_day0, 2),  #reaction on the spike day itself
+            "raw_return_%":     round(raw_return_end, 2),   #total return over the full window
+            "expected_drift_%": round(expected_total, 2),   #what trend would we expect based on the pre-event returns
+            "abnormal_return_%":  round(abnormal_return, 2),  #above or below the expected return based on the pre-event trend
+            "z_score":          round(z_score, 2),
+            "significant":      abs(z_score) > 1.3
         })
 
     return pd.DataFrame(results)
@@ -131,7 +145,7 @@ for file in files:
     spike_days = get_spike_days_of_single_class(news_data)
     #append the spike days to the list of all spike days
     all_spike_days.append(spike_days)
-    print(f"Spike days for {file}: {spike_days}")
+    #print(f"Spike days for {file}: {spike_days}")
 
 #get the shared spike days across all news categories
 shared_spike_days = get_shared_spike_days(all_spike_days)
@@ -156,50 +170,302 @@ for file in files:
     all_results.append(price_returns)
 
 df_all = pd.concat(all_results, ignore_index=True)
-print(df_all)
-#-----------visualize the data----------------------------
+#print(df_all)
+#-----------visualize the data---------------------------- old
 
-fig = go.Figure()
+def plot_chart1_abnormal_returns(shared_spike_days, all_daily_closes):
+    """Grouped bar chart with dropdown to select days_after."""
 
-#get all the asset names
-assets = df_all["asset"].unique()
-colors = {"gold": "gold", "bitcoin": "royalblue", "msci_world": "seagreen"}
+    assets = list(all_daily_closes.keys())
+    colors = {"gold_raw": "gold", "bitcoin_raw": "royalblue", "msci_world_raw": "seagreen"}
+    days_after_options = [1, 3, 5, 7]
+    default_da = 3
 
-for asset in assets:
-    asset_data = df_all[df_all["asset"] == asset]
+    fig = go.Figure()
+    all_trace_meta = []
 
-    fig.add_trace(go.Bar(
-        name = asset,
-        x = asset_data["date"],
-        y = asset_data["abnormal_return"],
-        marker_color=colors.get(asset, "gray"),
-        hovertemplate=(
-            "<b>%{x}</b><br>" +
-            "Asset: " + asset + "<br>" +
-            "Abnormal Return: %{y:.2f}%<br>" +
-            "Z-Score: %{customdata[0]}<br>" +
-            "Significant: %{customdata[1]}" +
-            "<extra></extra>"
-        ),
-        customdata = asset_data[["z_score", "significant"]].values
-    ))
+    # ── Precompute returns for every days_after option ───────────────
+    for da in days_after_options:
 
-    #----------Layout----------------------------------------
+        # Recalculate df_all for this days_after value
+        results_for_da = []
+        for asset, daily_close in all_daily_closes.items():
+            price_returns = calculate_price_return(shared_spike_days, daily_close, days_after=da)
+            price_returns["asset"] = asset
+            results_for_da.append(price_returns)
 
+        df_da = pd.concat(results_for_da, ignore_index=True)
+
+        # Add one bar trace per asset for this days_after value
+        for asset in assets:
+            asset_data = df_da[df_da["asset"] == asset]
+            is_default = (da == default_da)
+
+            fig.add_trace(go.Bar(
+                name=asset,
+                x=asset_data["date"],
+                y=asset_data["abnormal_return_%"],
+                marker_color=colors.get(asset, "gray"),
+                visible=is_default,
+                legendgroup=asset,
+                showlegend=is_default,  # only show legend for default
+                hovertemplate=(
+                    "<b>%{x}</b><br>" +
+                    f"Asset: {asset}<br>" +
+                    "Abnormal Return: %{y:.2f}%<br>" +
+                    "Z-Score: %{customdata[0]}<br>" +
+                    "Significant: %{customdata[1]}<extra></extra>"
+                ),
+                customdata=asset_data[["z_score", "significant"]].values
+            ))
+
+            all_trace_meta.append({"da": da, "asset": asset})
+
+    # ── Visibility helper ────────────────────────────────────────────
+    def make_visibility(sel_da):
+        return [m["da"] == sel_da for m in all_trace_meta]
+
+    # ── Dropdown buttons ─────────────────────────────────────────────
+    da_buttons = [
+        dict(
+            label=f"{da} days after",
+            method="update",
+            args=[
+                {"visible": make_visibility(da),
+                 # update legend: only show for selected da
+                 "showlegend": [m["da"] == da for m in all_trace_meta]},
+                {"title": f"RQ2: Abnormal Returns ({da} days after event)"}
+            ]
+        )
+        for da in days_after_options
+    ]
+
+    # ── Layout ───────────────────────────────────────────────────────
     fig.update_layout(
-        title = "x-Day Abnormal Returns after Trump news spikes",
-        xaxis_title = "Event Date",
-        yaxis_title = "Abnormal Return (%)",
+        title=f"RQ2: Abnormal Returns ({default_da} days after event)",
+        xaxis_title="Event Date",
+        yaxis_title="Abnormal Return (%)",
         barmode="group",
-        hovermode = "x unified",
-        plot_bgcolor = "white",
+        hovermode="x unified",
+        plot_bgcolor="white",
+        height=550,
         legend_title="Asset",
-        #add a zero line
-        shapes = [dict(
-            type = "line", x0 = 0, x1 = 1, xref = "paper",
-            y0 = 0, y1 = 0, yref = "y",
-            line = dict(color = "black", width = 1, dash = "dash")
-        )]
+        shapes=[dict(
+            type="line", x0=0, x1=1, xref="paper",
+            y0=0, y1=0, yref="y",
+            line=dict(color="black", width=1, dash="dash")
+        )],
+        updatemenus=[
+            dict(
+                buttons=da_buttons,
+                direction="down",
+                x=0.0, y=1.15, xanchor="left",
+                showactive=True,
+                bgcolor="lightgreen",
+                bordercolor="gray",
+            )
+        ],
+        annotations=[
+            dict(text="➡️ Days after event:", x=0.0, y=1.19,
+                 xref="paper", yref="paper", showarrow=False)
+        ]
     )
 
+    fig.write_html("data/processed/rq2_chart1_abnormal_returns.html")
     fig.show()
+
+
+def plot_chart2_event_window(shared_spike_days, all_daily_closes):
+    """Price path around a selected event with dropdowns for event, days before/after."""
+
+    colors = {"gold_raw": "gold", "bitcoin_raw": "royalblue", "msci_world_raw": "seagreen"}
+
+    days_before_options = [3, 5, 7, 10]
+    days_after_options  = [3, 5, 7, 10]
+    event_options       = shared_spike_days
+
+    default_event = event_options[0]
+    default_db    = days_before_options[1]  # 5
+    default_da    = days_after_options[1]   # 5
+
+    fig = go.Figure()
+
+    # ── Precompute all traces ────────────────────────────────────────
+    all_trace_meta = []
+
+    for event in event_options:
+        for db in days_before_options:
+            for da in days_after_options:
+                for asset, daily_close in all_daily_closes.items():
+
+                    date = pd.to_datetime(event)
+                    path = []
+
+                    for offset in range(-db, da + 1):
+                        target = date + pd.Timedelta(days=offset)
+                        price = None
+                        for adj in range(4):
+                            try:
+                                price = daily_close.loc[target + pd.Timedelta(days=adj)]
+                                break
+                            except KeyError:
+                                continue
+                        path.append(price)
+
+                    path = [p if p is not None else float("nan") for p in path]
+                    anchor = path[db - 1] if path[db - 1] else 1
+                    path_norm = [(p / anchor) * 100 if p else float("nan") for p in path]
+
+                    is_default = (event == default_event and db == default_db and da == default_da)
+
+                    fig.add_trace(go.Scatter(
+                        name=asset,
+                        x=list(range(-db, da + 1)),
+                        y=path_norm,
+                        mode="lines+markers",
+                        line=dict(color=colors.get(asset, "gray"), width=2),
+                        marker=dict(size=6),
+                        visible=is_default,
+                        hovertemplate=f"<b>{asset}</b><br>Day: %{{x}}<br>Price (norm): %{{y:.2f}}<extra></extra>"
+                    ))
+
+                    all_trace_meta.append({
+                        "event": event, "db": db, "da": da, "asset": asset
+                    })
+
+    # ── Visibility helper ────────────────────────────────────────────
+    def make_visibility(sel_event, sel_db, sel_da):
+        return [
+            m["event"] == sel_event and m["db"] == sel_db and m["da"] == sel_da
+            for m in all_trace_meta
+        ]
+
+    # ── Dropdown buttons ─────────────────────────────────────────────
+    event_buttons = [
+        dict(label=str(e), method="update",
+             args=[{"visible": make_visibility(e, default_db, default_da)},
+                   {"title": f"Price Path Around Event: {e}"}])
+        for e in event_options
+    ]
+
+    db_buttons = [
+        dict(label=f"{db} days before", method="update",
+             args=[{"visible": make_visibility(default_event, db, default_da)}])
+        for db in days_before_options
+    ]
+
+    da_buttons = [
+        dict(label=f"{da} days after", method="update",
+             args=[{"visible": make_visibility(default_event, default_db, da)}])
+        for da in days_after_options
+    ]
+
+    # ── Layout ───────────────────────────────────────────────────────
+    fig.update_layout(
+        title=f"Price Path Around Event: {default_event}",
+        xaxis_title="Days relative to news spike (0 = news day)",
+        yaxis_title="Normalized Price (day -1 = 100)",
+        hovermode="x unified",
+        plot_bgcolor="white",
+        height=550,
+        legend_title="Asset",
+        updatemenus=[
+            dict(buttons=event_buttons, direction="down",
+                 x=0.0, y=1.18, xanchor="left",
+                 showactive=True, bgcolor="lightblue"),
+            dict(buttons=db_buttons, direction="down",
+                 x=0.35, y=1.18, xanchor="left",
+                 showactive=True, bgcolor="lightyellow"),
+            dict(buttons=da_buttons, direction="down",
+                 x=0.65, y=1.18, xanchor="left",
+                 showactive=True, bgcolor="lightgreen"),
+        ],
+        annotations=[
+            dict(text="📅 Event:",       x=0.0,  y=1.22, xref="paper", yref="paper", showarrow=False),
+            dict(text="⬅️ Days before:", x=0.35, y=1.22, xref="paper", yref="paper", showarrow=False),
+            dict(text="➡️ Days after:",  x=0.65, y=1.22, xref="paper", yref="paper", showarrow=False),
+        ]
+    )
+
+    fig.add_vline(x=0, line_dash="dash", line_color="red", annotation_text="📰 News")
+    fig.add_hline(y=100, line_dash="dot", line_color="gray")
+
+    fig.write_html("data/processed/rq2_chart2_event_window.html")
+    fig.show()
+
+all_daily_closes = {}
+
+for file in glob("data/raw/*.csv"):
+    asset_name = file.replace("data/raw/", "").replace(".csv", "")
+    all_daily_closes[asset_name] = load_price_data(file)
+
+
+# ── Call both ────────────────────────────────────────────────────────
+#plot_chart1_abnormal_returns(shared_spike_days, all_daily_closes)
+#plot_chart2_event_window(shared_spike_days, all_daily_closes)
+
+#---functions for the Website-------------------------
+
+#build the first chart with the option to select the days after the event
+def build_chart1(days_after):
+    colors = {"gold_raw": "gold", "bitcoin_raw": "royalblue", "msci_world_raw": "seagreen"}
+    #create a bar chart with plotly, with one bar per asset, showing the abnormal return for each shared spike day, with a dropdown to select the days after the event
+    fig = go.Figure()
+    for asset, daily_close in all_daily_closes.items():
+        df = calculate_price_return(shared_spike_days, daily_close, days_after=days_after)
+        fig.add_trace(go.Bar(
+            name=asset,
+            x=df["date"],
+            y=df["abnormal_return_%"],
+            marker_color=colors.get(asset, "gray"),
+            customdata=df[["z_score", "significant"]].values,
+            hovertemplate=(
+                "<b>%{x}</b><br>" + f"Asset: {asset}<br>" +
+                "Abnormal Return: %{y:.2f}%<br>" +
+                "Z-Score: %{customdata[0]}<br>" +
+                "Significant: %{customdata[1]}<extra></extra>"
+            )
+        ))
+    fig.update_layout(
+        title=f"Abnormal Returns ({days_after} days after event)",
+        barmode="group", hovermode="x unified",
+        plot_bgcolor="white", height=500
+    )
+    return fig
+
+#build the second chart with the option to select the event and the days before and after the event
+def build_chart2(event, days_before, days_after):
+    import pandas as pd
+    colors = {"gold_raw": "gold", "bitcoin_raw": "royalblue", "msci_world_raw": "seagreen"}
+    fig = go.Figure()
+    date = pd.to_datetime(event)
+    for asset, daily_close in all_daily_closes.items():
+        path = []
+        for offset in range(-days_before, days_after + 1):
+            target = date + pd.Timedelta(days=offset)
+            price = None
+            for adj in range(4):
+                try:
+                    price = daily_close.loc[target + pd.Timedelta(days=adj)]
+                    break
+                except KeyError:
+                    continue
+            path.append(price if price is not None else float("nan"))
+        anchor = path[days_before - 1] or 1
+        path_norm = [(p / anchor) * 100 if p else float("nan") for p in path]
+        fig.add_trace(go.Scatter(
+            name=asset,
+            x=list(range(-days_before, days_after + 1)),
+            y=path_norm,
+            mode="lines+markers",
+            line=dict(color=colors.get(asset, "gray"), width=2),
+        ))
+    fig.update_layout(
+        title=f"Price Path Around: {event}",
+        xaxis_title="Days relative to news spike",
+        yaxis_title="Normalized Price (day -1 = 100)",
+        plot_bgcolor="white", height=500
+    )
+    fig.add_vline(x=0, line_dash="dash", line_color="red", annotation_text="📰 News")
+    fig.add_hline(y=100, line_dash="dot", line_color="gray")
+    return fig
