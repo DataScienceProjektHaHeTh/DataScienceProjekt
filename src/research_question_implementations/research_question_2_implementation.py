@@ -7,8 +7,15 @@
 
 import pandas as pd
 import plotly.graph_objects as go
+import os
 from plotly.subplots import make_subplots
 from glob import glob
+
+#for global filepaths
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_MARKET = os.path.join(BASE_DIR, "../../data/raw/market")
+DATA_NEWS_PROCESSED = os.path.join(BASE_DIR, "../../data/processed/articles_with_sentiment")
+
 
 def get_spike_days_of_single_class(news_data):
     #Calculate the number of articles published per day, by grouping the news data by date and counting the number of articles for each date
@@ -134,13 +141,13 @@ def calculate_price_return(spike_days, daily_close, days_after = 3, pre_event_da
 #-------------get all spike days for each news category----------------
 
 #get all filepaths for the processed news data
-files = glob("data/processed/articles_with_sentiment_guardian*.csv")
+news_files_paths = glob(os.path.join(DATA_NEWS_PROCESSED, "*.csv"))
 
 all_spike_days = []
 
-for file in files:
+for file_path in news_files_paths:
     #read the news data for the current category into a DataFrame
-    news_data = pd.read_csv(file)
+    news_data = pd.read_csv(file_path)
     #calculate the spike days for the current news category
     spike_days = get_spike_days_of_single_class(news_data)
     #append the spike days to the list of all spike days
@@ -153,14 +160,14 @@ shared_spike_days = get_shared_spike_days(all_spike_days)
 #-------------calculate price returns for the shared spike days----------------
 
 #get all the filepaths of the price data
-files = glob("data/raw/*.csv")
+files = glob(os.path.join(DATA_MARKET,"*.csv"))
 
 all_results = []
 
 #for all investments, read the price data and calculate the price returns for the shared spike days
 for file in files:
 
-    asset_name = file.replace("data/raw/", "").replace(".csv","")
+    asset_name = os.path.basename(file).replace(".csv","")
 
     daily_close = load_price_data(file)
     price_returns = calculate_price_return(shared_spike_days, daily_close, days_after=1)
@@ -177,7 +184,7 @@ def plot_chart1_abnormal_returns(shared_spike_days, all_daily_closes):
     """Grouped bar chart with dropdown to select days_after."""
 
     assets = list(all_daily_closes.keys())
-    colors = {"gold_raw": "gold", "bitcoin_raw": "royalblue", "msci_world_raw": "seagreen"}
+    colors = {"gold": "gold", "bitcoin": "royalblue", "msci_world": "seagreen"}
     days_after_options = [1, 3, 5, 7]
     default_da = 3
 
@@ -278,7 +285,7 @@ def plot_chart1_abnormal_returns(shared_spike_days, all_daily_closes):
 def plot_chart2_event_window(shared_spike_days, all_daily_closes):
     """Price path around a selected event with dropdowns for event, days before/after."""
 
-    colors = {"gold_raw": "gold", "bitcoin_raw": "royalblue", "msci_world_raw": "seagreen"}
+    colors = {"gold": "gold", "bitcoin": "royalblue", "msci_world": "seagreen"}
 
     days_before_options = [3, 5, 7, 10]
     days_after_options  = [3, 5, 7, 10]
@@ -395,8 +402,8 @@ def plot_chart2_event_window(shared_spike_days, all_daily_closes):
 
 all_daily_closes = {}
 
-for file in glob("data/raw/*.csv"):
-    asset_name = file.replace("data/raw/", "").replace(".csv", "")
+for file in glob(os.path.join(DATA_MARKET,"*.csv")):
+    asset_name = os.path.basename(file).replace(".csv", "")
     all_daily_closes[asset_name] = load_price_data(file)
 
 
@@ -408,7 +415,7 @@ for file in glob("data/raw/*.csv"):
 
 #build the first chart with the option to select the days after the event
 def build_chart1(days_after):
-    colors = {"gold_raw": "gold", "bitcoin_raw": "royalblue", "msci_world_raw": "seagreen"}
+    colors = {"gold": "gold", "bitcoin": "royalblue", "msci_world": "seagreen"}
     #create a bar chart with plotly, with one bar per asset, showing the abnormal return for each shared spike day, with a dropdown to select the days after the event
     fig = go.Figure()
     for asset, daily_close in all_daily_closes.items():
@@ -436,7 +443,7 @@ def build_chart1(days_after):
 #build the second chart with the option to select the event and the days before and after the event
 def build_chart2(event, days_before, days_after):
     import pandas as pd
-    colors = {"gold_raw": "gold", "bitcoin_raw": "royalblue", "msci_world_raw": "seagreen"}
+    colors = {"gold": "gold", "bitcoin": "royalblue", "msci_world": "seagreen"}
     fig = go.Figure()
     date = pd.to_datetime(event)
     for asset, daily_close in all_daily_closes.items():

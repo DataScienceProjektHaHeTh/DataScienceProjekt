@@ -4,6 +4,9 @@ import json
 import time
 from dotenv import load_dotenv
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_RAW_NEWS = os.path.join(BASE_DIR, "../../data/raw/news")
+
 load_dotenv()
 
 API_KEY = os.getenv("guardianApiKey")
@@ -65,7 +68,7 @@ for category, q in queries.items():
             time.sleep(0.2)
 
     #save the collected articles to a JSON file
-    filename = f"data/raw/guardian_{category}.json"
+    filename = os.path.join(DATA_RAW_NEWS, f"{category}.json")
     with open(filename, "w") as f:
         json.dump(all_articles, f, indent=4)
 

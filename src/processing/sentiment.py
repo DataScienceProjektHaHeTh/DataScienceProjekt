@@ -2,8 +2,15 @@ import pandas as pd
 import json
 import time
 import glob
+import os
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 from multiprocessing import Pool
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_PROCESSED_ARTICLES_WITH_SENTIMENT = os.path.join(BASE_DIR, "../../data/processed/articles_with_sentiment")
+DATA_RAW_ARTICLES = os.path.join(BASE_DIR, "../../data/raw/news")
+
+os.makedirs(DATA_PROCESSED_ARTICLES_WITH_SENTIMENT, exist_ok=True)
 
 #function calling Vader on the Text, return the Score
 def get_sentiment_scores(text):
@@ -21,7 +28,7 @@ def get_sentiment_label(score):
     else:
         return 'neutral'
 
-all_files = glob.glob('data/raw/guardian_*.json')
+all_files = glob.glob(os.path.join(DATA_RAW_ARTICLES, "*.json"))
 
 for filepath in all_files:
     print(f"Processing file: {filepath}")
@@ -62,6 +69,5 @@ for filepath in all_files:
     print(df.head())
     #save the dataframe to a new csv file
 
-    filename = filepath.split('/')[-1]  #just filename, without the path
-    filename = filename.replace('.json', '')  #remove the .json extension
-    df.to_csv(f'data/processed/articles_with_sentiment_{filename}.csv', index=False)
+    filename = os.path.basename(filepath).replace(".json", "")
+    df.to_csv(os.path.join(DATA_PROCESSED_ARTICLES_WITH_SENTIMENT, f"{filename}_with_sentiment.csv"), index=False)
