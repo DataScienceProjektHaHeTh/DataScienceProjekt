@@ -139,39 +139,74 @@ def load_market_daily() -> pd.DataFrame:
 
 # ── Step 4: 3-day forward returns ─────────────────────────────────────────────
 
-def compute_3d_returns(market_daily: pd.DataFrame) -> pd.DataFrame:
+def compute_3d_returns(market_daily: pd.DataFrame, n_days: int = 3) -> pd.DataFrame:
     """
-    Compute the cumulative 3-day price return for each asset.
+    Compute the cumulative n-day price return for each asset.
 
-    Formula (from the project definition):
-        return_t = (close_{t+3} - close_t) / close_t * 100
+    Formula: return_t = (close_{t+n} - close_t) / close_t * 100
 
-    shift(-3) shifts the close price series 3 rows *backward in time* so that
-    each row now holds the close price that will exist 3 rows later.
-    Subtracting the current close and dividing gives the percentage return.
+    n_days defaults to 3 (project definition) but is exposed as a parameter
+    so the website slider can test 1, 3, 5, 7, or 10-day windows to check
+    whether markets react over a shorter or longer horizon than assumed.
 
-    For MSCI World and Gold the daily series contains only trading days, so
-    shift(-3) equals 3 *trading days* forward — matching the project definition.
-    For Bitcoin the daily series contains every calendar day, so shift(-3)
-    equals 3 *calendar days* forward — also matching the definition.
+    For MSCI World and Gold shift(-n) advances n *trading days* forward.
+    For Bitcoin shift(-n) advances n *calendar days* forward.
+    Both are correct because dropna() first isolates each asset's own calendar.
 
-    The last 3 rows of each asset will have NaN returns because there is no
-    future data to compute them against. This is expected and harmless.
-
-    Returns a DataFrame with columns:
-        msci_world_3d_return, gold_3d_return, bitcoin_3d_return
+    Returns a DataFrame with columns: msci_world_3d_return, gold_3d_return, bitcoin_3d_return
+    (column names always use '3d' regardless of n_days for compatibility with downstream code)
     """
     returns = pd.DataFrame(index=market_daily.index)
     for asset in ASSETS:
-        # dropna() isolates only this asset's own trading days before shifting,
-        # so shift(-3) advances 3 rows within the asset's own calendar — not 3
-        # calendar days in the unified index (which would land on weekends for
-        # MSCI/Gold and produce spurious NaN values).
         close = market_daily[f"{asset}_close"].dropna()
-        future_close = close.shift(-3)
+        future_close = close.shift(-n_days)
         asset_returns = (future_close - close) / close * 100
-        returns[f"{asset}_3d_return"] = asset_returns  # reindexes to full index automatically
+        returns[f"{asset}_3d_return"] = asset_returns
     return returns
+
+
+def compute_lagged_returns(market_daily: pd.DataFrame, lag: int = 0, n_days: int = 3) -> pd.DataFrame:
+    """
+    Compute n-day returns starting lag days AFTER the reference date.
+
+    lag=0 means returns start on the same day as the spike (default behaviour).
+    lag=1 means returns start one day AFTER the spike — useful because Guardian
+    articles often publish after UK/US market close, so the market reaction
+    actually shows up the following day.
+
+    Returns a DataFrame with the same columns as compute_3d_returns.
+    """
+    returns = pd.DataFrame(index=market_daily.index)
+    for asset in ASSETS:
+        close = market_daily[f"{asset}_close"].dropna()
+        # shift(-lag) gives the close price lag days later as our new base
+        # shift(-(lag + n_days)) gives the close price lag+n days later
+        base_close   = close.shift(-lag)
+        future_close = close.shift(-(lag + n_days))
+        asset_returns = (future_close - base_close) / base_close * 100
+        returns[f"{asset}_3d_return"] = asset_returns
+    return returns
+
+
+def compute_normalized_counts(article_counts: pd.DataFrame, window: int = 30) -> pd.DataFrame:
+    """
+    Normalize article counts using a rolling z-score relative to the past `window` days.
+
+    z_t = (count_t - rolling_mean_t) / rolling_std_t
+
+    This removes the slow upward trend in coverage volume over time, so a spike
+    of 40 articles in January is compared against January norms, not the full-year
+    average. Values > 1 mean above-average for recent days; values > 2 are extreme.
+
+    Returns a DataFrame with columns: trade_policy_zscore, geopolitics_zscore, etc.
+    """
+    zscores = pd.DataFrame(index=article_counts.index)
+    for cat in CATEGORIES:
+        col = f"{cat}_count"
+        rolling_mean = article_counts[col].rolling(window, min_periods=7).mean()
+        rolling_std  = article_counts[col].rolling(window, min_periods=7).std()
+        zscores[f"{cat}_zscore"] = (article_counts[col] - rolling_mean) / rolling_std
+    return zscores
 
 
 # ── Step 5: Spike flags ────────────────────────────────────────────────────────
