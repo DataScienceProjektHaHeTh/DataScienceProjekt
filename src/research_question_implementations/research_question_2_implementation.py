@@ -30,33 +30,35 @@ def get_spike_days_of_single_class(news_data):
     return filtered_spike_days
 
 def get_shared_spike_days(spike_days_list):
+
+    def remove_duplicate_spike_days(spike_days):
+
+        MIN_GAP_DAYS = 5
+        filtered_spike_days = []
+        last_kept_date = None
+
+        for date in spike_days:
+            #always keep the first spike day
+            if last_kept_date is None:
+                filtered_spike_days.append(date)
+                last_kept_date = date
+            #for subsequent spike days, check the gap to the last kept spike day
+            else:
+                gap = (pd.to_datetime(date) - pd.to_datetime(last_kept_date)).days
+                if gap >= MIN_GAP_DAYS:
+                    filtered_spike_days.append(date)
+                    last_kept_date = date   
+                else:
+                    print(f"Skipping spike day {date} due to proximity to last kept spike day {last_kept_date} (gap: {gap} days)")
+
+
+        return filtered_spike_days
+
     #Intersection of all spike day lists to find shared spike days across all news categories
     shared = sorted(set.intersection(*[set(lst.index) for lst in spike_days_list]))
     print(f"Shared spike days across all news categories: {shared}")
-    return shared
 
-def remove_duplicate_spike_days(spike_days):
-
-    MIN_GAP_DAYS = 5
-    filtered_spike_days = []
-    last_kept_date = None
-
-    for date in spike_days:
-        #always keep the first spike day
-        if last_kept_date is None:
-            filtered_spike_days.append(date)
-            last_kept_date = date
-        #for subsequent spike days, check the gap to the last kept spike day
-        else:
-            gap = (pd.to_datetime(date) - pd.to_datetime(last_kept_date)).days
-            if gap >= MIN_GAP_DAYS:
-                filtered_spike_days.append(date)
-                last_kept_date = date   
-            else:
-                print(f"Skipping spike day {date} due to proximity to last kept spike day {last_kept_date} (gap: {gap} days)")
-
-
-    return filtered_spike_days
+    return remove_duplicate_spike_days(shared)
 
 def load_price_data(filepath):
     df = pd.read_csv(filepath, skiprows=[1,2], index_col=0, parse_dates=True)
@@ -133,10 +135,6 @@ for file in files:
 
 #get the shared spike days across all news categories
 shared_spike_days = get_shared_spike_days(all_spike_days)
-
-#filter the shared spike days to remove those that are too close to each other
-shared_spike_days = remove_duplicate_spike_days(shared_spike_days)
-print(f"Shared spike days across all news categories: {shared_spike_days}")
 
 #-------------calculate price returns for the shared spike days----------------
 
