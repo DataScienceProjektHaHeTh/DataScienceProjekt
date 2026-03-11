@@ -196,7 +196,7 @@ def build_chart1(days_after):
 
 def build_chart2(event, days_before, days_after):
     """Normalised price path around a single event for all assets."""
-    colors = {"gold_close": "gold_close", "bitcoin": "royalblue", "msci_world_close": "seagreen"}
+    colors = {"gold_close": "gold", "bitcoin": "royalblue", "msci_world_close": "seagreen"}
     fig    = go.Figure()
     date   = pd.to_datetime(event)
 
