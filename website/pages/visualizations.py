@@ -6,11 +6,19 @@ import plotly.graph_objects as go
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
-from src.research_question_implementations.research_question_2_implementation import (
-    calculate_price_return, load_price_data,
-    shared_spike_days, all_daily_closes,
-    build_chart1, build_chart2
-)
+try:
+    from src.research_question_implementations.research_question_2_implementation import (
+        calculate_price_return, load_price_data,
+        shared_spike_days, all_daily_closes,
+        build_chart1, build_chart2
+    )
+    _rq2_available = True
+except Exception as e:
+    print(f"[WARN] RQ2 data unavailable: {e}")
+    shared_spike_days = []
+    _rq2_available = False
+    def build_chart1(*a, **kw): return go.Figure()
+    def build_chart2(*a, **kw): return go.Figure()
 from src.analysis_rq1_rq3_rq7.data_prep import (
     load_base_data, build_master_dynamic, compute_3d_returns, compute_normalized_counts,
 )
