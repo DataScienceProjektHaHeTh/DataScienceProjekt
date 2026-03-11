@@ -279,6 +279,7 @@ def plot_chart1_abnormal_returns(shared_spike_days, all_daily_closes):
         ]
     )
 
+    fig.add_hline(y=0, line_dash="dot", line_color="gray")
     fig.write_html("data/processed/rq2_chart1_abnormal_returns.html")
     fig.show()
 

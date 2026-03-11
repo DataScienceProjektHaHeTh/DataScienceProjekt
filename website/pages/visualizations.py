@@ -19,6 +19,14 @@ except Exception as e:
     _rq2_available = False
     def build_chart1(*a, **kw): return go.Figure()
     def build_chart2(*a, **kw): return go.Figure()
+
+from src.research_question_implementations.research_question_4_implementation import (
+    build_chart_rq4,
+    build_chart_rq4_category_breakdown,
+    all_daily_returns
+)
+
+
 from src.analysis_rq1_rq3_rq7.data_prep import (
     load_base_data, build_master_dynamic, compute_3d_returns, compute_normalized_counts,
 )
@@ -223,12 +231,51 @@ layout = html.Div([
             dcc.Graph(id="rq2-graph-chart2"),
         ],className = "viz-box"),
     ], className="section rq-section"),
+
+    #---RQ4--------------------------------------------------------------------------
+    html.Section([
+    html.H2("RQ4: Do multi-category news spikes amplify market returns?"),
+    html.P("Comparing abnormal returns after single-category vs multi-category Trump news spikes."),
+    #chart 1
+    html.Div([
+        html.H3("Single vs Multi-Category Spike Returns"),
+        html.Label("Days after event:"),
+        dcc.Dropdown(
+            options= DAYS_AFTER_OPTIONS,
+            value=5,
+            id="rq4-da1", className="dropdown", clearable=False
+        ),
+        dcc.Graph(id="rq4-graph-chart1"),
+    ], className="viz-box"),
+    
+    #chart 2
+    html.Div([
+        html.H3("Returns by news Category per asset"),
+        html.Div([
+            html.Label("Asset:"),
+            dcc.Dropdown(
+                options = EVENT_OPTIONS,
+                value = 3,
+                id = "rq4-asset", className = "dropdown", clearable = False
+            ),
+        ], style={"width": "35%"}),
+        html.Div([
+            html.Label("Days after event:"),
+            dcc.Dropdown(
+                options = DAYS_AFTER_OPTIONS,
+                value = 5,
+                id = "rq4-da2", className = "dropdown", clearable = False
+            ),
+        ], style = {"width": "25%"})
+    ], style = {"display": "flex", "gap": "20px", "marginBottom": "10px"}),
+    dcc.Graph(id = "rq4-graph2")
+    ], className="section rq-section"),
 ], className = "page")
 
 
+#-- Callbacks ------------------------------------------
 
-# ── Callbacks ────────────────────────────────────────────────────────
-
+#-- RQ2 ----------------------------------------------
 @callback(
         Output("rq2-graph-chart1", "figure"),
         Input("rq2-chart1-da", "value")
