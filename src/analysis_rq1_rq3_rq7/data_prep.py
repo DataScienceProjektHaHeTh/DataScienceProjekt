@@ -85,7 +85,21 @@ def load_daily_sentiment() -> pd.DataFrame | None:
     Returns None with a warning if the sentiment files haven't been generated yet
     (i.e. if sentiment.py has not been run). In that case the master DataFrame
     will simply not contain sentiment columns — all other analysis still works.
+
+    Falls back to data/processed/daily_sentiment.csv if article-level sentiment
+    files are absent (e.g. on the hosted deployment where they are gitignored).
     """
+    # Fast path: use pre-built daily aggregate if article-level files are absent
+    processed_path = PROC / "daily_sentiment.csv"
+    if not (PROC / "articles_with_sentiment" / f"{CATEGORIES[0]}_with_sentiment.csv").exists():
+        if processed_path.exists():
+            df = pd.read_csv(processed_path, index_col=0, parse_dates=True)
+            df.index.name = "date"
+            df.sort_index(inplace=True)
+            return df
+        print("[WARN] Sentiment file missing: trade_policy_with_sentiment.csv — run sentiment.py first")
+        return None
+
     frames = []
     for cat in CATEGORIES:
         path = PROC / "articles_with_sentiment" / f"{cat}_with_sentiment.csv"

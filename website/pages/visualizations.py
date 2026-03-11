@@ -205,7 +205,7 @@ layout = html.Div([
                     #dropdown to select which event to show (options are the shared spike days)
                     dcc.Dropdown(
                         options = EVENT_OPTIONS,
-                        value = str(shared_spike_days[0]),
+                        value = str(shared_spike_days[0]) if shared_spike_days else None,
                         id = "rq2-chart2-event",
                         className ="dropdown",
                         clearable = False
