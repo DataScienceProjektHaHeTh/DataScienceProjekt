@@ -20,11 +20,18 @@ except Exception as e:
     def build_chart1(*a, **kw): return go.Figure()
     def build_chart2(*a, **kw): return go.Figure()
 
-from src.research_question_implementations.research_question_4_implementation import (
-    build_chart_rq4,
-    build_chart_rq4_category_breakdown,
-    all_daily_returns
-)
+try:
+    from src.research_question_implementations.research_question_4_implementation import (
+        build_chart_rq4,
+        build_chart_rq4_category_breakdown,
+        all_daily_returns
+    )
+    _rq4_available = True
+except Exception as e:
+    print(f"[WARN] RQ4 data unavailable: {e}")
+    _rq4_available = False
+    def build_chart_rq4(*a, **kw): return go.Figure()
+    def build_chart_rq4_category_breakdown(*a, **kw): return go.Figure()
 
 
 from src.analysis_rq1_rq3_rq7.data_prep import (
