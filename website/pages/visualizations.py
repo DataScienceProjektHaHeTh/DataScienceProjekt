@@ -20,11 +20,18 @@ except Exception as e:
     def build_chart1(*a, **kw): return go.Figure()
     def build_chart2(*a, **kw): return go.Figure()
 
-from src.research_question_implementations.research_question_4_implementation import (
-    build_chart_rq4,
-    build_chart_rq4_category_breakdown,
-    all_daily_returns
-)
+try:
+    from src.research_question_implementations.research_question_4_implementation import (
+        build_chart_rq4,
+        build_chart_rq4_category_breakdown,
+        all_daily_returns
+    )
+    _rq4_available = True
+except Exception as e:
+    print(f"[WARN] RQ4 data unavailable: {e}")
+    _rq4_available = False
+    def build_chart_rq4(*a, **kw): return go.Figure()
+    def build_chart_rq4_category_breakdown(*a, **kw): return go.Figure()
 
 
 from src.analysis_rq1_rq3_rq7.data_prep import (
@@ -167,130 +174,47 @@ layout = html.Div([
         ], className="viz-box"),
     ], className="section rq-section"),
 
-    # ── RQ 2 ──────────────────────────────────────────────────────────────────
+    # ── RQ 2 — edit here ──────────────────────────────────────────────────────
     html.Section([
-        html.H2("RQ2: Placeholder Research Question 2"),
-        html.P("Placeholder: Describe what this visualization shows and what insight it reveals."),
-
-        #chart 1: abnormal returns
+        html.H2("RQ2: Do Trump-related news spikes cause abnormal market returns?"),
+        html.P("Visualizations coming soon — replace this section with your charts."),
         html.Div([
-            html.H3("Abnormal returns per Event"),
-            html.Label("Days after event:"),
-            #dropdown to select how many days after the event to calculate abnormal returns for (1, 3, 5, 7)
-            dcc.Dropdown(
-                options = DAYS_AFTER_OPTIONS,
-                value = 3,
-                id = "rq2-chart1-da",
-                className ="dropdown",
-                clearable = False
-            ),
-            #graph to show abnormal returns per event, with bars for each asset class (gold, bitcoin, msci world) and hover info showing z-score and significance
-            dcc.Graph(id="rq2-graph-chart1"),
+            html.H3("Chart placeholder"),
+            dcc.Graph(figure=placeholder_fig("RQ2 chart — add your figure here")),
         ], className="viz-box"),
-
-        #chart 2: event window
-        html.Div([
-            html.Div([
-                html.H3("Event Window around single event"),
-                html.Div([
-                    html.Label("Event:"),
-                    #dropdown to select which event to show (options are the shared spike days)
-                    dcc.Dropdown(
-                        options = EVENT_OPTIONS,
-                        value = str(shared_spike_days[0]),
-                        id = "rq2-chart2-event",
-                        className ="dropdown",
-                        clearable = False
-                    ),
-
-                ], style = {"width": "35%"}),
-                html.Div([
-                    html.Label("Days before event:"),
-                    #dropdown to select how many days before the event to show (3, 5, 7, 10)
-                    dcc.Dropdown(
-                        options = DAYS_BEFORE_OPTIONS,
-                        value = 5,
-                        id = "rq2-chart2-db",
-                        className ="dropdown",
-                        clearable = False
-                    ),
-                ], style = {"width": "25%"}),
-                html.Div([
-                    html.Label("Days after event:"),
-                    #dropdown to select how many days after the event to show (1, 3, 5, 7)
-                    dcc.Dropdown(
-                        options = DAYS_AFTER_OPTIONS,
-                        value = 5,
-                        id = "rq2-chart2-da",
-                        className ="dropdown",
-                        clearable = False
-                    ),
-                ], style = {"width": "25%"}),
-            ], style = {"display": "flex", "gap": "20px", "marginBottom": "10px"}),
-            #graph to show price path for each asset class (gold, bitcoin, msci world) around the selected event, with x-axis as days relative to event and y-axis as normalized price (day -1 = 100%), and a vertical line at day 0 to indicate the event
-            dcc.Graph(id="rq2-graph-chart2"),
-        ],className = "viz-box"),
     ], className="section rq-section"),
 
-    #---RQ4--------------------------------------------------------------------------
+    # ── RQ 4 — edit here ──────────────────────────────────────────────────────
     html.Section([
-    html.H2("RQ4: Do multi-category news spikes amplify market returns?"),
-    html.P("Comparing abnormal returns after single-category vs multi-category Trump news spikes."),
-    #chart 1
-    html.Div([
-        html.H3("Single vs Multi-Category Spike Returns"),
-        html.Label("Days after event:"),
-        dcc.Dropdown(
-            options= DAYS_AFTER_OPTIONS,
-            value=5,
-            id="rq4-da1", className="dropdown", clearable=False
-        ),
-        dcc.Graph(id="rq4-graph-chart1"),
-    ], className="viz-box"),
-    
-    #chart 2
-    html.Div([
-        html.H3("Returns by news Category per asset"),
+        html.H2("RQ4: Do multi-category news spikes amplify market returns?"),
+        html.P("Visualizations coming soon — replace this section with your charts."),
         html.Div([
-            html.Label("Asset:"),
-            dcc.Dropdown(
-                options = EVENT_OPTIONS,
-                value = 3,
-                id = "rq4-asset", className = "dropdown", clearable = False
-            ),
-        ], style={"width": "35%"}),
-        html.Div([
-            html.Label("Days after event:"),
-            dcc.Dropdown(
-                options = DAYS_AFTER_OPTIONS,
-                value = 5,
-                id = "rq4-da2", className = "dropdown", clearable = False
-            ),
-        ], style = {"width": "25%"})
-    ], style = {"display": "flex", "gap": "20px", "marginBottom": "10px"}),
-    dcc.Graph(id = "rq4-graph2")
+            html.H3("Chart placeholder"),
+            dcc.Graph(figure=placeholder_fig("RQ4 chart — add your figure here")),
+        ], className="viz-box"),
     ], className="section rq-section"),
+
+    # ── RQ 5 — edit here ──────────────────────────────────────────────────────
+    html.Section([
+        html.H2("RQ5: Placeholder Research Question 5"),
+        html.P("Visualizations coming soon — replace this section with your charts."),
+        html.Div([
+            html.H3("Chart placeholder"),
+            dcc.Graph(figure=placeholder_fig("RQ5 chart — add your figure here")),
+        ], className="viz-box"),
+    ], className="section rq-section"),
+
+    # ── RQ 6 — edit here ──────────────────────────────────────────────────────
+    html.Section([
+        html.H2("RQ6: Placeholder Research Question 6"),
+        html.P("Visualizations coming soon — replace this section with your charts."),
+        html.Div([
+            html.H3("Chart placeholder"),
+            dcc.Graph(figure=placeholder_fig("RQ6 chart — add your figure here")),
+        ], className="viz-box"),
+    ], className="section rq-section"),
+
 ], className = "page")
-
-
-#-- Callbacks ------------------------------------------
-
-#-- RQ2 ----------------------------------------------
-@callback(
-        Output("rq2-graph-chart1", "figure"),
-        Input("rq2-chart1-da", "value")
-)
-def update_rq2_chart1(days_after):
-    return build_chart1(days_after)
-
-@callback(
-        Output("rq2-graph-chart2", "figure"),
-        Input("rq2-chart2-event", "value"),
-        Input("rq2-chart2-db",    "value"),
-        Input("rq2-chart2-da",    "value")
-)
-def update_rq2_chart2(event, days_before, days_after):
-    return build_chart2(event, days_before, days_after)
 
 
 # ── RQ1 / RQ7 callbacks ──────────────────────────────────────────────────────
