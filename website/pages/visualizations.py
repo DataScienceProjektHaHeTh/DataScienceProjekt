@@ -11,6 +11,11 @@ from src.research_question_implementations.research_question_2_implementation im
     shared_spike_days, all_daily_closes,
     build_chart1, build_chart2
 )
+from src.research_question_implementations.research_question_4_implementation import (
+    build_chart_rq4,
+    build_chart_rq4_category_breakdown,
+    all_daily_returns
+)
 
 dash.register_page(__name__, path="/visualizations", name="Visualizations")
 
@@ -135,12 +140,51 @@ layout = html.Div([
             dcc.Graph(id="rq2-graph-chart2"),
         ],className = "viz-box"),
     ], className="section rq-section"),
+
+    #---RQ4--------------------------------------------------------------------------
+    html.Section([
+    html.H2("RQ4: Do multi-category news spikes amplify market returns?"),
+    html.P("Comparing abnormal returns after single-category vs multi-category Trump news spikes."),
+    #chart 1
+    html.Div([
+        html.H3("Single vs Multi-Category Spike Returns"),
+        html.Label("Days after event:"),
+        dcc.Dropdown(
+            options= DAYS_AFTER_OPTIONS,
+            value=5,
+            id="rq4-da1", className="dropdown", clearable=False
+        ),
+        dcc.Graph(id="rq4-graph-chart1"),
+    ], className="viz-box"),
+    
+    #chart 2
+    html.Div([
+        html.H3("Returns by news Category per asset"),
+        html.Div([
+            html.Label("Asset:"),
+            dcc.Dropdown(
+                options = EVENT_OPTIONS,
+                value = 3,
+                id = "rq4-asset", className = "dropdown", clearable = False
+            ),
+        ], style={"width": "35%"}),
+        html.Div([
+            html.Label("Days after event:"),
+            dcc.Dropdown(
+                options = DAYS_AFTER_OPTIONS,
+                value = 5,
+                id = "rq4-da2", className = "dropdown", clearable = False
+            ),
+        ], style = {"width": "25%"})
+    ], style = {"display": "flex", "gap": "20px", "marginBottom": "10px"}),
+    dcc.Graph(id = "rq4-graph2")
+    ], className="section rq-section"),
 ], className = "page")
 
 
+#-- Callbacks ------------------------------------------
 
-# ── Callbacks ────────────────────────────────────────────────────────
-
+#-- RQ2 ----------------------------------------------
 @callback(
         Output("rq2-graph-chart1", "figure"),
         Input("rq2-chart1-da", "value")
@@ -156,3 +200,20 @@ def update_rq2_chart1(days_after):
 )
 def update_rq2_chart2(event, days_before, days_after):
     return build_chart2(event, days_before, days_after)
+
+
+#-- RQ4 ---------------------------------------------------------
+@callback(
+    Output("rq4-graph-chart1", "figure"),
+    Input("rq4-da", "value")
+)
+def update_rq4(days_after):
+    return build_chart_rq4(days_after)
+
+@callback(
+    Output("rq4-graph2", "figure"),
+    Input("rq4-asset", "value"),
+    Input("rq4-da2",   "value")
+)
+def update_rq4_breakdown(asset, days_after):
+    return build_chart_rq4_category_breakdown(asset, days_after)
