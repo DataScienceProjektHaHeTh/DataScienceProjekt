@@ -16,9 +16,8 @@ pip-delete-this-directory.txt
 
 # --- Data & Models (Crucial for Data Science) ---
 # Don't upload huge datasets or trained models to Git
-data/
-*.csv
-*.json
+data/raw/news/
+data/processed/articles_with_sentiment/
 *.pkl
 *.h5
 *.models

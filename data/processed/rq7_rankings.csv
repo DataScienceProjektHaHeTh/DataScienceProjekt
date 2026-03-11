@@ -1,0 +1,4 @@
+,avg_daily_articles,volume_rank,mean_abs_correlation,correlation_rank,rank_mismatch
+Domestic Politics,29.82,1,0.0762,2,True
+Geopolitics,25.91,2,0.0755,3,True
+Trade Policy,18.27,3,0.0804,1,True

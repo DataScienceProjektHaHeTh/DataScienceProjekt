@@ -45,7 +45,7 @@ def load_article_counts() -> pd.DataFrame:
     """
     frames = []
     for cat in CATEGORIES:
-        path = RAW / f"guardian_{cat}.json"
+        path = RAW / "news" / f"{cat}.json"
         with open(path, "r") as f:
             articles = json.load(f)
 
@@ -77,7 +77,7 @@ def load_daily_sentiment() -> pd.DataFrame | None:
     """
     frames = []
     for cat in CATEGORIES:
-        path = PROC / f"articles_with_sentiment_guardian_{cat}.csv"
+        path = PROC / "articles_with_sentiment" / f"{cat}_with_sentiment.csv"
         if not path.exists():
             print(f"[WARN] Sentiment file missing: {path.name} — run sentiment.py first")
             return None
@@ -118,7 +118,7 @@ def load_market_daily() -> pd.DataFrame:
     """
     frames = []
     for asset in ASSETS:
-        path = RAW / f"{asset}_raw.csv"
+        path = RAW / "market" / f"{asset}.csv"
         df = pd.read_csv(path, skiprows=[1, 2], index_col=0, parse_dates=True)
         df.index.name = "datetime"
 

@@ -2,6 +2,7 @@ from dash import Dash, html, dcc
 import dash
 
 app = Dash(__name__, use_pages=True, suppress_callback_exceptions=True)
+server = app.server  # expose Flask server for gunicorn
 
 #define the app layout, like the top navbar)
 app.layout = html.Div([
@@ -26,4 +27,6 @@ app.layout = html.Div([
 ])
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=8080, debug=False)
+    import os
+    port = int(os.environ.get("PORT", 8080))
+    app.run(host="0.0.0.0", port=port, debug=False)
