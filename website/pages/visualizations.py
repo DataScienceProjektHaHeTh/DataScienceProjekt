@@ -67,10 +67,11 @@ def placeholder_fig(title="Your chart will appear here"):
     )
     return fig
 
-# ── RQ2 dropdown options ───────────────────────────────────────────────────────
-EVENT_OPTIONS   = [{"label": str(e), "value": str(e)} for e in shared_spike_days]
+# ── RQ2/4 dropdown options ───────────────────────────────────────────────────────
+EVENT_OPTIONS           = [{"label": str(e), "value": str(e)} for e in shared_spike_days]
 DAYS_AFTER_OPTIONS      = [{"label": f"{d} days after",  "value": d} for d in [1, 3, 5, 7]]
-DAYS_BEFORE_OPTIONS      = [{"label": f"{d} days before", "value": d} for d in [3, 5, 7, 10]]
+DAYS_BEFORE_OPTIONS     = [{"label": f"{d} days before", "value": d} for d in [3, 5, 7, 10]]
+INVESTMENT_CLASSES       = [{"label": a, "value": a} for a in all_daily_returns.keys()]
 
 
 # ── Layout ─────────────────────────────────────────────────────────────────────
@@ -128,53 +129,6 @@ layout = html.Div([
         ], className="viz-box"),
     ], className="section rq-section"),
 
-    # ── RQ 7 ──────────────────────────────────────────────────────────────────
-    html.Section([
-        html.H2("RQ7: Does higher coverage volume mean stronger market correlation?"),
-        html.P("Compares each category's average daily article volume (left) against its market correlation strength (right). A mismatch means niche but politically sensitive topics drive stronger market reactions than high-volume general coverage."),
-
-        html.Div([
-            html.H3("Volume vs Correlation Ranking"),
-            html.P("Uses the same return window and normalisation selected in RQ1.", style={"color": "#888", "fontSize": "13px"}),
-            dcc.Graph(id="rq7-overview"),
-        ], className="viz-box"),
-    ], className="section rq-section"),
-
-    # ── RQ 3 ──────────────────────────────────────────────────────────────────
-    html.Section([
-        html.H2("RQ3: Does the sentiment of news articles correlate with market returns?"),
-        html.P("Uses VADER compound scores (−1 to +1) averaged per day per category. The heatmap shows direct correlation; the bucket chart compares mean returns across negative, neutral, and positive news days."),
-
-        html.Div([
-            html.H3("Sentiment Correlation Heatmap"),
-            dcc.Graph(id="rq3-heatmap"),
-        ], className="viz-box"),
-
-        html.Div([
-            html.H3("Average Return by Sentiment Bucket"),
-            html.Div([
-                html.Div([
-                    html.Label("Negative threshold (VADER ≤)"),
-                    dcc.Slider(
-                        id="rq3-neg-threshold",
-                        min=-0.3, max=-0.01, step=0.01, value=-0.05,
-                        marks={v: str(v) for v in [-0.3, -0.2, -0.1, -0.05, -0.01]},
-                    ),
-                ], style={"width": "360px"}),
-                html.Div([
-                    html.Label("Positive threshold (VADER ≥)"),
-                    dcc.Slider(
-                        id="rq3-pos-threshold",
-                        min=0.01, max=0.3, step=0.01, value=0.05,
-                        marks={v: str(v) for v in [0.01, 0.05, 0.1, 0.2, 0.3]},
-                    ),
-                ], style={"width": "360px"}),
-            ], style={"display": "flex", "gap": "40px", "marginBottom": "16px"}),
-            dcc.Graph(id="rq3-buckets"),
-        ], className="viz-box"),
-    ], className="section rq-section"),
-
-    # ── RQ 2 — edit here ──────────────────────────────────────────────────────
     # ── RQ 2 ──────────────────────────────────────────────────────────────────
     html.Section([
         html.H2("RQ2: Placeholder Research Question 2"),
@@ -240,6 +194,39 @@ layout = html.Div([
         ],className = "viz-box"),
     ], className="section rq-section"),
 
+    #-- RQ 3 ----------------------------------------------------------------------
+    html.Section([
+        html.H2("RQ3: Does the sentiment of news articles correlate with market returns?"),
+        html.P("Uses VADER compound scores (−1 to +1) averaged per day per category. The heatmap shows direct correlation; the bucket chart compares mean returns across negative, neutral, and positive news days."),
+
+        html.Div([
+            html.H3("Sentiment Correlation Heatmap"),
+            dcc.Graph(id="rq3-heatmap"),
+        ], className="viz-box"),
+
+        html.Div([
+            html.H3("Average Return by Sentiment Bucket"),
+            html.Div([
+                html.Div([
+                    html.Label("Negative threshold (VADER ≤)"),
+                    dcc.Slider(
+                        id="rq3-neg-threshold",
+                        min=-0.3, max=-0.01, step=0.01, value=-0.05,
+                        marks={v: str(v) for v in [-0.3, -0.2, -0.1, -0.05, -0.01]},
+                    ),
+                ], style={"width": "360px"}),
+                html.Div([
+                    html.Label("Positive threshold (VADER ≥)"),
+                    dcc.Slider(
+                        id="rq3-pos-threshold",
+                        min=0.01, max=0.3, step=0.01, value=0.05,
+                        marks={v: str(v) for v in [0.01, 0.05, 0.1, 0.2, 0.3]},
+                    ),
+                ], style={"width": "360px"}),
+            ], style={"display": "flex", "gap": "40px", "marginBottom": "16px"}),
+            dcc.Graph(id="rq3-buckets"),
+        ], className="viz-box"),
+    ], className="section rq-section"),
 
     #---RQ4--------------------------------------------------------------------------
     html.Section([
@@ -261,24 +248,26 @@ layout = html.Div([
     html.Div([
         html.H3("Returns by news Category per asset"),
         html.Div([
-            html.Label("Asset:"),
-            dcc.Dropdown(
-                options = EVENT_OPTIONS,
-                value = 3,
-                id = "rq4-asset", className = "dropdown", clearable = False
-            ),
-        ], style={"width": "35%"}),
-        html.Div([
-            html.Label("Days after event:"),
-            dcc.Dropdown(
-                options = DAYS_AFTER_OPTIONS,
-                value = 5,
-                id = "rq4-da2", className = "dropdown", clearable = False
-            ),
-        ], style = {"width": "25%"})
-    ], style = {"display": "flex", "gap": "20px", "marginBottom": "10px"}),
-    dcc.Graph(id = "rq4-graph2")
-    ], className="section rq-section"),
+            html.Div([
+                html.Label("Asset:"),
+                dcc.Dropdown(
+                    options=[{"label": a, "value": a} for a in all_daily_returns.keys()],
+                    value=list(all_daily_returns.keys())[0],
+                    id="rq4-asset", className="dropdown", clearable=False
+                ),
+            ], style={"width": "35%"}),
+            html.Div([
+                html.Label("Days after event:"),
+                dcc.Dropdown(
+                    options=DAYS_AFTER_OPTIONS,
+                    value=5,
+                    id="rq4-da2", className="dropdown", clearable=False
+                ),], style={"width": "25%"}),
+            ], style={"display": "flex", "gap": "20px", "marginBottom": "10px"}),
+            dcc.Graph(id="rq4-graph2"),   # ✅ inside the viz-box
+        ], className="viz-box"),
+    ], className= "section rq-section"),
+    
 
     # ── RQ 5 — edit here ──────────────────────────────────────────────────────
     html.Section([
@@ -299,6 +288,19 @@ layout = html.Div([
             dcc.Graph(figure=placeholder_fig("RQ6 chart — add your figure here")),
         ], className="viz-box"),
     ], className="section rq-section"),
+
+    # ── RQ 7 ──────────────────────────────────────────────────────────────────
+    html.Section([
+        html.H2("RQ7: Does higher coverage volume mean stronger market correlation?"),
+        html.P("Compares each category's average daily article volume (left) against its market correlation strength (right). A mismatch means niche but politically sensitive topics drive stronger market reactions than high-volume general coverage."),
+
+        html.Div([
+            html.H3("Volume vs Correlation Ranking"),
+            html.P("Uses the same return window and normalisation selected in RQ1.", style={"color": "#888", "fontSize": "13px"}),
+            dcc.Graph(id="rq7-overview"),
+        ], className="viz-box"),
+    ], className="section rq-section"),
+
 
 ], className = "page")
 
