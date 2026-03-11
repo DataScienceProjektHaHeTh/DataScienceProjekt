@@ -42,7 +42,18 @@ def load_article_counts() -> pd.DataFrame:
     Returns a DataFrame indexed by date with columns:
         trade_policy_count, geopolitics_count, domestic_politics_count
     All missing dates (days with zero articles) are filled with 0.
+
+    Falls back to data/processed/article_counts.csv if raw JSON files are missing
+    (e.g. on the hosted deployment where raw news data is gitignored).
     """
+    # Fast path: use pre-built processed CSV if raw JSONs are absent
+    processed_path = PROC / "article_counts.csv"
+    if not (RAW / "news" / f"{CATEGORIES[0]}.json").exists() and processed_path.exists():
+        df = pd.read_csv(processed_path, index_col=0, parse_dates=True)
+        df.index.name = "date"
+        df.sort_index(inplace=True)
+        return df
+
     frames = []
     for cat in CATEGORIES:
         path = RAW / "news" / f"{cat}.json"
