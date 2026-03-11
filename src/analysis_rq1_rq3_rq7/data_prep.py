@@ -77,7 +77,7 @@ def load_daily_sentiment() -> pd.DataFrame | None:
     """
     frames = []
     for cat in CATEGORIES:
-        path = PROC / f"articles_with_sentiment_guardian_{cat}.csv"
+        path = PROC / "articles_with_sentiment" / f"{cat}_with_sentiment.csv"
         if not path.exists():
             print(f"[WARN] Sentiment file missing: {path.name} — run sentiment.py first")
             return None

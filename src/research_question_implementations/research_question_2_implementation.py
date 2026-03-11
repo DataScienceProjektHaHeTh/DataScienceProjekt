@@ -63,7 +63,8 @@ def get_shared_spike_days(spike_days_list):
         return filtered_spike_days
 
     #Intersection of all spike day lists to find shared spike days across all news categories
-    shared = sorted(set.intersection(*[set(lst.index) for lst in spike_days_list]))
+    sets = [set(lst.index) for lst in spike_days_list]
+    shared = sorted(sets[0].intersection(*sets[1:])) if sets else []
     #print(f"Shared spike days across all news categories: {shared}")
 
     return remove_duplicate_spike_days(shared)
