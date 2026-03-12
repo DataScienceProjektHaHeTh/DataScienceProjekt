@@ -236,34 +236,75 @@ def fig_rq5_threshold_summary(
     n_bins:             int   = 5,
 ) -> go.Figure:
     """
-    Horizontal bar chart showing the estimated article-count threshold per category —
-    the lower bound of the first bin where >50 % of days show a measurable return.
-    A None threshold (no bin reached the 50 % mark) is shown as 'n/a'.
+    Heatmap showing, per news category × asset, the maximum percentage of days
+    that exceed the movement threshold (across all article-count bins).
+
+    The colour encodes reactivity (0–100 %).  Each cell is annotated with
+    - the first-bin threshold (articles/day) where that asset crosses the 50 % mark,
+    - or "< 50 %" if it never reaches that mark, plus the observed maximum.
+
+    Rationale for the redesign: the original "all-three-assets simultaneously >50 %"
+    criterion is almost never met because MSCI World rarely moves >1 % in 3 days.
+    Showing per-asset maxima makes the chart informative in all parameter settings.
     """
+    categories = ["trade_policy", "geopolitics", "domestic_politics"]
+    assets     = ["bitcoin", "gold", "msci_world"]
+
     results = run_rq5(df=df, return_window=return_window,
                       movement_threshold=movement_threshold, n_bins=n_bins)
 
-    categories = list(results.keys())
-    thresholds = [results[c]["threshold"] for c in categories]
-    labels     = [CATEGORY_LABELS.get(c, c) for c in categories]
-    values     = [t if t is not None else 0 for t in thresholds]
-    texts      = [f"{t:.0f} articles/day" if t is not None else "n/a" for t in thresholds]
+    z_pct  = []   # colour values (max % exceeding threshold)
+    texts  = []   # cell annotations
 
-    fig = go.Figure(go.Bar(
-        x=values,
-        y=labels,
-        orientation="h",
+    for cat in categories:
+        bs       = results[cat]["bin_summary"]
+        row_pct  = []
+        row_text = []
+
+        for asset in assets:
+            pct_col = f"{asset}_return_{return_window}d_pct_days_exceeding_threshold"
+            pct_vals = bs[pct_col]
+            max_pct  = pct_vals.max()
+            row_pct.append(round(max_pct, 1))
+
+            # find the first bin where THIS asset alone exceeds 50 %
+            exceeds = pct_vals > 50
+            if exceeds.any():
+                first_bin = bs[exceeds].index[0]
+                thresh    = first_bin.left
+                row_text.append(f"≥{thresh:.0f} art/d<br>({max_pct:.0f}% max)")
+            else:
+                row_text.append(f"< 50 %<br>({max_pct:.0f}% max)")
+
+        z_pct.append(row_pct)
+        texts.append(row_text)
+
+    x_labs = [a.replace("_", " ").title() for a in assets]
+    y_labs = [CATEGORY_LABELS.get(c, c) for c in categories]
+
+    fig = go.Figure(go.Heatmap(
+        z=z_pct,
+        x=x_labs,
+        y=y_labs,
         text=texts,
-        textposition="outside",
-        marker_color=["#003087", "#D4AF37", "#F7931A"],
+        texttemplate="%{text}",
+        colorscale="RdYlGn",
+        zmin=0, zmax=100,
+        colorbar=dict(title="Max % of days exceeding threshold", ticksuffix="%"),
+        hovertemplate=(
+            "Category: %{y}<br>Asset: %{x}<br>"
+            "Max reactivity: %{z:.1f}%<extra></extra>"
+        ),
     ))
     fig.update_layout(
-        title="Estimated article-count threshold per news category",
-        xaxis_title="Articles / day",
+        title=(
+            f"Market reactivity per category × asset "
+            f"(|{return_window}d return| > {movement_threshold}%)"
+        ),
         plot_bgcolor="#f8f9fa",
         paper_bgcolor="white",
-        height=280,
-        margin=dict(t=50, b=40, l=160, r=80),
+        height=340,
+        margin=dict(t=60, b=40, l=160, r=120),
     )
     return fig
 

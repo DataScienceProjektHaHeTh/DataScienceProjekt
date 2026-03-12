@@ -156,74 +156,102 @@ def run_rq6(
 
 def fig_rq6_lag_profiles(
     df:               pd.DataFrame,
-    category:         str   = "trade_policy",
     spike_multiplier: float = 1.0,
     max_lag:          int   = 5,
 ) -> go.Figure:
     """
-    Line chart of average cumulative return (%) over lag days 1–max_lag after a
-    spike, one line per asset class.  A marker highlights the peak lag day for
-    each asset — the day the "wave" reaches its highest point.
+    Three-panel figure (one subplot per news category) showing the average
+    cumulative return (%) at each lag day 1–max_lag after a spike.
+    Each subplot has one line per asset; a star marks the peak-return lag day.
+
+    All categories are shown simultaneously so no dropdown is needed.
 
     Parameters
     ----------
     df               : pre-loaded master DataFrame (must include {asset}_close columns)
-    category         : news category to analyse
     spike_multiplier : std multiplier for spike detection
-    max_lag          : maximum lag days to look forward (default 5)
+    max_lag          : maximum days to look forward (default 5)
     """
-    results = run_rq6(df=df, spike_multiplier=spike_multiplier, max_lag=max_lag)
-    data    = results[category]
-    lag_profiles = data["lag_profiles"]   # index=lag_days, cols=assets
-    peak_lags    = data["peak_lags"]
-    n_spikes     = data["n_spikes"]
+    results    = run_rq6(df=df, spike_multiplier=spike_multiplier, max_lag=max_lag)
+    categories = ["trade_policy", "geopolitics", "domestic_politics"]
+    assets     = ["bitcoin", "gold", "msci_world"]
 
-    fig = go.Figure()
+    fig = make_subplots(
+        rows=1, cols=3,
+        subplot_titles=[CATEGORY_LABELS[c] for c in categories],
+        shared_yaxes=True,
+        horizontal_spacing=0.06,
+    )
 
-    for asset in ["bitcoin", "gold", "msci_world"]:
-        label  = asset.replace("_", " ").title()
-        color  = ASSET_COLORS[asset]
-        y_vals = lag_profiles[asset]
-        peak   = peak_lags[asset]
+    tick_vals = list(range(1, max_lag + 1))
+    tick_text = [f"+{i}" for i in tick_vals]
 
-        fig.add_trace(go.Scatter(
-            x=list(lag_profiles.index),
-            y=y_vals.round(3),
-            mode="lines+markers",
-            name=label,
-            line=dict(color=color, width=2),
-            marker=dict(size=6, color=color),
-        ))
+    for col_idx, cat in enumerate(categories, start=1):
+        data         = results[cat]
+        lag_profiles = data["lag_profiles"]
+        peak_lags    = data["peak_lags"]
+        n_spikes     = data["n_spikes"]
 
-        # star marker at peak lag
-        fig.add_trace(go.Scatter(
-            x=[peak],
-            y=[y_vals.loc[peak]],
-            mode="markers",
-            name=f"{label} peak",
-            marker=dict(symbol="star", size=14, color=color,
-                        line=dict(color="white", width=1)),
-            showlegend=False,
-            hovertemplate=f"{label}: peak at day +{peak} ({y_vals.loc[peak]:.2f}%)<extra></extra>",
-        ))
+        for asset in assets:
+            label  = asset.replace("_", " ").title()
+            color  = ASSET_COLORS[asset]
+            y_vals = lag_profiles[asset]
+            peak   = peak_lags[asset]
 
-    fig.add_hline(y=0, line_dash="dot", line_color="#888", line_width=1)
+            fig.add_trace(go.Scatter(
+                x=tick_vals,
+                y=y_vals.round(3),
+                mode="lines+markers",
+                name=label,
+                legendgroup=label,
+                showlegend=(col_idx == 1),   # only show in legend once
+                line=dict(color=color, width=2),
+                marker=dict(size=6, color=color),
+                hovertemplate=f"Day +%{{x}}<br>{label}: %{{y:.2f}}%<extra>{cat}</extra>",
+            ), row=1, col=col_idx)
 
-    cat_label = CATEGORY_LABELS.get(category, category)
+            # star at peak lag
+            fig.add_trace(go.Scatter(
+                x=[peak],
+                y=[float(y_vals.loc[peak])],
+                mode="markers",
+                showlegend=False,
+                marker=dict(symbol="star", size=13, color=color,
+                            line=dict(color="white", width=1)),
+                hovertemplate=(
+                    f"{label} peak: day +{peak} "
+                    f"({float(y_vals.loc[peak]):.2f}%)<extra></extra>"
+                ),
+            ), row=1, col=col_idx)
+
+        # zero reference line per subplot
+        fig.add_hline(y=0, line_dash="dot", line_color="#aaa", line_width=1,
+                      row=1, col=col_idx)
+
+        # annotate spike count
+        fig.add_annotation(
+            text=f"n={n_spikes} spikes",
+            xref=f"x{'' if col_idx == 1 else col_idx} domain",
+            yref=f"y{'' if col_idx == 1 else col_idx} domain",
+            x=0.98, y=0.02,
+            showarrow=False,
+            font=dict(size=11, color="#888"),
+            xanchor="right",
+        )
+
+        fig.update_xaxes(
+            tickmode="array", tickvals=tick_vals, ticktext=tick_text,
+            title_text="Days after spike", row=1, col=col_idx,
+        )
+
+    fig.update_yaxes(title_text="Avg cumulative return (%)", row=1, col=1)
     fig.update_layout(
-        title=f"RQ6 — {cat_label}: avg cumulative return after spike ({n_spikes} spike days)",
-        xaxis=dict(
-            title="Trading days after spike",
-            tickmode="array",
-            tickvals=list(range(1, max_lag + 1)),
-            ticktext=[f"Day +{i}" for i in range(1, max_lag + 1)],
-        ),
-        yaxis_title="Avg cumulative return (%)",
+        title="RQ6 — Avg cumulative return after spike by category",
         legend=dict(orientation="h", yanchor="top", y=-0.18, x=0.5, xanchor="center"),
         plot_bgcolor="#f8f9fa",
         paper_bgcolor="white",
         height=420,
-        margin=dict(t=60, b=80, l=60, r=30),
+        margin=dict(t=70, b=90, l=60, r=30),
     )
     return fig
 

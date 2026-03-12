@@ -364,27 +364,13 @@ layout = html.Div([
         # ── controls ──────────────────────────────────────────────────────────
         html.Div([
             html.Div([
-                html.Label("News category"),
-                dcc.Dropdown(
-                    id="rq6-category",
-                    options=[
-                        {"label": "Trade Policy",      "value": "trade_policy"},
-                        {"label": "Geopolitics",        "value": "geopolitics"},
-                        {"label": "Domestic Politics",  "value": "domestic_politics"},
-                    ],
-                    value="trade_policy",
-                    clearable=False,
-                    className="dropdown",
-                ),
-            ], style={"width": "200px"}),
-            html.Div([
                 html.Label("Spike threshold (× std)"),
                 dcc.Slider(
                     id="rq6-spike-mult",
                     min=0.5, max=2.5, step=0.25, value=1.0,
                     marks={v: str(v) for v in [0.5, 1.0, 1.5, 2.0, 2.5]},
                 ),
-            ], style={"width": "320px"}),
+            ], style={"width": "360px"}),
             html.Div([
                 html.Label("Max lag window (days)"),
                 dcc.Dropdown(
@@ -528,15 +514,13 @@ def update_rq5(category, return_window, movement_threshold, n_bins):
 @callback(
     Output("rq6-lag-chart", "figure"),
     Output("rq6-heatmap",   "figure"),
-    Input("rq6-category",   "value"),
     Input("rq6-spike-mult", "value"),
     Input("rq6-max-lag",    "value"),
 )
-def update_rq6(category, spike_multiplier, max_lag):
+def update_rq6(spike_multiplier, max_lag):
     if not _rq56_available:
         return go.Figure(), go.Figure()
     return (
-        fig_rq6_lag_profiles(_df_rq6, category=category,
-                             spike_multiplier=spike_multiplier, max_lag=max_lag),
+        fig_rq6_lag_profiles(_df_rq6, spike_multiplier=spike_multiplier, max_lag=max_lag),
         fig_rq6_peak_heatmap(_df_rq6, spike_multiplier=spike_multiplier, max_lag=max_lag),
     )
