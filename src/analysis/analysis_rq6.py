@@ -1,6 +1,20 @@
 import pandas as pd
 import numpy as np
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 from data_loader import build_master_df, add_spike_flags
+
+# ── display constants ─────────────────────────────────────────────────────────
+ASSET_COLORS = {
+    "bitcoin":    "#F7931A",
+    "gold":       "#D4AF37",
+    "msci_world": "#003087",
+}
+CATEGORY_LABELS = {
+    "trade_policy":      "Trade Policy",
+    "geopolitics":       "Geopolitics",
+    "domestic_politics": "Domestic Politics",
+}
 
 # ── RQ6: lag analysis ─────────────────────────────────────────────────────────
 # Core idea: for every spike day, look at the cumulative return on each of the
@@ -44,10 +58,11 @@ def compute_cumulative_returns_from_spike(
 
 
 def run_rq6(
-    start_date:       str   = "2025-01-20",
-    end_date:         str   = None,
-    max_lag:          int   = 5,
-    spike_multiplier: float = 1.0,
+    start_date:       str           = "2025-01-20",
+    end_date:         str           = None,
+    max_lag:          int           = 5,
+    spike_multiplier: float         = 1.0,
+    df:               pd.DataFrame  = None,   # pass pre-loaded df to skip raw-data reload
 ) -> dict:
     """
     RQ6: Within a 5-day window following a Trump-related Guardian coverage spike,
@@ -68,8 +83,10 @@ def run_rq6(
         - peak_lags      : dict of {asset: avg lag day of peak return}
         - n_spikes       : number of spike days detected for this category
     """
-    # load data with 5-day return window so we have enough forward data
-    df = build_master_df(start_date=start_date, end_date=end_date, return_window=max_lag)
+    if df is None:
+        df = build_master_df(start_date=start_date, end_date=end_date, return_window=max_lag)
+    else:
+        df = df.copy()
     df = add_spike_flags(df, spike_multiplier=spike_multiplier)
 
     categories  = ["trade_policy", "geopolitics", "domestic_politics"]
@@ -125,6 +142,123 @@ def run_rq6(
     return results
 
 
+# ── plotly figures for web app ────────────────────────────────────────────────
+
+def fig_rq6_lag_profiles(
+    df:               pd.DataFrame,
+    category:         str   = "trade_policy",
+    spike_multiplier: float = 1.0,
+    max_lag:          int   = 5,
+) -> go.Figure:
+    """
+    Line chart of average cumulative return (%) over lag days 1–max_lag after a
+    spike, one line per asset class.  A marker highlights the peak lag day for
+    each asset — the day the "wave" reaches its highest point.
+
+    Parameters
+    ----------
+    df               : pre-loaded master DataFrame (must include {asset}_close columns)
+    category         : news category to analyse
+    spike_multiplier : std multiplier for spike detection
+    max_lag          : maximum lag days to look forward (default 5)
+    """
+    results = run_rq6(df=df, spike_multiplier=spike_multiplier, max_lag=max_lag)
+    data    = results[category]
+    lag_profiles = data["lag_profiles"]   # index=lag_days, cols=assets
+    peak_lags    = data["peak_lags"]
+    n_spikes     = data["n_spikes"]
+
+    fig = go.Figure()
+
+    for asset in ["bitcoin", "gold", "msci_world"]:
+        label  = asset.replace("_", " ").title()
+        color  = ASSET_COLORS[asset]
+        y_vals = lag_profiles[asset]
+        peak   = peak_lags[asset]
+
+        fig.add_trace(go.Scatter(
+            x=list(lag_profiles.index),
+            y=y_vals.round(3),
+            mode="lines+markers",
+            name=label,
+            line=dict(color=color, width=2),
+            marker=dict(size=6, color=color),
+        ))
+
+        # star marker at peak lag
+        fig.add_trace(go.Scatter(
+            x=[peak],
+            y=[y_vals.loc[peak]],
+            mode="markers",
+            name=f"{label} peak",
+            marker=dict(symbol="star", size=14, color=color,
+                        line=dict(color="white", width=1)),
+            showlegend=False,
+            hovertemplate=f"{label}: peak at day +{peak} ({y_vals.loc[peak]:.2f}%)<extra></extra>",
+        ))
+
+    fig.add_hline(y=0, line_dash="dot", line_color="#888", line_width=1)
+
+    cat_label = CATEGORY_LABELS.get(category, category)
+    fig.update_layout(
+        title=f"RQ6 — {cat_label}: avg cumulative return after spike ({n_spikes} spike days)",
+        xaxis=dict(
+            title="Trading days after spike",
+            tickmode="array",
+            tickvals=list(range(1, max_lag + 1)),
+            ticktext=[f"Day +{i}" for i in range(1, max_lag + 1)],
+        ),
+        yaxis_title="Avg cumulative return (%)",
+        legend=dict(orientation="h", yanchor="top", y=-0.18, x=0.5, xanchor="center"),
+        plot_bgcolor="#f8f9fa",
+        paper_bgcolor="white",
+        height=420,
+        margin=dict(t=60, b=80, l=60, r=30),
+    )
+    return fig
+
+
+def fig_rq6_peak_heatmap(
+    df:               pd.DataFrame,
+    spike_multiplier: float = 1.0,
+    max_lag:          int   = 5,
+) -> go.Figure:
+    """
+    Heatmap showing which lag day (1–max_lag) the cumulative return peaks for
+    each (category × asset) combination.  Darker = later peak response.
+
+    This gives a bird's-eye view: is Bitcoin always fastest? Does trade policy
+    hit the market sooner than geopolitics?
+    """
+    results    = run_rq6(df=df, spike_multiplier=spike_multiplier, max_lag=max_lag)
+    categories = list(results.keys())
+    assets     = ["bitcoin", "gold", "msci_world"]
+
+    z      = [[results[c]["peak_lags"][a] for a in assets] for c in categories]
+    x_labs = [a.replace("_", " ").title() for a in assets]
+    y_labs = [CATEGORY_LABELS.get(c, c) for c in categories]
+
+    fig = go.Figure(go.Heatmap(
+        z=z,
+        x=x_labs,
+        y=y_labs,
+        text=[[f"Day +{v}" for v in row] for row in z],
+        texttemplate="%{text}",
+        colorscale="Blues",
+        zmin=1, zmax=max_lag,
+        colorbar=dict(title="Peak lag (day)", tickvals=list(range(1, max_lag + 1))),
+        hovertemplate="Category: %{y}<br>Asset: %{x}<br>Peak at day +%{z}<extra></extra>",
+    ))
+    fig.update_layout(
+        title="Peak response lag by category and asset (lower = faster reaction)",
+        plot_bgcolor="#f8f9fa",
+        paper_bgcolor="white",
+        height=320,
+        margin=dict(t=60, b=40, l=160, r=80),
+    )
+    return fig
+
+
 # ── helper: peak lag summary for web app ─────────────────────────────────────
 def get_peak_lag_summary(results: dict) -> pd.DataFrame:
     """
@@ -142,9 +276,3 @@ def get_peak_lag_summary(results: dict) -> pd.DataFrame:
         })
         rows.append(row)
     return pd.DataFrame(rows).set_index("category")
-
-
-if __name__ == "__main__":
-    results = run_rq6()
-    print("\n── PEAK LAG SUMMARY ──")
-    print(get_peak_lag_summary(results).to_string())

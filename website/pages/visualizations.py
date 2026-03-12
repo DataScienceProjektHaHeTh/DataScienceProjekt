@@ -42,6 +42,22 @@ from src.analysis_rq1_rq3_rq7.plots import (
     fig_rq3_heatmap, fig_rq3_buckets,
 )
 
+try:
+    from src.analysis.data_loader import load_master_from_processed
+    from src.analysis.analysis_rq5 import fig_rq5_bins, fig_rq5_threshold_summary
+    from src.analysis.analysis_rq6 import fig_rq6_lag_profiles, fig_rq6_peak_heatmap
+    _df_rq5 = load_master_from_processed("master_rq5.csv")
+    _df_rq6 = load_master_from_processed("master_rq6.csv")
+    _rq56_available = True
+except Exception as e:
+    print(f"[WARN] RQ5/6 data unavailable: {e}")
+    _rq56_available = False
+    _df_rq5 = _df_rq6 = None
+    def fig_rq5_bins(*a, **kw):              return go.Figure()
+    def fig_rq5_threshold_summary(*a, **kw): return go.Figure()
+    def fig_rq6_lag_profiles(*a, **kw):      return go.Figure()
+    def fig_rq6_peak_heatmap(*a, **kw):      return go.Figure()
+
 # Load base data once at startup — callbacks reuse this without re-reading files
 _counts, _market, _returns_default, _sentiment = load_base_data()
 
@@ -269,23 +285,127 @@ layout = html.Div([
     ], className= "section rq-section"),
     
 
-    # ── RQ 5 — edit here ──────────────────────────────────────────────────────
+    # ── RQ 5 ──────────────────────────────────────────────────────────────────
     html.Section([
-        html.H2("RQ5: Placeholder Research Question 5"),
-        html.P("Visualizations coming soon — replace this section with your charts."),
+        html.H2("RQ5: At which article volume does a measurable market reaction first appear?"),
+        html.P(
+            "Days are grouped into equal-frequency bins by article count. "
+            "The top panel shows average forward returns per bin; the bottom panel "
+            "shows how often returns exceed the movement threshold. "
+            "The estimated threshold is the lower bound of the first bin where "
+            ">50 % of days cross the threshold."
+        ),
+
+        # ── controls ──────────────────────────────────────────────────────────
         html.Div([
-            html.H3("Chart placeholder"),
-            dcc.Graph(figure=placeholder_fig("RQ5 chart — add your figure here")),
+            html.Div([
+                html.Label("News category"),
+                dcc.Dropdown(
+                    id="rq5-category",
+                    options=[
+                        {"label": "Trade Policy",      "value": "trade_policy"},
+                        {"label": "Geopolitics",        "value": "geopolitics"},
+                        {"label": "Domestic Politics",  "value": "domestic_politics"},
+                    ],
+                    value="trade_policy",
+                    clearable=False,
+                    className="dropdown",
+                ),
+            ], style={"width": "200px"}),
+            html.Div([
+                html.Label("Return window (days)"),
+                dcc.Dropdown(
+                    id="rq5-window",
+                    options=[{"label": f"{d} days", "value": d} for d in [3, 5, 7]],
+                    value=3,
+                    clearable=False,
+                    className="dropdown",
+                ),
+            ], style={"width": "150px"}),
+            html.Div([
+                html.Label("Movement threshold (%)"),
+                dcc.Slider(
+                    id="rq5-threshold",
+                    min=0.5, max=3.0, step=0.5, value=1.0,
+                    marks={v: f"{v}%" for v in [0.5, 1.0, 1.5, 2.0, 2.5, 3.0]},
+                ),
+            ], style={"width": "340px"}),
+            html.Div([
+                html.Label("Number of bins"),
+                dcc.Slider(
+                    id="rq5-bins",
+                    min=3, max=8, step=1, value=5,
+                    marks={v: str(v) for v in range(3, 9)},
+                ),
+            ], style={"width": "240px"}),
+        ], style={"display": "flex", "gap": "30px", "alignItems": "flex-end", "marginBottom": "16px"}),
+
+        html.Div([
+            html.H3("Article volume vs. market reaction"),
+            dcc.Graph(id="rq5-bins-chart"),
+        ], className="viz-box"),
+
+        html.Div([
+            html.H3("Estimated threshold per news category"),
+            dcc.Graph(id="rq5-summary-chart"),
         ], className="viz-box"),
     ], className="section rq-section"),
 
-    # ── RQ 6 — edit here ──────────────────────────────────────────────────────
+    # ── RQ 6 ──────────────────────────────────────────────────────────────────
     html.Section([
-        html.H2("RQ6: Placeholder Research Question 6"),
-        html.P("Visualizations coming soon — replace this section with your charts."),
+        html.H2("RQ6: How quickly do different assets react to a news spike?"),
+        html.P(
+            "For every spike day, the cumulative return is tracked over the following "
+            "5 trading days. The line chart shows the average return profile per asset; "
+            "the star marker indicates the day of peak absolute return. "
+            "The heatmap gives a cross-category overview."
+        ),
+
+        # ── controls ──────────────────────────────────────────────────────────
         html.Div([
-            html.H3("Chart placeholder"),
-            dcc.Graph(figure=placeholder_fig("RQ6 chart — add your figure here")),
+            html.Div([
+                html.Label("News category"),
+                dcc.Dropdown(
+                    id="rq6-category",
+                    options=[
+                        {"label": "Trade Policy",      "value": "trade_policy"},
+                        {"label": "Geopolitics",        "value": "geopolitics"},
+                        {"label": "Domestic Politics",  "value": "domestic_politics"},
+                    ],
+                    value="trade_policy",
+                    clearable=False,
+                    className="dropdown",
+                ),
+            ], style={"width": "200px"}),
+            html.Div([
+                html.Label("Spike threshold (× std)"),
+                dcc.Slider(
+                    id="rq6-spike-mult",
+                    min=0.5, max=2.5, step=0.25, value=1.0,
+                    marks={v: str(v) for v in [0.5, 1.0, 1.5, 2.0, 2.5]},
+                ),
+            ], style={"width": "320px"}),
+            html.Div([
+                html.Label("Max lag window (days)"),
+                dcc.Dropdown(
+                    id="rq6-max-lag",
+                    options=[{"label": f"{d} days", "value": d} for d in [3, 5, 7]],
+                    value=5,
+                    clearable=False,
+                    className="dropdown",
+                ),
+            ], style={"width": "160px"}),
+        ], style={"display": "flex", "gap": "30px", "alignItems": "flex-end", "marginBottom": "16px"}),
+
+        html.Div([
+            html.H3("Average cumulative return after spike (line per asset)"),
+            dcc.Graph(id="rq6-lag-chart"),
+        ], className="viz-box"),
+
+        html.Div([
+            html.H3("Peak lag heatmap — all categories × all assets"),
+            html.P("Same spike threshold as above applies.", style={"color": "#888", "fontSize": "13px"}),
+            dcc.Graph(id="rq6-heatmap"),
         ], className="viz-box"),
     ], className="section rq-section"),
 
@@ -382,3 +502,41 @@ def update_rq4_chart1(days_after):
 )
 def update_rq4_chart2(asset, days_after):
     return build_chart_rq4_category_breakdown(asset, days_after)
+
+
+# ── RQ5 callbacks ─────────────────────────────────────────────────────────────
+@callback(
+    Output("rq5-bins-chart",    "figure"),
+    Output("rq5-summary-chart", "figure"),
+    Input("rq5-category",  "value"),
+    Input("rq5-window",    "value"),
+    Input("rq5-threshold", "value"),
+    Input("rq5-bins",      "value"),
+)
+def update_rq5(category, return_window, movement_threshold, n_bins):
+    if not _rq56_available:
+        return go.Figure(), go.Figure()
+    return (
+        fig_rq5_bins(_df_rq5, category=category, return_window=return_window,
+                     movement_threshold=movement_threshold, n_bins=n_bins),
+        fig_rq5_threshold_summary(_df_rq5, return_window=return_window,
+                                  movement_threshold=movement_threshold, n_bins=n_bins),
+    )
+
+
+# ── RQ6 callbacks ─────────────────────────────────────────────────────────────
+@callback(
+    Output("rq6-lag-chart", "figure"),
+    Output("rq6-heatmap",   "figure"),
+    Input("rq6-category",   "value"),
+    Input("rq6-spike-mult", "value"),
+    Input("rq6-max-lag",    "value"),
+)
+def update_rq6(category, spike_multiplier, max_lag):
+    if not _rq56_available:
+        return go.Figure(), go.Figure()
+    return (
+        fig_rq6_lag_profiles(_df_rq6, category=category,
+                             spike_multiplier=spike_multiplier, max_lag=max_lag),
+        fig_rq6_peak_heatmap(_df_rq6, spike_multiplier=spike_multiplier, max_lag=max_lag),
+    )

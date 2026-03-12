@@ -3,7 +3,11 @@ import pandas as pd
 from pathlib import Path
 
 # ── paths ────────────────────────────────────────────────────────────────────
-DATA_RAW = Path("data/raw")
+# Absolute paths so the module works regardless of the working directory
+# (needed when imported from website/pages/visualizations.py).
+ROOT          = Path(__file__).resolve().parents[2]   # project root
+DATA_RAW      = ROOT / "data" / "raw"
+DATA_PROCESSED = ROOT / "data" / "processed"
 
 GUARDIAN_FILES = {
     "trade_policy":      DATA_RAW / "guardian_trade_policy.json",
@@ -152,6 +156,38 @@ def build_master_df(
     return df
 
 
+# ── persistence helpers ───────────────────────────────────────────────────────
+def save_master_df(df: pd.DataFrame, filename: str) -> None:
+    """
+    Saves a master DataFrame to data/processed/<filename>.
+    Call this once after fetching new data so the website can load
+    the pre-built CSV instead of re-reading all raw files on every deploy.
+
+    Parameters
+    ----------
+    df       : output of build_master_df (or add_spike_flags)
+    filename : target filename, e.g. "master_rq5.csv"
+    """
+    DATA_PROCESSED.mkdir(parents=True, exist_ok=True)
+    filepath = DATA_PROCESSED / filename
+    df.to_csv(filepath)
+    print(f"  ✓ saved {len(df)} rows → {filepath.relative_to(ROOT)}")
+
+
+def load_master_from_processed(filename: str) -> pd.DataFrame:
+    """
+    Loads a previously saved master DataFrame from data/processed/<filename>.
+    Restores the DatetimeIndex so all downstream code can use .index directly.
+
+    Parameters
+    ----------
+    filename : e.g. "master_rq5.csv"
+    """
+    filepath = DATA_PROCESSED / filename
+    df = pd.read_csv(filepath, index_col="date", parse_dates=True)
+    return df
+
+
 # ── spike detector ────────────────────────────────────────────────────────────
 def add_spike_flags(df: pd.DataFrame, spike_multiplier: float = 1.0) -> pd.DataFrame:
     """
@@ -181,3 +217,19 @@ def add_spike_flags(df: pd.DataFrame, spike_multiplier: float = 1.0) -> pd.DataF
     df["multi_spike"]  = df["spike_count"] >= 2
 
     return df
+
+
+# ── CLI: pre-build processed CSVs for the website ────────────────────────────
+if __name__ == "__main__":
+    print("Building master DataFrames for RQ5 and RQ6 …\n")
+
+    # RQ5 uses the standard 3-day return window defined in the research question.
+    df_rq5 = build_master_df(return_window=3)
+    save_master_df(df_rq5, "master_rq5.csv")
+
+    # RQ6 needs a 5-day window to cover the full lag range and computes
+    # per-spike cumulative returns from the raw close prices stored here.
+    df_rq6 = build_master_df(return_window=5)
+    save_master_df(df_rq6, "master_rq6.csv")
+
+    print("\nDone — commit both CSVs so the website works without raw data.")
