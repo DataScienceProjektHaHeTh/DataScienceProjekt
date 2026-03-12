@@ -1,7 +1,17 @@
+import sys
+from pathlib import Path
+
 import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
+
+# Make "from data_loader import ..." work whether this module is run directly
+# from src/analysis/ or imported as src.analysis.analysis_rq5 from the website.
+_HERE = Path(__file__).resolve().parent
+if str(_HERE) not in sys.path:
+    sys.path.insert(0, str(_HERE))
+
 from data_loader import build_master_df, add_spike_flags, compute_returns
 
 # ── display constants ─────────────────────────────────────────────────────────
