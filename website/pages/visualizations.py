@@ -129,10 +129,10 @@ layout = html.Div([
         ], className="viz-box"),
     ], className="section rq-section"),
 
-    # ── RQ 2 ──────────────────────────────────────────────────────────────────
+    #-- RQ 2 -----------------------------------------------------------------
     html.Section([
-        html.H2("RQ2: Placeholder Research Question 2"),
-        html.P("Placeholder: Describe what this visualization shows and what insight it reveals."),
+        html.H2("RQ2: Differences in response of the Investments to Days with high news count"),
+        html.P("The Graph shows the abnormal return in percent of the three Investments, on days with a high news count, meaning a signigicanty higher count than normal. The Percentages show how much the returns differ from the expected Trend (5 day) prediction"),
 
         #chart 1: abnormal returns
         html.Div([
@@ -194,7 +194,7 @@ layout = html.Div([
         ],className = "viz-box"),
     ], className="section rq-section"),
 
-    #-- RQ 3 ----------------------------------------------------------------------
+    #-- RQ 3 -----------------------------------------------------------------------
     html.Section([
         html.H2("RQ3: Does the sentiment of news articles correlate with market returns?"),
         html.P("Uses VADER compound scores (−1 to +1) averaged per day per category. The heatmap shows direct correlation; the bucket chart compares mean returns across negative, neutral, and positive news days."),
