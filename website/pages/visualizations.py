@@ -39,7 +39,7 @@ from src.analysis_rq1_rq3_rq7.data_prep import (
 )
 from src.analysis_rq1_rq3_rq7.plots import (
     fig_rq1_heatmap, fig_rq1_scatter, fig_rq7_overview,
-    fig_rq3_heatmap, fig_rq3_buckets,
+    fig_rq3_violin, fig_rq3_buckets,
 )
 
 try:
@@ -213,10 +213,11 @@ layout = html.Div([
     #-- RQ 3 -----------------------------------------------------------------------
     html.Section([
         html.H2("RQ3: Does the sentiment of news articles correlate with market returns?"),
-        html.P("Uses VADER compound scores (−1 to +1) averaged per day per category. The heatmap shows direct correlation; the bucket chart compares mean returns across negative, neutral, and positive news days."),
+        html.P("Uses VADER compound scores (−1 to +1) averaged per day per category. The violin chart shows the full return distribution per sentiment bucket; the bar chart compares mean returns across negative, neutral, and positive news days."),
 
         html.Div([
-            html.H3("Sentiment Correlation Heatmap"),
+            html.H3("Return Distribution by Sentiment"),
+            html.P("Threshold sliders below apply to both charts.", style={"color": "#888", "fontSize": "13px"}),
             dcc.Graph(id="rq3-heatmap"),
         ], className="viz-box"),
 
@@ -451,7 +452,7 @@ def update_rq1_rq7(n_days, threshold, normalize):
 def update_rq3(neg_threshold, pos_threshold):
     master = build_master_dynamic(_counts, _market, _returns_default, _sentiment)
     return (
-        fig_rq3_heatmap(master),
+        fig_rq3_violin(master, negative_threshold=neg_threshold, positive_threshold=pos_threshold),
         fig_rq3_buckets(master, negative_threshold=neg_threshold, positive_threshold=pos_threshold),
     )
 

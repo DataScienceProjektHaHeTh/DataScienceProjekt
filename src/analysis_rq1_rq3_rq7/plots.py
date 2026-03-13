@@ -11,8 +11,8 @@ Functions
 ---------
   fig_rq1_heatmap(master)     — 3x3 correlation heatmap (article count vs 3d return)
   fig_rq1_scatter(master)     — 3x3 scatter grid on spike days with trend lines
-  fig_rq7_overview(master)    — volume bar + ranking comparison
-  fig_rq3_heatmap(master)     — 3x3 sentiment correlation heatmap
+  fig_rq7_overview(master)    — donut (volume share) + scatter (volume vs correlation strength)
+  fig_rq3_violin(master)      — grouped violin distributions of returns by sentiment bucket
   fig_rq3_buckets(master)     — grouped bar chart of avg return per sentiment bucket
 """
 
@@ -209,127 +209,134 @@ def fig_rq1_scatter(
 def fig_rq7_overview(master: pd.DataFrame, method: str = "spearman") -> go.Figure:
     """
     Two-panel figure:
-      Left panel  — horizontal bar chart of average daily article volume per category
-      Right panel — grouped bar chart comparing volume rank and correlation rank
+      Left panel  — donut chart showing each category's share of total article volume
+      Right panel — scatter plot: avg volume (X) vs mean absolute correlation (Y),
+                    one labelled point per category
 
-    The left panel answers "which category generates the most coverage?"
-    The right panel answers "does more coverage = stronger market correlation?"
+    The donut answers "which category dominates coverage?"
+    The scatter directly asks "does more coverage mean stronger market impact?"
     """
-    # Volume
     volumes = {CAT_LABELS[c]: master[f"{c}_count"].mean() for c in CATEGORIES}
 
-    # Correlation strength (mean absolute r across assets)
     correlations, _, _ = compute_correlations(master, method=method)
     mean_abs_r = {CAT_LABELS[c]: correlations.loc[c].abs().mean() for c in CATEGORIES}
 
-    labels = list(volumes.keys())
+    labels     = [CAT_LABELS[c] for c in CATEGORIES]
+    vol_values = [volumes[l]    for l in labels]
+    corr_values = [mean_abs_r[l] for l in labels]
+    colors     = [CAT_COLORS[c] for c in CATEGORIES]
 
     fig = make_subplots(
         rows=1, cols=2,
-        subplot_titles=["Avg Daily Article Volume", "Volume Rank vs Correlation Rank"],
-        horizontal_spacing=0.15,
+        specs=[[{"type": "domain"}, {"type": "xy"}]],
+        subplot_titles=["Article Volume Share", "Volume vs Correlation Strength"],
+        horizontal_spacing=0.12,
     )
 
-    # Left: horizontal bars for volume
-    fig.add_trace(go.Bar(
-        y=labels,
-        x=list(volumes.values()),
-        orientation="h",
-        marker_color=[CAT_COLORS[c] for c in CATEGORIES],
-        text=[f"{v:.1f}" for v in volumes.values()],
-        textposition="outside",
+    # Left: donut chart
+    fig.add_trace(go.Pie(
+        labels=labels,
+        values=vol_values,
+        hole=0.45,
+        marker=dict(colors=colors),
+        textinfo="label+percent",
+        hovertemplate="%{label}<br>Avg %{value:.1f} articles/day<extra></extra>",
         showlegend=False,
     ), row=1, col=1)
 
-    # Right: grouped bars for rank comparison
-    vol_ranks  = pd.Series(volumes).rank(ascending=False).astype(int)
-    corr_ranks = pd.Series(mean_abs_r).rank(ascending=False).astype(int)
-
-    fig.add_trace(go.Bar(
-        name="Volume rank",
-        x=labels,
-        y=vol_ranks.values,
-        marker_color=[CAT_COLORS[c] for c in CATEGORIES],
-        opacity=1.0,
-        text=[f"#{r}" for r in vol_ranks.values],
-        textposition="outside",
-    ), row=1, col=2)
-
-    fig.add_trace(go.Bar(
-        name="Correlation rank",
-        x=labels,
-        y=corr_ranks.values,
-        marker_color=[CAT_COLORS[c] for c in CATEGORIES],
-        opacity=0.45,
-        text=[f"#{r}" for r in corr_ranks.values],
-        textposition="outside",
-    ), row=1, col=2)
+    # Right: scatter — one labelled dot per category
+    for i, (label, cat) in enumerate(zip(labels, CATEGORIES)):
+        fig.add_trace(go.Scatter(
+            x=[vol_values[i]],
+            y=[corr_values[i]],
+            mode="markers+text",
+            marker=dict(color=CAT_COLORS[cat], size=14),
+            text=[label],
+            textposition="top center",
+            name=label,
+            showlegend=False,
+        ), row=1, col=2)
 
     fig.update_layout(
         template=TEMPLATE,
         title=dict(text="RQ7 — Coverage Volume vs Market Correlation Strength", x=0.5),
         height=420,
-        barmode="group",
-        yaxis2=dict(tickvals=[1, 2, 3], ticktext=["1st", "2nd", "3rd"], autorange="reversed"),
-        legend=dict(x=0.55, y=0.98),
         margin=dict(t=80),
     )
-    fig.update_xaxes(title_text="Avg articles / day", row=1, col=1)
-    fig.update_yaxes(title_text="Rank (1 = strongest)", row=1, col=2)
+    fig.update_xaxes(title_text="Avg articles / day", row=1, col=2)
+    fig.update_yaxes(title_text="Mean |r| across assets", row=1, col=2)
     return fig
 
 
-# ── RQ3: Sentiment correlation heatmap ────────────────────────────────────────
+# ── RQ3: Sentiment violin plot ─────────────────────────────────────────────────
 
-def fig_rq3_heatmap(master: pd.DataFrame, method: str = "spearman") -> go.Figure:
+def fig_rq3_violin(
+    master: pd.DataFrame,
+    negative_threshold: float = -0.05,
+    positive_threshold: float = 0.05,
+) -> go.Figure:
     """
-    3×3 heatmap of Spearman r between daily average sentiment score and 3-day return.
-    Same layout as the RQ1 heatmap for easy side-by-side comparison.
+    3-panel figure (one per news category) with grouped violin plots.
+    For each asset, three violins show the distribution of 3-day returns
+    on negative, neutral, and positive sentiment days.
+
+    This reveals the shape and spread of return distributions per sentiment
+    bucket — complementing the mean-focused bucket bar chart.
     """
-    correlations, pvalues, n_obs = compute_sentiment_correlations(master, method=method)
+    fig = make_subplots(
+        rows=1, cols=3,
+        subplot_titles=[CAT_LABELS[c] for c in CATEGORIES],
+        horizontal_spacing=0.08,
+        shared_yaxes=True,
+    )
 
-    cat_labels   = [CAT_LABELS[c]   for c in CATEGORIES]
-    asset_labels = [ASSET_LABELS[a] for a in ASSETS]
-    z      = correlations.values.astype(float)
-    p_vals = pvalues.values.astype(float)
+    shown: set = set()
+    for col_j, cat in enumerate(CATEGORIES):
+        sentiment_col = f"{cat}_sentiment"
+        for asset in ASSETS:
+            pair = master[[sentiment_col, f"{asset}_3d_return"]].dropna()
+            neg = pair[pair[sentiment_col] <= negative_threshold][f"{asset}_3d_return"].values
+            neu = pair[
+                (pair[sentiment_col] > negative_threshold) &
+                (pair[sentiment_col] < positive_threshold)
+            ][f"{asset}_3d_return"].values
+            pos = pair[pair[sentiment_col] >= positive_threshold][f"{asset}_3d_return"].values
 
-    def star(p):
-        if np.isnan(p): return ""
-        if p < 0.001:   return "***"
-        if p < 0.01:    return "**"
-        if p < 0.05:    return "*"
-        if p < 0.10:    return "."
-        return ""
+            for returns, bucket_label in [(neg, "Negative"), (neu, "Neutral"), (pos, "Positive")]:
+                if len(returns) < 3:
+                    continue
+                show = bucket_label not in shown
+                shown.add(bucket_label)
+                fig.add_trace(go.Violin(
+                    x=[ASSET_LABELS[asset]] * len(returns),
+                    y=returns,
+                    name=bucket_label,
+                    legendgroup=bucket_label,
+                    showlegend=show,
+                    line_color=BUCKET_COLORS[bucket_label],
+                    fillcolor=BUCKET_COLORS[bucket_label],
+                    opacity=0.6,
+                    box_visible=True,
+                    meanline_visible=True,
+                    points=False,
+                ), row=1, col=col_j + 1)
 
-    text = [[f"{z[i,j]:.3f}{star(p_vals[i,j])}<br>(n={int(n_obs.values[i,j])})"
-             for j in range(3)] for i in range(3)]
-
-    fig = go.Figure(go.Heatmap(
-        z=z,
-        x=asset_labels,
-        y=cat_labels,
-        text=text,
-        texttemplate="%{text}",
-        textfont={"size": 13},
-        colorscale="RdBu",
-        zmid=0,
-        zmin=-0.4,
-        zmax=0.4,
-        colorbar=dict(title="Spearman r", tickformat=".2f"),
-    ))
+    for col_j in range(1, 4):
+        fig.add_hline(y=0, line_dash="dot", line_color="black", line_width=1, row=1, col=col_j)
 
     fig.update_layout(
         template=TEMPLATE,
         title=dict(
-            text="RQ3 — Correlation: Daily Sentiment Score vs 3-Day Return<br>"
-                 "<sup>All days | Significance: . p<0.10 &nbsp; * p<0.05 &nbsp; ** p<0.01 &nbsp; *** p<0.001</sup>",
+            text="RQ3 — Distribution of 3-Day Returns by Sentiment<br>"
+                 f"<sup>Negative ≤ {negative_threshold} | Neutral | Positive ≥ {positive_threshold} (VADER compound)</sup>",
             x=0.5,
         ),
-        xaxis_title="Asset",
-        yaxis_title="News Category",
-        height=400,
-        margin=dict(t=100),
+        violinmode="group",
+        height=500,
+        margin=dict(t=110),
+        legend=dict(title="Sentiment", orientation="h", x=0.5, xanchor="center", y=-0.15),
     )
+    fig.update_yaxes(title_text="3-day return (%)", row=1, col=1)
     return fig
 
 
@@ -454,8 +461,8 @@ if __name__ == "__main__":
             fig_rq7_overview(master_best)),
 
         # RQ3: default master (sentiment analysis doesn't benefit from z-score)
-        ("RQ3 — Sentiment heatmap",
-            fig_rq3_heatmap(master_default)),
+        ("RQ3 — Sentiment violin",
+            fig_rq3_violin(master_default)),
 
         ("RQ3 — Bucket bar chart",
             fig_rq3_buckets(master_default)),
