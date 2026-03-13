@@ -9,7 +9,7 @@ layout = html.Div([
     html.Section([
         html.H2("Motivation"),
         html.P(
-            "Placeholder: What motivated us to choose this topic? Why is it interesting and relevant?",
+            "Donald Trump's second presidency has been marked ba an unusually high pace of politically consequential decisions: sweeping tariff announcements, shifts in Nato commitments, executive orders targeting federal agencies, and ongoing geopolitical crises. Each of these events generate a wave of media coverage and often a visible reaction in financial markets. \n But the relationship between political news and asset prices is rarely straightforward and in our minds just a thought thats hasn't been investigated. Does more coverage move markets, or does it just create noise? Does negative news reliably send prices down? Do different asset classes react in the same way or are there different patterns to be seen? \n We chose this topic because is sits at the intersection of three trends that define the current moment: an unusually media intensive presidency, an era of very high participation in financial markets and the growing role of alternative assets like Bitcoin.",
             className="section-text"
         ),
     ], className="section"),
@@ -80,28 +80,28 @@ layout = html.Div([
             html.Div("1", className="step-number"),
             html.Div([
                 html.H3("Data Collection"),
-                html.P("Placeholder: How did we collect and source our data?")
+                html.P("Guardian articles were fetched using the Guardian Open Platform API with category-specific keyword queries combining 'Trump' with terms relevant to trade policy (tariffs, WTO, USMCA), geopolitics (NATO, Ukraine, China, Taiwan), and domestic politics (executive orders, DOGE, immigration). All articles published from 1 January 2025 onward were collected, yielding approximately 20,000 articles across the three categories. Market data — hourly closing prices for the MSCI World ETF (URTH), Gold Futures (GC=F), and Bitcoin (BTC-USD) — was downloaded via the Yahoo Finance API (yfinance) and resampled to daily closing prices.")
             ])
         ], className="step"),
         html.Div([
             html.Div("2", className="step-number"),
             html.Div([
                 html.H3("Data Cleaning"),
-                html.P("Placeholder: How did we clean and preprocess the data?")
+                html.P("Guardian publication timestamps were truncated to calendar dates and articles were counted per day per category. Missing days (market holidays with no articles) were filled with zero. Market prices were forward-filled only where strictly necessary to maintain a consistent daily index. For sentiment analysis, article body text was trimmed to the first 512 characters before scoring to avoid memory issues with longer texts. A rolling 30-day z-score normalisation was applied to article counts to correct for the steady upward trend in coverage volume over the study period — without this step, a day with 40 articles in January appears comparable to a day with 40 articles in October, even though the latter was unremarkable given the higher baseline.")
             ])
         ], className="step"),
         html.Div([
             html.Div("3", className="step-number"),
             html.Div([
                 html.H3("Analysis"),
-                html.P("Placeholder: What methods did we use? (e.g. sentiment analysis, clustering, ...)")
+                html.P("Seven research questions were answered using four analytical approaches. Correlation analysis (RQ1, RQ7) used Spearman rank correlation between daily article counts and forward returns on spike days. Event-study analysis (RQ2, RQ4) computed abnormal returns — the difference between actual and trend-predicted returns — around each spike event, enabling comparison of single-category versus multi-category spikes and across asset classes. Sentiment analysis (RQ3) applied the VADER library to compute a daily average compound score per category, then correlated scores with returns and compared mean returns across negative, neutral, and positive sentiment buckets. Threshold and lag analysis (RQ5, RQ6) binned days by article count to find the volume at which measurable market reactions first consistently appear, and tracked cumulative post-spike returns over a 5-day window to identify how quickly each asset reaches its peak response.")
             ])
         ], className="step"),
         html.Div([
             html.Div("4", className="step-number"),
             html.Div([
                 html.H3("Visualization"),
-                html.P("Placeholder: How we you visualize our results?")
+                html.P("All visualizations are built with Plotly and served through a Dash multi-page web application. Every chart is interactive and tied to parameter controls (return window, spike threshold, sentiment cutoffs, lag window) so readers can explore how methodological assumptions affect the results. The key distinction between the 'default' configuration — which matches the literal specification of each research question — and the 'improved' configuration (7-day return window, z-score normalisation) is shown side by side throughout, making the sensitivity of our findings to analytical choices transparent and reproducible.")
             ])
         ], className="step"),
     ], className="section"),

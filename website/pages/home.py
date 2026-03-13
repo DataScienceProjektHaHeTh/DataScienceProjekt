@@ -8,16 +8,16 @@ layout = html.Div([
 
     # Main Section / Hero
     html.Section([
-        html.H1("Project Title", className="hero-title", style = {"color": "#ffffff"}),
+        html.H1("Trump, Tariffs and Turbulence: How Political News move the Financial Markets", className="hero-title", style = {"color": "#ffffff"}),
         html.P(
-            "Analyzing the effects of Trump related news on movements in the Stock Market.",
+            "A data-driven analyses of how Trump-related Guardian news coverage correlates with the price of MSCI World, Gold and Bitcoin - looking at the second Trump term to the 'current' day.",
             className="hero-subtitle"
         ),
         #Info Charts
         html.Div([
             html.Span("WiSe 2025/26", className="badge"),
             html.Span("CAU Kiel", className="badge"),
-            html.Span("Team Name", className="badge"),
+            html.Span("Group 11", className="badge"),
         ], className="hero-badges")
     ], className="hero"),
 
