@@ -10,7 +10,7 @@ try:
     from src.analysis_rq1_rq3_rq7.rq2_spikedays import (
         calculate_price_return, load_price_data,
         shared_spike_days, all_daily_closes,
-        build_chart1, build_chart2
+        build_chart1, build_chart2, build_chart3
     )
     _rq2_available = True
 except Exception as e:
@@ -208,6 +208,27 @@ layout = html.Div([
             #graph to show price path for each asset class (gold, bitcoin, msci world) around the selected event, with x-axis as days relative to event and y-axis as normalized price (day -1 = 100%), and a vertical line at day 0 to indicate the event
             dcc.Graph(id="rq2-graph-chart2"),
         ],className = "viz-box"),
+
+        html.Div([
+            html.H3("Cumulative Abnormal Return - Day by Day Waterfall"),
+            html.Div([
+                html.Div([
+                    html.Label("Event:"),
+                    dcc.Dropdown(
+                        options = EVENT_OPTIONS,
+                        value = str(shared_spike_days[0]),
+                        id ="rq2-chart3-event", className = "dropdown", clearable=False),
+                ], style = {"width": "35%"}),
+                html.Div([
+                    html.Label("Days after event:"),
+                    dcc.Dropdown(
+                        options = DAYS_AFTER_OPTIONS,
+                        value = 5,
+                        id = "rq2-chart3-da", className="dropdown", clearable=False),
+                ], style = {"width": "25%"}),
+            ], style = {"display": "flex", "gap": "20px", "marginBottom": "10px"}),
+            dcc.Graph(id = "rq2-graph-chart3"),
+        ], className = "viz-box")
     ], className="section rq-section"),
 
     #-- RQ 3 -----------------------------------------------------------------------
@@ -474,6 +495,13 @@ def update_rq2_chart1(days_after):
 def update_rq2_chart2(event, days_before, days_after):
     return build_chart2(event, days_before, days_after)
 
+@callback(
+        Output("rq2-graph-chart3", "figure"),
+        Input("rq2-chart3-event", "value"),
+        Input("rq2-chart3-da", "value")
+)
+def update_rq2_chart3(event, days_after):
+    return build_chart3(event, days_after)
 # ── RQ4 callbacks ─────────────────────────────────────────────────────────────
 @callback(
     Output("rq4-graph-chart1", "figure"),
