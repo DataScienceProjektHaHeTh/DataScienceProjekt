@@ -1,55 +1,116 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Merriweather:ital,wght@0,400;0,700;1,400&display=swap');
+
 /* ── Global ──────────────────────────────────────────────────────────────── */
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
     font-family: 'Segoe UI', sans-serif;
-    background: #f4f6f9;
+    background-color: #f4f6f9;
+    background-image: url('/assets/paper_texture_fullhd.png');
+    background-attachment: scroll;
+    background-size: cover;
+    background-repeat: no-repeat;
     color: #333;
 }
 
-/* ── Navbar ──────────────────────────────────────────────────────────────── */
+/* ── Navbar (fixed right sidebar) ────────────────────────────────────────── */
 .navbar {
-    background: #1a1a2e;
-    padding: 0 2rem;
-    position: sticky;
+    position: fixed;
     top: 0;
+    right: 0;
+    height: 100vh;
+    width: 160px;
+    background: transparent;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    padding: 2rem 1.5rem;
+    gap: 0.3rem;
     z-index: 100;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
 
-.nav-inner {
-    max-width: 1100px;
-    margin: 0 auto;
+.navbar > a.nav-link,
+.navbar > .nav-dropdown > a.nav-link {
+    color: #052962;
+    text-decoration: none;
+    padding: 0.4rem 0.7rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: background 0.2s, color 0.2s;
+    text-align: right;
+    display: block;
+    width: 100%;
+}
+
+.navbar > a.nav-link:hover,
+.navbar > .nav-dropdown > a.nav-link:hover {
+    background: #052962;
+    color: white;
+}
+
+/* ── Navbar hover dropdown ───────────────────────────────────────────────── */
+.nav-dropdown {
+    position: relative;
+    width: 100%;
+    text-align: right;
+}
+
+.nav-dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 0;
+    right: calc(100% + 8px);
+    background: #f5f0e8;
+    border: 1px solid rgba(5,41,98,0.2);
+    border-radius: 8px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+    min-width: 260px;
+    padding: 0.4rem 0;
+    z-index: 200;
+}
+
+.nav-dropdown:hover .nav-dropdown-menu {
+    display: block;
+}
+
+.nav-dropdown-menu a.nav-dropdown-item {
+    display: block;
+    color: #052962;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: background 0.15s, color 0.15s;
+    white-space: nowrap;
+}
+
+.nav-dropdown-menu a.nav-dropdown-item:hover {
+    background: #052962;
+    color: white;
+}
+
+/* ── RQ selector bar ─────────────────────────────────────────────────────── */
+.rq-selector-bar {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    height: 60px;
+    gap: 1rem;
+    background: transparent;
+    padding: 1rem 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    margin-bottom: 2rem;
 }
 
-.nav-logo {
-    color: white;
-    font-size: 1.2rem;
-    font-weight: bold;
-}
-
-.nav-links { display: flex; gap: 1rem; }
-
-.nav-links a.nav-link {
-    color: #ccc;
-    text-decoration: none;
-    padding: 0.4rem 0.9rem;
-    border-radius: 6px;
+.rq-selector-label {
+    font-weight: 600;
+    color: #1a1a2e;
+    white-space: nowrap;
     font-size: 0.95rem;
-    transition: background 0.2s, color 0.2s;
-}
-
-.nav-links a.nav-link:hover {
-    background: #e94560;
-    color: white;
 }
 
 /* ── Main Content ─────────────────────────────────────────────────────────── */
-.main-content { max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem; }
+.main-content { max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem; padding-right: 180px; }
 
 .page h1 {
     font-size: 2rem;
@@ -98,10 +159,10 @@ body {
 .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; }
 
 .card {
-    background: white;
+    background: transparent;
     border-radius: 12px;
     padding: 1.5rem;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    border: 1px solid rgba(5,41,98,0.15);
     transition: transform 0.2s;
 }
 
@@ -110,11 +171,31 @@ body {
 .card h3 { margin-bottom: 0.5rem; color: #1a1a2e; }
 .card p { color: #666; font-size: 0.95rem; line-height: 1.6; }
 
+.card-clickable { cursor: pointer; text-decoration: none; display: block; color: inherit; }
+.card-clickable:hover { transform: translateY(-5px); box-shadow: 0 6px 18px rgba(0,0,0,0.12); }
+
+.card-stat {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #e94560;
+    margin-bottom: 0.4rem;
+    font-family: monospace;
+}
+
+.card-rq-link {
+    display: inline-block;
+    margin-top: 0.75rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #e94560;
+    letter-spacing: 0.03em;
+}
+
 /* ── Dataset Grid ─────────────────────────────────────────────────────────── */
 .dataset-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
 
 .dataset-card {
-    background: white;
+    background: #fff;
     border-radius: 10px;
     padding: 1.2rem;
     box-shadow: 0 2px 6px rgba(0,0,0,0.06);
@@ -130,7 +211,7 @@ body {
     gap: 1.2rem;
     align-items: flex-start;
     margin-bottom: 1.2rem;
-    background: white;
+    background: #fff;
     padding: 1.2rem;
     border-radius: 10px;
     box-shadow: 0 2px 6px rgba(0,0,0,0.06);
@@ -160,7 +241,7 @@ body {
 .team-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-top: 1.5rem; }
 
 .team-card {
-    background: white;
+    background: #fff;
     border-radius: 14px;
     padding: 1.8rem 1.5rem;
     text-align: center;
@@ -186,19 +267,176 @@ body {
 .team-bio { font-size: 0.9rem; color: #666; line-height: 1.6; }
 
 /* ── Visualizations ───────────────────────────────────────────────────────── */
-.rq-section { background: white; border-radius: 14px; padding: 2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+.rq-section { background: transparent; border-radius: 14px; padding: 2rem; }
 .rq-section p { color: #555; margin-bottom: 1.2rem; line-height: 1.6; }
 
 .viz-box {
-    background: #f8f9fa;
+    background: transparent;
     border-radius: 10px;
     padding: 1.2rem;
     margin-bottom: 1.5rem;
+    border: 1px solid rgba(5,41,98,0.1);
 }
 
 .viz-box h3 { font-size: 1rem; color: #444; margin-bottom: 0.75rem; }
 
 .dropdown { margin-bottom: 1rem; }
 
+/* ── Dash Dropdowns ──────────────────────────────────────────────────────── */
+.Select-control {
+    background: transparent !important;
+    border-color: rgba(5,41,98,0.3) !important;
+}
+
+.Select-control:hover {
+    border-color: #052962 !important;
+    box-shadow: none !important;
+}
+
+.Select-value-label,
+.Select-placeholder,
+.Select-input input {
+    color: #052962 !important;
+    background: transparent !important;
+}
+
+.Select-menu-outer {
+    background: #f5f0e8 !important;
+    border-color: rgba(5,41,98,0.2) !important;
+}
+
+.VirtualizedSelectOption,
+.Select-option {
+    background: transparent !important;
+    color: #052962 !important;
+}
+
+.VirtualizedSelectOption:hover,
+.Select-option:hover,
+.Select-option.is-focused {
+    background: rgba(5,41,98,0.1) !important;
+}
+
+.Select-arrow { border-top-color: #052962 !important; }
+
+/* ── Dash Sliders ─────────────────────────────────────────────────────────── */
+.rc-slider-rail { background: rgba(5,41,98,0.15) !important; }
+.rc-slider-track { background: #052962 !important; }
+.rc-slider-handle {
+    border-color: #052962 !important;
+    background: #f5f0e8 !important;
+}
+.rc-slider-mark-text { color: #052962 !important; }
+.rc-slider-dot { border-color: rgba(5,41,98,0.3) !important; }
+.rc-slider-dot-active { border-color: #052962 !important; }
+
+/* ── Dash RadioItems ──────────────────────────────────────────────────────── */
+.form-check-input { accent-color: #052962; }
+
 /* ── Summary ──────────────────────────────────────────────────────────────── */
 .summary-text { color: #555; line-height: 1.8; font-size: 1rem; }
+
+/* ── Newspaper header ─────────────────────────────────────────────────────── */
+.newspaper-header {
+    background: transparent;
+    border-bottom: 3px solid #052962;
+    padding: 2rem 0 2.5rem;
+    margin-bottom: 2.5rem;
+}
+
+.newspaper-kicker-row {
+    border-top: 1px solid #052962;
+    border-bottom: 1px solid #052962;
+    padding: 0.3rem 0;
+    margin-bottom: 1.2rem;
+}
+
+.newspaper-kicker {
+    font-size: 0.75rem;
+    font-family: 'Segoe UI', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #052962;
+    font-weight: 600;
+}
+
+.newspaper-headline {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(2.2rem, 5vw, 3.8rem);
+    line-height: 1.1;
+    margin-bottom: 0.6rem;
+    font-weight: 900;
+}
+
+.headline-trump  { color: #6DACDA; }
+.headline-main   { color: #052962; }
+
+.newspaper-subheadline {
+    font-family: 'Merriweather', Georgia, serif;
+    font-size: 1.05rem;
+    color: #506991;
+    font-style: italic;
+    margin-bottom: 1.2rem;
+    line-height: 1.5;
+}
+
+.newspaper-rule {
+    border: none;
+    border-top: 2px solid #052962;
+    margin: 1.2rem 0;
+}
+
+.newspaper-columns {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 2.5rem;
+    align-items: start;
+}
+
+.newspaper-col-text { }
+
+.newspaper-body-text {
+    font-family: 'Merriweather', Georgia, serif;
+    font-size: 0.95rem;
+    line-height: 1.85;
+    color: #222;
+    margin-bottom: 1rem;
+    text-align: justify;
+}
+
+.newspaper-col-image {
+    display: flex;
+    justify-content: center;
+}
+
+.trump-image {
+    width: 100%;
+    display: block;
+    background: transparent;
+}
+
+/* ── Newspaper findings cards ─────────────────────────────────────────────── */
+.newspaper-section-title {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 1.5rem;
+    color: #052962;
+    border-left: 4px solid #6DACDA;
+    padding-left: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.newspaper-card h3 {
+    font-family: 'Playfair Display', Georgia, serif;
+    color: #052962;
+}
+
+.newspaper-card p {
+    font-family: 'Merriweather', Georgia, serif;
+    font-size: 0.88rem;
+    line-height: 1.75;
+}
+
+@media (max-width: 700px) {
+    .newspaper-columns { grid-template-columns: 1fr; }
+    .newspaper-col-image { order: -1; }
+}

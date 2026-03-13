@@ -8,16 +8,21 @@ server = app.server  # expose Flask server for gunicorn
 app.layout = html.Div([
     # Navigation Bar
     html.Nav([
+        dcc.Link("Home",            href="/",                className="nav-link"),
         html.Div([
-            html.Span("DS Project", className="nav-logo"),
-            #Link Items in the Navbar, 
+            dcc.Link("Analysis & Results", href="/visualizations", className="nav-link"),
             html.Div([
-                dcc.Link("Home",            href="/",                className="nav-link"),
-                dcc.Link("About Project",   href="/about-project",   className="nav-link"),
-                dcc.Link("Team",            href="/about-team",      className="nav-link"),
-                dcc.Link("Visualizations",  href="/visualizations",  className="nav-link"),
-            ], className="nav-links")
-        ], className="nav-inner")
+                dcc.Link("RQ1 — News Frequency vs Returns",  href="/visualizations?rq=rq1", className="nav-dropdown-item"),
+                dcc.Link("RQ2 — Asset Response to Spikes",  href="/visualizations?rq=rq2", className="nav-dropdown-item"),
+                dcc.Link("RQ3 — Sentiment vs Returns",      href="/visualizations?rq=rq3", className="nav-dropdown-item"),
+                dcc.Link("RQ4 — Multi-Category Spikes",     href="/visualizations?rq=rq4", className="nav-dropdown-item"),
+                dcc.Link("RQ5 — Article Volume Threshold",  href="/visualizations?rq=rq5", className="nav-dropdown-item"),
+                dcc.Link("RQ6 — Asset Reaction Speed",      href="/visualizations?rq=rq6", className="nav-dropdown-item"),
+                dcc.Link("RQ7 — Volume vs Correlation",     href="/visualizations?rq=rq7", className="nav-dropdown-item"),
+            ], className="nav-dropdown-menu"),
+        ], className="nav-dropdown"),
+        dcc.Link("About Project",   href="/about-project",   className="nav-link"),
+        dcc.Link("Team",            href="/about-team",      className="nav-link"),
     ], className="navbar"),
 
     # Page content

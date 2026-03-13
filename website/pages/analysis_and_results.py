@@ -61,7 +61,21 @@ except Exception as e:
 # Load base data once at startup — callbacks reuse this without re-reading files
 _counts, _market, _returns_default, _sentiment = load_base_data()
 
-dash.register_page(__name__, path="/visualizations", name="Visualizations")
+dash.register_page(__name__, path="/visualizations", name="Analysis & Results")
+
+RQS = ["rq1", "rq2", "rq3", "rq4", "rq5", "rq6", "rq7"]
+_SHOW = {"display": "block"}
+_HIDE = {"display": "none"}
+
+RQ_OPTIONS = [
+    {"label": "RQ1 — News Frequency & Market Returns",   "value": "rq1"},
+    {"label": "RQ2 — Asset Response to News Spikes",     "value": "rq2"},
+    {"label": "RQ3 — Sentiment vs Returns",              "value": "rq3"},
+    {"label": "RQ4 — Multi-Category Spike Amplification","value": "rq4"},
+    {"label": "RQ5 — Article Volume Threshold",          "value": "rq5"},
+    {"label": "RQ6 — Asset Reaction Speed",              "value": "rq6"},
+    {"label": "RQ7 — Volume vs Correlation Ranking",     "value": "rq7"},
+]
 
 # ── Placeholder figure helper ──────────────────────────────────────────────────
 def placeholder_fig(title="Your chart will appear here"):
@@ -92,15 +106,28 @@ INVESTMENT_CLASSES       = [{"label": a, "value": a} for a in all_daily_returns.
 
 # ── Layout ─────────────────────────────────────────────────────────────────────
 layout = html.Div([
-    html.H1("Visualizations"),
+    html.H1("Analysis & Results"),
     html.P(
-        "All interactive and static visualizations for each research question.",
+        "Select a research question to explore its analysis, interactive charts, and interpretation.",
         className="page-subtitle"
     ),
 
+    # ── RQ selector ───────────────────────────────────────────────────────────
+    html.Div([
+        html.Label("Research Question:", className="rq-selector-label"),
+        dcc.Dropdown(
+            id="rq-selector",
+            options=RQ_OPTIONS,
+            value="rq1",
+            clearable=False,
+            className="dropdown",
+            style={"width": "420px"},
+        ),
+    ], className="rq-selector-bar"),
+
     # ── RQ 1 ──────────────────────────────────────────────────────────────────
-    html.Section([
-        html.H2("RQ1: Does article volume in a news category correlate with market returns?"),
+    html.Div(html.Section([
+        html.H2("RQ1: To what extent does the daily frequency of Trump-related news coverage in The Guardian, categorized by topic, correlate with the cumulative 3-day price return of MSCI World, Gold, and Bitcoin following a coverage spike?"),
         html.P("Spearman correlation between article spike days and forward returns for MSCI World, Gold, and Bitcoin. Adjust the parameters below to explore how assumptions affect the results."),
 
         html.Div([
@@ -136,17 +163,33 @@ layout = html.Div([
                 ], style={"width": "260px"}),
             ], style={"display": "flex", "gap": "30px", "alignItems": "flex-end", "marginBottom": "16px"}),
             dcc.Graph(id="rq1-heatmap"),
+            html.P(
+                "Takeaway: With a 3-day window and raw article counts, no statistically significant correlation emerges across any category–asset pair. "
+                "Switching to a 7-day window with z-score normalisation reveals a strong, significant flight-to-safety pattern — but exclusively in Trade Policy: "
+                "MSCI World (r = −0.45, p < 0.001) and Bitcoin (r = −0.38, p = 0.002) fall while Gold rises (r = +0.40, p = 0.001) following a spike. "
+                "Geopolitics and Domestic Politics remain statistically insignificant under all parameter configurations, suggesting that only trade-specific news has a direct and measurable market impact.",
+                style={"backgroundColor": "#f0f4f8", "padding": "12px 16px", "borderLeft": "3px solid #4a9eda",
+                       "fontSize": "13px", "color": "#444", "marginTop": "12px"},
+            ),
         ], className="viz-box"),
 
         html.Div([
             html.H3("Scatter Grid — Spike Days"),
             html.P("Same parameters as above apply.", style={"color": "#888", "fontSize": "13px"}),
             dcc.Graph(id="rq1-scatter"),
+            html.P(
+                "Takeaway: The scatter confirms the heatmap signal. In the 7-day / z-score configuration, Trade Policy spike days show a clear negative trend line for MSCI World and Bitcoin "
+                "and a positive one for Gold — the annotated r values in each subplot quantify this. "
+                "Geopolitics and Domestic Politics produce near-flat or noisy trend lines with no consistent direction across assets, "
+                "even at stricter spike thresholds (2× std) that isolate only the most extreme news days.",
+                style={"backgroundColor": "#f0f4f8", "padding": "12px 16px", "borderLeft": "3px solid #4a9eda",
+                       "fontSize": "13px", "color": "#444", "marginTop": "12px"},
+            ),
         ], className="viz-box"),
-    ], className="section rq-section"),
+    ], className="section rq-section"), id="section-rq1"),
 
     #-- RQ 2 -----------------------------------------------------------------
-    html.Section([
+    html.Div(html.Section([
         html.H2("RQ2: Differences in response of the Investments to Days with high news count"),
         html.P("The Graph shows the abnormal return in percent of the three Investments, on days with a high news count, meaning a signigicanty higher count than normal. The Percentages show how much the returns differ from the expected Trend (5 day) prediction"),
 
@@ -229,45 +272,72 @@ layout = html.Div([
             ], style = {"display": "flex", "gap": "20px", "marginBottom": "10px"}),
             dcc.Graph(id = "rq2-graph-chart3"),
         ], className = "viz-box")
-    ], className="section rq-section"),
+    ], className="section rq-section"), id="section-rq2", style=_HIDE),
 
     #-- RQ 3 -----------------------------------------------------------------------
-    html.Section([
-        html.H2("RQ3: Does the sentiment of news articles correlate with market returns?"),
+    html.Div(html.Section([
+        html.H2("RQ3: How does the average daily sentiment score of Trump-related Guardian articles within each news category relate to the direction and magnitude of the cumulative price return across all three asset classes?"),
         html.P("Uses VADER compound scores (−1 to +1) averaged per day per category. The violin chart shows the full return distribution per sentiment bucket; the bar chart compares mean returns across negative, neutral, and positive news days."),
 
         html.Div([
+            html.Div([
+                html.Label("Return window (days)"),
+                dcc.Dropdown(
+                    id="rq3-window",
+                    options=[{"label": f"{d} days", "value": d} for d in [3, 5, 7, 14]],
+                    value=3,
+                    clearable=False,
+                    className="dropdown",
+                ),
+            ], style={"width": "160px"}),
+            html.Div([
+                html.Label("Negative threshold (VADER ≤)"),
+                dcc.Slider(
+                    id="rq3-neg-threshold",
+                    min=-0.3, max=-0.01, step=0.01, value=-0.05,
+                    marks={v: str(v) for v in [-0.3, -0.2, -0.1, -0.05, -0.01]},
+                ),
+            ], style={"width": "360px"}),
+            html.Div([
+                html.Label("Positive threshold (VADER ≥)"),
+                dcc.Slider(
+                    id="rq3-pos-threshold",
+                    min=0.01, max=0.3, step=0.01, value=0.05,
+                    marks={v: str(v) for v in [0.01, 0.05, 0.1, 0.2, 0.3]},
+                ),
+            ], style={"width": "360px"}),
+        ], style={"display": "flex", "gap": "30px", "alignItems": "flex-end", "marginBottom": "16px"}),
+
+        html.Div([
             html.H3("Return Distribution by Sentiment"),
-            html.P("Threshold sliders below apply to both charts.", style={"color": "#888", "fontSize": "13px"}),
             dcc.Graph(id="rq3-heatmap"),
+            html.P(
+                "Takeaway: The return distributions for negative, neutral and positive sentiment days overlap almost entirely across all categories and assets, "
+                "indicating that VADER sentiment scores do not meaningfully separate high- from low-return days. "
+                "Gold is a consistent exception — its distribution sits above zero in all buckets, reflecting a persistent uptrend rather than a sentiment-driven effect. "
+                "Widening the return window to 7–14 days does not reveal a clearer separation, confirming that sentiment in Guardian articles has negligible short-term predictive power for any of the three assets.",
+                style={"backgroundColor": "#f0f4f8", "padding": "12px 16px", "borderLeft": "3px solid #4a9eda",
+                       "fontSize": "13px", "color": "#444", "marginTop": "12px"},
+            ),
         ], className="viz-box"),
 
         html.Div([
-            html.H3("Average Return by Sentiment Bucket"),
-            html.Div([
-                html.Div([
-                    html.Label("Negative threshold (VADER ≤)"),
-                    dcc.Slider(
-                        id="rq3-neg-threshold",
-                        min=-0.3, max=-0.01, step=0.01, value=-0.05,
-                        marks={v: str(v) for v in [-0.3, -0.2, -0.1, -0.05, -0.01]},
-                    ),
-                ], style={"width": "360px"}),
-                html.Div([
-                    html.Label("Positive threshold (VADER ≥)"),
-                    dcc.Slider(
-                        id="rq3-pos-threshold",
-                        min=0.01, max=0.3, step=0.01, value=0.05,
-                        marks={v: str(v) for v in [0.01, 0.05, 0.1, 0.2, 0.3]},
-                    ),
-                ], style={"width": "360px"}),
-            ], style={"display": "flex", "gap": "40px", "marginBottom": "16px"}),
+            html.H3("Average Return by Sentiment Bucket (± 1 SE)"),
             dcc.Graph(id="rq3-buckets"),
+            html.P(
+                "Takeaway: Error bars show that almost all bucket differences are well within ±1 SE of each other, confirming no reliable sentiment signal. "
+                "The most notable exception is Bitcoin under Trade Policy: positive-sentiment days yield a mean return of −0.78% (n = 103), "
+                "notably lower than negative-sentiment days (−0.12%, n = 249) — a potential 'buy the rumour, sell the news' pattern. "
+                "Gold earns positive mean returns in every bucket and category (+0.5% to +1.0%), driven by its underlying bull trend rather than sentiment. "
+                "MSCI World hovers near zero across all buckets with overlapping error bars, indicating no directional sentiment effect on equities.",
+                style={"backgroundColor": "#f0f4f8", "padding": "12px 16px", "borderLeft": "3px solid #4a9eda",
+                       "fontSize": "13px", "color": "#444", "marginTop": "12px"},
+            ),
         ], className="viz-box"),
-    ], className="section rq-section"),
+    ], className="section rq-section"), id="section-rq3", style=_HIDE),
 
     #---RQ4--------------------------------------------------------------------------
-    html.Section([
+    html.Div(html.Section([
     html.H2("RQ4: Do multi-category news spikes amplify market returns?"),
     html.P("Comparing abnormal returns after single-category vs multi-category Trump news spikes."),
     #chart 1
@@ -304,11 +374,10 @@ layout = html.Div([
             ], style={"display": "flex", "gap": "20px", "marginBottom": "10px"}),
             dcc.Graph(id="rq4-graph2"),   # ✅ inside the viz-box
         ], className="viz-box"),
-    ], className= "section rq-section"),
-    
+    ], className="section rq-section"), id="section-rq4", style=_HIDE),
 
     # ── RQ 5 ──────────────────────────────────────────────────────────────────
-    html.Section([
+    html.Div(html.Section([
         html.H2("RQ5: At which article volume does a measurable market reaction first appear?"),
         html.P(
             "Days are grouped into equal-frequency bins by article count. "
@@ -371,10 +440,10 @@ layout = html.Div([
             html.H3("Estimated threshold per news category"),
             dcc.Graph(id="rq5-summary-chart"),
         ], className="viz-box"),
-    ], className="section rq-section"),
+    ], className="section rq-section"), id="section-rq5", style=_HIDE),
 
     # ── RQ 6 ──────────────────────────────────────────────────────────────────
-    html.Section([
+    html.Div(html.Section([
         html.H2("RQ6: How quickly do different assets react to a news spike?"),
         html.P(
             "For every spike day, the cumulative return is tracked over the following "
@@ -415,22 +484,55 @@ layout = html.Div([
             html.P("Same spike threshold as above applies.", style={"color": "#888", "fontSize": "13px"}),
             dcc.Graph(id="rq6-heatmap"),
         ], className="viz-box"),
-    ], className="section rq-section"),
+    ], className="section rq-section"), id="section-rq6", style=_HIDE),
 
     # ── RQ 7 ──────────────────────────────────────────────────────────────────
-    html.Section([
-        html.H2("RQ7: Does higher coverage volume mean stronger market correlation?"),
-        html.P("Compares each category's average daily article volume (left) against its market correlation strength (right). A mismatch means niche but politically sensitive topics drive stronger market reactions than high-volume general coverage."),
+    html.Div(html.Section([
+        html.H2("RQ7: Which news category generates the highest average daily article volume, and how does the ranking by coverage volume compare to the ranking by strength of correlation with cumulative 3-day price returns?"),
+        html.P("Compares each category's share of total article volume (left) against its market correlation strength (right). A mismatch means niche but politically sensitive topics drive stronger market reactions than high-volume general coverage."),
 
         html.Div([
             html.H3("Volume vs Correlation Ranking"),
             html.P("Uses the same return window and normalisation selected in RQ1.", style={"color": "#888", "fontSize": "13px"}),
             dcc.Graph(id="rq7-overview"),
+            html.P(
+                "Takeaway: Domestic Politics dominates article volume (≈ 30 articles/day), followed by Geopolitics (≈ 26) and Trade Policy (≈ 18). "
+                "The correlation ranking is almost exactly reversed: Trade Policy has by far the strongest market signal (mean |r| ≈ 0.41 in the 7-day/z-score configuration), "
+                "while the two higher-volume categories have negligible correlations (|r| < 0.09). "
+                "This inversion suggests that coverage volume alone does not predict market impact — "
+                "trade policy decisions carry direct economic consequences that markets respond to, whereas general political coverage does not.",
+                style={"backgroundColor": "#f0f4f8", "padding": "12px 16px", "borderLeft": "3px solid #4a9eda",
+                       "fontSize": "13px", "color": "#444", "marginTop": "12px"},
+            ),
         ], className="viz-box"),
-    ], className="section rq-section"),
+    ], className="section rq-section"), id="section-rq7", style=_HIDE),
+
+], className="page")
 
 
-], className = "page")
+# ── RQ selector callbacks ─────────────────────────────────────────────────────
+import urllib.parse
+
+@callback(
+    *[Output(f"section-{rq}", "style") for rq in RQS],
+    Input("rq-selector", "value"),
+)
+def show_section(selected):
+    return [_SHOW if rq == selected else _HIDE for rq in RQS]
+
+
+@callback(
+    Output("rq-selector", "value"),
+    Input("_pages_location", "search"),
+    prevent_initial_call=True,
+)
+def set_rq_from_url(search):
+    if search:
+        params = urllib.parse.parse_qs(search.lstrip("?"))
+        rq = params.get("rq", [None])[0]
+        if rq in RQS:
+            return rq
+    return dash.no_update
 
 
 # ── RQ1 / RQ7 callbacks ──────────────────────────────────────────────────────
@@ -465,13 +567,15 @@ def update_rq1_rq7(n_days, threshold, normalize):
 # ── RQ3 callbacks ─────────────────────────────────────────────────────────────
 
 @callback(
-    Output("rq3-heatmap",  "figure"),
-    Output("rq3-buckets",  "figure"),
+    Output("rq3-heatmap", "figure"),
+    Output("rq3-buckets", "figure"),
+    Input("rq3-window",        "value"),
     Input("rq3-neg-threshold", "value"),
     Input("rq3-pos-threshold", "value"),
 )
-def update_rq3(neg_threshold, pos_threshold):
-    master = build_master_dynamic(_counts, _market, _returns_default, _sentiment)
+def update_rq3(n_days, neg_threshold, pos_threshold):
+    returns = compute_3d_returns(_market, n_days=n_days)
+    master  = build_master_dynamic(_counts, _market, returns, _sentiment)
     return (
         fig_rq3_violin(master, negative_threshold=neg_threshold, positive_threshold=pos_threshold),
         fig_rq3_buckets(master, negative_threshold=neg_threshold, positive_threshold=pos_threshold),

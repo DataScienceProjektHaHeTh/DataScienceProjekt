@@ -248,8 +248,8 @@ def fig_rq6_lag_profiles(
     fig.update_layout(
         title="RQ6 — Avg cumulative return after spike by category",
         legend=dict(orientation="h", yanchor="top", y=-0.18, x=0.5, xanchor="center"),
-        plot_bgcolor="#f8f9fa",
-        paper_bgcolor="white",
+        plot_bgcolor="rgba(0,0,0,0)",
+        paper_bgcolor="rgba(0,0,0,0)",
         height=420,
         margin=dict(t=70, b=90, l=60, r=30),
     )
@@ -289,8 +289,8 @@ def fig_rq6_peak_heatmap(
     ))
     fig.update_layout(
         title="Peak response lag by category and asset (lower = faster reaction)",
-        plot_bgcolor="#f8f9fa",
-        paper_bgcolor="white",
+        plot_bgcolor="rgba(0,0,0,0)",
+        paper_bgcolor="rgba(0,0,0,0)",
         height=320,
         margin=dict(t=60, b=40, l=160, r=80),
     )

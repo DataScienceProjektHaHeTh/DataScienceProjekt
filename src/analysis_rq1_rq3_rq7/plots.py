@@ -13,7 +13,7 @@ Functions
   fig_rq1_scatter(master)     — 3x3 scatter grid on spike days with trend lines
   fig_rq7_overview(master)    — donut (volume share) + scatter (volume vs correlation strength)
   fig_rq3_violin(master)      — grouped violin distributions of returns by sentiment bucket
-  fig_rq3_buckets(master)     — grouped bar chart of avg return per sentiment bucket
+  fig_rq3_buckets(master)     — grouped bar chart of avg return per sentiment bucket (±1 SE error bars)
 """
 
 import sys
@@ -22,6 +22,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
+import plotly.io as pio
 from plotly.subplots import make_subplots
 
 # Allow imports from the analysis folder regardless of working directory
@@ -33,7 +34,10 @@ from analysis_rq1_rq3_rq7.rq3_sentiment import compute_sentiment_correlations, c
 
 # ── Shared style constants ─────────────────────────────────────────────────────
 
-TEMPLATE = "plotly_white"
+pio.templates["newspaper"] = pio.templates["plotly_white"]
+pio.templates["newspaper"].layout.paper_bgcolor = "rgba(0,0,0,0)"
+pio.templates["newspaper"].layout.plot_bgcolor  = "rgba(0,0,0,0)"
+TEMPLATE = "newspaper"
 
 CAT_COLORS = {
     "trade_policy":      "#2196F3",   # blue
@@ -233,15 +237,16 @@ def fig_rq7_overview(master: pd.DataFrame, method: str = "spearman") -> go.Figur
         horizontal_spacing=0.12,
     )
 
-    # Left: donut chart
+    # Left: donut chart — percentages inside, labels in legend
     fig.add_trace(go.Pie(
         labels=labels,
         values=vol_values,
         hole=0.45,
         marker=dict(colors=colors),
-        textinfo="label+percent",
+        textinfo="percent",
+        textposition="inside",
         hovertemplate="%{label}<br>Avg %{value:.1f} articles/day<extra></extra>",
-        showlegend=False,
+        showlegend=True,
     ), row=1, col=1)
 
     # Right: scatter — one labelled dot per category
@@ -264,7 +269,7 @@ def fig_rq7_overview(master: pd.DataFrame, method: str = "spearman") -> go.Figur
         margin=dict(t=80),
     )
     fig.update_xaxes(title_text="Avg articles / day", row=1, col=2)
-    fig.update_yaxes(title_text="Mean |r| across assets", row=1, col=2)
+    fig.update_yaxes(title_text="Correlation Strength", row=1, col=2)
     return fig
 
 
@@ -286,7 +291,7 @@ def fig_rq3_violin(
     fig = make_subplots(
         rows=1, cols=3,
         subplot_titles=[CAT_LABELS[c] for c in CATEGORIES],
-        horizontal_spacing=0.08,
+        horizontal_spacing=0.04,
         shared_yaxes=True,
     )
 
@@ -319,6 +324,8 @@ def fig_rq3_violin(
                     box_visible=True,
                     meanline_visible=True,
                     points=False,
+                    scalemode="width",
+                    width=0.9,
                 ), row=1, col=col_j + 1)
 
     for col_j in range(1, 4):
@@ -332,7 +339,9 @@ def fig_rq3_violin(
             x=0.5,
         ),
         violinmode="group",
-        height=500,
+        violingap=0.05,
+        violingroupgap=0.05,
+        height=520,
         margin=dict(t=110),
         legend=dict(title="Sentiment", orientation="h", x=0.5, xanchor="center", y=-0.15),
     )
@@ -350,13 +359,29 @@ def fig_rq3_buckets(
     """
     3-panel figure (one per news category), each showing a grouped bar chart:
       X    = asset (MSCI World, Gold, Bitcoin)
-      Y    = average 3-day return (%)
+      Y    = average return (%)
       Bars = sentiment bucket (Negative / Neutral / Positive)
+      Error bars = ±1 standard error (SE = std / sqrt(n))
 
-    This directly answers whether negative news leads to negative returns,
-    and reveals contrarian or flight-to-safety patterns per asset.
+    Error bars show whether bucket differences are meaningful or just noise.
     """
     buckets = compute_sentiment_buckets(master, negative_threshold, positive_threshold)
+
+    # Pre-compute standard errors per (cat, asset, bucket) from raw master
+    se_lookup: dict = {}
+    for cat in CATEGORIES:
+        sent_col = f"{cat}_sentiment"
+        se_lookup[cat] = {}
+        for asset in ASSETS:
+            pair = master[[sent_col, f"{asset}_3d_return"]].dropna()
+            neg_r = pair[pair[sent_col] <= negative_threshold][f"{asset}_3d_return"]
+            neu_r = pair[(pair[sent_col] > negative_threshold) & (pair[sent_col] < positive_threshold)][f"{asset}_3d_return"]
+            pos_r = pair[pair[sent_col] >= positive_threshold][f"{asset}_3d_return"]
+            se_lookup[cat][ASSET_LABELS[asset]] = {
+                "Negative": neg_r.std() / len(neg_r) ** 0.5 if len(neg_r) > 1 else 0,
+                "Neutral":  neu_r.std() / len(neu_r) ** 0.5 if len(neu_r) > 1 else 0,
+                "Positive": pos_r.std() / len(pos_r) ** 0.5 if len(pos_r) > 1 else 0,
+            }
 
     fig = make_subplots(
         rows=1, cols=3,
@@ -378,6 +403,7 @@ def fig_rq3_buckets(
         for mean_col, n_col, bucket_label in bucket_keys:
             means = df[mean_col].values.astype(float)
             ns    = df[n_col].values.astype(int)
+            ses   = [se_lookup[cat][a][bucket_label] for a in asset_labels_list]
 
             fig.add_trace(go.Bar(
                 name=bucket_label,
@@ -386,20 +412,20 @@ def fig_rq3_buckets(
                 marker_color=BUCKET_COLORS[bucket_label],
                 text=[f"{m:+.2f}%<br>n={n}" for m, n in zip(means, ns)],
                 textposition="outside",
-                showlegend=(col_j == 0),   # only show legend for first panel
+                showlegend=(col_j == 0),
                 legendgroup=bucket_label,
-                hovertemplate=f"{bucket_label}<br>%{{x}}: %{{y:.2f}}%<extra></extra>",
+                error_y=dict(type="data", array=ses, visible=True, thickness=1.5, width=4),
+                hovertemplate=f"{bucket_label}<br>%{{x}}: %{{y:.2f}}% ± %{{error_y.array:.2f}}%<extra></extra>",
             ), row=1, col=col_j + 1)
 
-    # Add a zero reference line across all panels
     for col_j in range(1, 4):
         fig.add_hline(y=0, line_dash="dot", line_color="black", line_width=1, row=1, col=col_j)
 
     fig.update_layout(
         template=TEMPLATE,
         title=dict(
-            text="RQ3 — Average 3-Day Return by Sentiment Bucket<br>"
-                 f"<sup>Negative ≤ {negative_threshold} | Neutral {negative_threshold} to {positive_threshold} | Positive ≥ {positive_threshold} (VADER compound score)</sup>",
+            text="RQ3 — Average Return by Sentiment Bucket (± 1 SE)<br>"
+                 f"<sup>Negative ≤ {negative_threshold} | Neutral | Positive ≥ {positive_threshold} (VADER compound score)</sup>",
             x=0.5,
         ),
         barmode="group",
@@ -407,7 +433,7 @@ def fig_rq3_buckets(
         margin=dict(t=110),
         legend=dict(title="Sentiment", orientation="h", x=0.5, xanchor="center", y=-0.15),
     )
-    fig.update_yaxes(title_text="Avg 3-day return (%)", row=1, col=1)
+    fig.update_yaxes(title_text="Avg return (%)", row=1, col=1)
     return fig
 
 

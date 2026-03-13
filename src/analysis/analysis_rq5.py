@@ -218,8 +218,8 @@ def fig_rq5_bins(
         title=f"RQ5 — {cat_label}: article volume vs. market reaction",
         barmode="group",
         legend=dict(orientation="h", yanchor="top", y=-0.12, x=0.5, xanchor="center"),
-        plot_bgcolor="#f8f9fa",
-        paper_bgcolor="white",
+        plot_bgcolor="rgba(0,0,0,0)",
+        paper_bgcolor="rgba(0,0,0,0)",
         height=560,
         margin=dict(t=70, b=70, l=60, r=30),
     )
@@ -301,8 +301,8 @@ def fig_rq5_threshold_summary(
             f"Market reactivity per category × asset "
             f"(|{return_window}d return| > {movement_threshold}%)"
         ),
-        plot_bgcolor="#f8f9fa",
-        paper_bgcolor="white",
+        plot_bgcolor="rgba(0,0,0,0)",
+        paper_bgcolor="rgba(0,0,0,0)",
         height=340,
         margin=dict(t=60, b=40, l=160, r=120),
     )

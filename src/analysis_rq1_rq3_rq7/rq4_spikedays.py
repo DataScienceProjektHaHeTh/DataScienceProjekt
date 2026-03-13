@@ -170,8 +170,8 @@ def build_chart_rq4(days_after):
         ),
         xaxis_title="Asset",
         yaxis_title="Mean Abnormal Return (%)",
-        plot_bgcolor="white",
-        paper_bgcolor="white",
+        plot_bgcolor="rgba(0,0,0,0)",
+        paper_bgcolor="rgba(0,0,0,0)",
         height=480,
         hovermode="x unified",
         legend=dict(orientation="h", y=-0.15),
@@ -335,8 +335,8 @@ def build_chart_rq4_category_breakdown(asset_name, days_after):
             "Colour = number of spiking categories &nbsp;·&nbsp; "
             "Dotted line = equal movement</sup>"
         ),
-        plot_bgcolor="white",
-        paper_bgcolor="white",
+        plot_bgcolor="rgba(0,0,0,0)",
+        paper_bgcolor="rgba(0,0,0,0)",
         height=460,
         legend=dict(orientation="h", y=-0.18),
     )

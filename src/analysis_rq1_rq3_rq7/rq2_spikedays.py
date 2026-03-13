@@ -246,8 +246,8 @@ def build_chart1(days_after):
               f"<sup>Solid = statistically significant (|z| > 1.3) &nbsp;·&nbsp; Open = not significant</sup>",
         xaxis_title="Event Date",
         yaxis_title="Abnormal Return (%)",
-        plot_bgcolor="white",
-        paper_bgcolor="white",
+        plot_bgcolor="rgba(0,0,0,0)",
+        paper_bgcolor="rgba(0,0,0,0)",
         height=500,
         hovermode="x unified",
         legend=dict(orientation="h", y=-0.18),
@@ -344,8 +344,8 @@ def build_chart2(event, days_before, days_after):
               f"<sup>Normalised to 100 at day −1 &nbsp;·&nbsp; "
               f"Green candle = price ↑ from prev day &nbsp;·&nbsp; Red = price ↓</sup>",
         xaxis_title="Days relative to news spike",
-        plot_bgcolor="white",
-        paper_bgcolor="white",
+        plot_bgcolor="rgba(0,0,0,0)",
+        paper_bgcolor="rgba(0,0,0,0)",
         height=220 * n_assets + 80,
         xaxis=dict(showgrid=True, gridcolor="#eee"),
     )
@@ -449,8 +449,8 @@ def build_chart3(event, days_after):
               f"<sup>Each bar = daily incremental abnormal return &nbsp;·&nbsp; "
               f"'Total' bar = cumulative sum &nbsp;·&nbsp; "
               f"Green = above expected &nbsp;·&nbsp; Red = below expected</sup>",
-        plot_bgcolor="white",
-        paper_bgcolor="white",
+        plot_bgcolor="rgba(0,0,0,0)",
+        paper_bgcolor="rgba(0,0,0,0)",
         height=480,
     )
     return fig
