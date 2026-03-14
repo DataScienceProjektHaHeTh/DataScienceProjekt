@@ -300,7 +300,7 @@ a.card-link-wrapper {
     border-top: 3px solid #6DACDA;
 }
 
-.dataset-card h3 { font-size: 1rem; color: #052962; margin-bottom: 0.4rem; }
+.dataset-card h3 { font-size: 1rem; color: #052962; margin-bottom: 0.4rem; font-family: 'Playfair Display', Georgia, serif; font-weight: 700; }
 .dataset-card p { font-size: 0.9rem; color: #555; }
 
 /* ── Steps ────────────────────────────────────────────────────────────────── */
