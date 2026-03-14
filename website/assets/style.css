@@ -100,22 +100,44 @@ body {
 }
 
 /* ── RQ selector bar ─────────────────────────────────────────────────────── */
-.rq-selector-bar {
+/* ── RQ button bar ────────────────────────────────────────────────────────── */
+.rq-btn-bar {
     display: flex;
-    align-items: center;
-    gap: 1rem;
-    background: transparent;
-    padding: 1rem 1.5rem;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    gap: 0.5rem;
+    flex-wrap: wrap;
     margin-bottom: 2rem;
+    padding-bottom: 1.2rem;
+    border-bottom: 1px solid rgba(5,41,98,0.12);
 }
 
-.rq-selector-label {
-    font-weight: 600;
-    color: #1a1a2e;
-    white-space: nowrap;
-    font-size: 0.95rem;
+.rq-btn {
+    background: transparent;
+    border: 1.5px solid rgba(5,41,98,0.25);
+    color: #052962;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 0.4rem 0.9rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+    letter-spacing: 0.04em;
+}
+
+.rq-btn:hover {
+    background: rgba(5,41,98,0.07);
+    border-color: #052962;
+}
+
+.rq-btn-active {
+    background: #052962;
+    color: #fff;
+    border-color: #052962;
+}
+
+.rq-btn-active:hover {
+    background: #052962;
+    color: #fff;
 }
 
 /* ── Main Content ─────────────────────────────────────────────────────────── */

@@ -1,7 +1,7 @@
 import dash
 import sys
 import os
-from dash import html, dcc, callback, Output, Input
+from dash import html, dcc, callback, Output, Input, ctx
 import plotly.graph_objects as go
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
@@ -77,6 +77,16 @@ RQ_OPTIONS = [
     {"label": "RQ7 — Volume vs Correlation Ranking",     "value": "rq7"},
 ]
 
+RQ_TOOLTIPS = {
+    "rq1": "Does daily news frequency, split by topic, correlate with 3-day returns in MSCI World, Gold, and Bitcoin following a coverage spike?",
+    "rq2": "How do MSCI World, Gold, and Bitcoin differ in direction and magnitude of abnormal returns following identical news spikes?",
+    "rq3": "Does the average daily VADER sentiment score of Guardian articles predict the direction and magnitude of 3-day returns across assets?",
+    "rq4": "Do simultaneous spikes across multiple news categories amplify 3-day returns compared to isolated single-category spikes?",
+    "rq5": "Above which daily article volume does a return exceeding 1% first consistently appear — and does this threshold differ by category?",
+    "rq6": "Within a 5-day post-spike window, how quickly does each asset reach its peak return — and does the lag differ across news categories?",
+    "rq7": "Which category generates the most daily coverage — and does the volume ranking match the ranking by correlation strength with asset returns?",
+}
+
 # ── Placeholder figure helper ──────────────────────────────────────────────────
 def placeholder_fig(title="Your chart will appear here"):
     fig = go.Figure()
@@ -115,18 +125,21 @@ layout = html.Div([
         className="page-subtitle"
     ),
 
-    # ── RQ selector ───────────────────────────────────────────────────────────
+    # ── RQ selector buttons ───────────────────────────────────────────────────
     html.Div([
-        html.Label("Research Question:", className="rq-selector-label"),
+        *[html.Button(
+            rq.upper(),
+            id=f"rq-btn-{rq}",
+            className="rq-btn",
+            title=RQ_TOOLTIPS[rq],
+            n_clicks=0,
+        ) for rq in RQS],
+        # Hidden dropdown keeps state; callbacks still use its value
         dcc.Dropdown(
-            id="rq-selector",
-            options=RQ_OPTIONS,
-            value="rq1",
-            clearable=False,
-            className="dropdown",
-            style={"width": "420px"},
+            id="rq-selector", options=RQ_OPTIONS, value="rq1",
+            clearable=False, style={"display": "none"},
         ),
-    ], className="rq-selector-bar"),
+    ], className="rq-btn-bar"),
 
     # ── RQ 1 ──────────────────────────────────────────────────────────────────
     html.Div(html.Section([
@@ -527,14 +540,28 @@ def show_section(selected):
 @callback(
     Output("rq-selector", "value"),
     Input("_pages_location", "search"),
+    *[Input(f"rq-btn-{rq}", "n_clicks") for rq in RQS],
 )
-def set_rq_from_url(search):
-    if search:
-        params = urllib.parse.parse_qs(search.lstrip("?"))
-        rq = params.get("rq", [None])[0]
-        if rq in RQS:
-            return rq
+def set_rq(search, *_btn_clicks):
+    triggered = ctx.triggered_id
+    if triggered == "_pages_location":
+        if search:
+            params = urllib.parse.parse_qs(search.lstrip("?"))
+            rq = params.get("rq", [None])[0]
+            if rq in RQS:
+                return rq
+        return dash.no_update
+    if isinstance(triggered, str) and triggered.startswith("rq-btn-"):
+        return triggered.replace("rq-btn-", "")
     return dash.no_update
+
+
+@callback(
+    *[Output(f"rq-btn-{rq}", "className") for rq in RQS],
+    Input("rq-selector", "value"),
+)
+def update_btn_classes(selected):
+    return ["rq-btn rq-btn-active" if rq == selected else "rq-btn" for rq in RQS]
 
 
 # ── RQ1 / RQ7 callbacks ──────────────────────────────────────────────────────
