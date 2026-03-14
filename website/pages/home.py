@@ -61,37 +61,37 @@ layout = html.Div([
 
                     dcc.Link(html.Div([
                         html.Span("RQ1", className="rq-number"),
-                        html.Span("News frequency vs 3-day returns across assets", className="rq-label"),
+                        html.Span("Does daily news frequency — split by topic — correlate with 3-day returns in MSCI World, Gold, and Bitcoin following a coverage spike?", className="rq-label"),
                     ], className="rq-link-item"), href="/visualizations?rq=rq1"),
 
                     dcc.Link(html.Div([
                         html.Span("RQ2", className="rq-number"),
-                        html.Span("Asset response direction and magnitude after news spikes", className="rq-label"),
+                        html.Span("How do the three assets differ in direction and magnitude of 3-day abnormal returns following identical news spikes across all categories?", className="rq-label"),
                     ], className="rq-link-item"), href="/visualizations?rq=rq2"),
 
                     dcc.Link(html.Div([
                         html.Span("RQ3", className="rq-number"),
-                        html.Span("Daily sentiment score vs return direction across asset classes", className="rq-label"),
+                        html.Span("Does the average daily VADER sentiment score of Guardian articles predict the direction and magnitude of 3-day returns across assets?", className="rq-label"),
                     ], className="rq-link-item"), href="/visualizations?rq=rq3"),
 
                     dcc.Link(html.Div([
                         html.Span("RQ4", className="rq-number"),
-                        html.Span("Multi-category spike co-occurrence vs single-category spikes", className="rq-label"),
+                        html.Span("Do simultaneous spikes across multiple news categories amplify 3-day returns compared to isolated single-category spikes?", className="rq-label"),
                     ], className="rq-link-item"), href="/visualizations?rq=rq4"),
 
                     dcc.Link(html.Div([
                         html.Span("RQ5", className="rq-number"),
-                        html.Span("Article volume threshold for measurable price reaction (>1%)", className="rq-label"),
+                        html.Span("Above which daily article volume does a return exceeding 1% first consistently appear — and does this threshold differ by news category?", className="rq-label"),
                     ], className="rq-link-item"), href="/visualizations?rq=rq5"),
 
                     dcc.Link(html.Div([
                         html.Span("RQ6", className="rq-number"),
-                        html.Span("Peak return lag within 5-day window by category and asset", className="rq-label"),
+                        html.Span("Within a 5-day post-spike window, how quickly does each asset reach its peak return — and does the lag differ across the three news categories?", className="rq-label"),
                     ], className="rq-link-item"), href="/visualizations?rq=rq6"),
 
                     dcc.Link(html.Div([
                         html.Span("RQ7", className="rq-number"),
-                        html.Span("Coverage volume ranking vs correlation strength ranking", className="rq-label"),
+                        html.Span("Which category generates the most daily coverage — and does the volume ranking match the ranking by correlation strength with asset returns?", className="rq-label"),
                     ], className="rq-link-item"), href="/visualizations?rq=rq7"),
 
                 ], className="rq-link-list"),
