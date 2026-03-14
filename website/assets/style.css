@@ -158,21 +158,22 @@ body {
 }
 
 .def-label {
-    font-size: 0.68rem;
+    font-size: 0.65rem;
     text-transform: uppercase;
-    letter-spacing: 0.14em;
+    letter-spacing: 0.16em;
     color: #6DACDA;
     font-weight: 700;
-    font-family: 'Merriweather', Georgia, serif;
-    margin-bottom: 0.35rem;
+    font-family: 'Playfair Display', Georgia, serif;
+    margin-bottom: 0.3rem;
 }
 
 .def-term {
     font-family: 'Playfair Display', Georgia, serif;
-    font-size: 1.05rem;
+    font-size: 1rem;
     font-weight: 700;
     color: #052962;
-    margin-bottom: 0.55rem;
+    margin-bottom: 0.5rem;
+    line-height: 1.3;
 }
 
 .def-formula {
