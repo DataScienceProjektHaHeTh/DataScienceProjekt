@@ -122,10 +122,15 @@ body {
 .main-content { padding: 2rem 200px 2rem 3.5rem; }
 
 .page h1 {
-    font-size: 2rem;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 2.4rem;
+    font-weight: 900;
     margin-bottom: 0.4rem;
-    color: #1a1a2e;
+    line-height: 1.15;
 }
+
+.page-h1-accent { color: #6DACDA; }
+.page-h1-main   { color: #052962; }
 
 .page-subtitle { color: #666; margin-bottom: 2rem; }
 
@@ -133,11 +138,26 @@ body {
 .section { margin-bottom: 3rem; }
 
 .section h2 {
-    font-size: 1.4rem;
-    color: #1a1a2e;
-    border-left: 4px solid #e94560;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 1.3rem;
+    color: #052962;
+    border-left: 4px solid #6DACDA;
     padding-left: 0.75rem;
     margin-bottom: 1rem;
+    line-height: 1.35;
+}
+
+/* RQ section headers: "RQ1" badge in light blue + question text in navy */
+.rq-section-number {
+    color: #6DACDA;
+    font-family: 'Merriweather', Georgia, serif;
+    font-weight: 700;
+    font-size: 0.95em;
+    letter-spacing: 0.02em;
+}
+
+.rq-section-title-text {
+    color: #052962;
 }
 
 .section-text { color: #555; line-height: 1.7; }
@@ -193,7 +213,7 @@ a.card-link-wrapper {
 .card-stat {
     font-size: 1.05rem;
     font-weight: 700;
-    color: #e94560;
+    color: #6DACDA;
     margin-bottom: 0.4rem;
     font-family: monospace;
 }
@@ -215,10 +235,10 @@ a.card-link-wrapper {
     border-radius: 10px;
     padding: 1.2rem;
     box-shadow: 0 2px 6px rgba(0,0,0,0.06);
-    border-top: 3px solid #e94560;
+    border-top: 3px solid #052962;
 }
 
-.dataset-card h3 { font-size: 1rem; color: #e94560; margin-bottom: 0.4rem; }
+.dataset-card h3 { font-size: 1rem; color: #052962; margin-bottom: 0.4rem; }
 .dataset-card p { font-size: 0.9rem; color: #555; }
 
 /* ── Steps ────────────────────────────────────────────────────────────────── */
@@ -234,7 +254,7 @@ a.card-link-wrapper {
 }
 
 .step-number {
-    background: #e94560;
+    background: #052962;
     color: white;
     width: 36px;
     height: 36px;
@@ -271,8 +291,8 @@ a.card-link-wrapper {
 
 .team-role {
     font-size: 0.8rem;
-    background: #f0f0f5;
-    color: #e94560;
+    background: rgba(5,41,98,0.07);
+    color: #052962;
     padding: 0.2rem 0.7rem;
     border-radius: 999px;
     display: inline-block;

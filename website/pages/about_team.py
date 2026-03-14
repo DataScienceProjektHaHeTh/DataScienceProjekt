@@ -12,7 +12,10 @@ def team_card(name, bio, emoji="👤"):
     ], className="team-card")
 
 layout = html.Div([
-    html.H1("Meet the Team"),
+    html.H1([
+        html.Span("Meet ", className="page-h1-accent"),
+        html.Span("the Team", className="page-h1-main"),
+    ]),
     html.P("The people behind this project.", className="page-subtitle"),
 
     #Insert Pictures?

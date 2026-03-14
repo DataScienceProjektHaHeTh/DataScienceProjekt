@@ -4,7 +4,10 @@ from dash import html
 dash.register_page(__name__, path="/about-project", name="About Project")
 
 layout = html.Div([
-    html.H1("About the Project"),
+    html.H1([
+        html.Span("About ", className="page-h1-accent"),
+        html.Span("the Project", className="page-h1-main"),
+    ]),
 
 
 

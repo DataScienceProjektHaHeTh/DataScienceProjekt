@@ -106,7 +106,10 @@ INVESTMENT_CLASSES       = [{"label": a, "value": a} for a in all_daily_returns.
 
 # ── Layout ─────────────────────────────────────────────────────────────────────
 layout = html.Div([
-    html.H1("Analysis & Results"),
+    html.H1([
+        html.Span("Analysis ", className="page-h1-accent"),
+        html.Span("& Results", className="page-h1-main"),
+    ]),
     html.P(
         "Select a research question to explore its analysis, interactive charts, and interpretation.",
         className="page-subtitle"
@@ -127,7 +130,7 @@ layout = html.Div([
 
     # ── RQ 1 ──────────────────────────────────────────────────────────────────
     html.Div(html.Section([
-        html.H2("RQ1: To what extent does the daily frequency of Trump-related news coverage in The Guardian, categorized by topic, correlate with the cumulative 3-day price return of MSCI World, Gold, and Bitcoin following a coverage spike?"),
+        html.H2([html.Span("RQ1", className="rq-section-number"), html.Span(" — Does daily news frequency, split by topic, correlate with 3-day returns in MSCI World, Gold, and Bitcoin following a coverage spike?", className="rq-section-title-text")]),
         html.P("Spearman correlation between article spike days and forward returns for MSCI World, Gold, and Bitcoin. Adjust the parameters below to explore how assumptions affect the results."),
 
         html.Div([
@@ -190,7 +193,7 @@ layout = html.Div([
 
     #-- RQ 2 -----------------------------------------------------------------
     html.Div(html.Section([
-        html.H2("RQ2: Differences in response of the Investments to Days with high news count"),
+        html.H2([html.Span("RQ2", className="rq-section-number"), html.Span(" — How do MSCI World, Gold, and Bitcoin differ in direction and magnitude of abnormal returns following identical news spikes?", className="rq-section-title-text")]),
         html.P("The Graph shows the abnormal return in percent of the three Investments, on days with a high news count, meaning a signigicanty higher count than normal. The Percentages show how much the returns differ from the expected Trend (5 day) prediction"),
 
         #chart 1: abnormal returns
@@ -276,7 +279,7 @@ layout = html.Div([
 
     #-- RQ 3 -----------------------------------------------------------------------
     html.Div(html.Section([
-        html.H2("RQ3: How does the average daily sentiment score of Trump-related Guardian articles within each news category relate to the direction and magnitude of the cumulative price return across all three asset classes?"),
+        html.H2([html.Span("RQ3", className="rq-section-number"), html.Span(" — Does the average daily VADER sentiment score of Guardian articles predict the direction and magnitude of 3-day returns across assets?", className="rq-section-title-text")]),
         html.P("Uses VADER compound scores (−1 to +1) averaged per day per category. The violin chart shows the full return distribution per sentiment bucket; the bar chart compares mean returns across negative, neutral, and positive news days."),
 
         html.Div([
@@ -338,7 +341,7 @@ layout = html.Div([
 
     #---RQ4--------------------------------------------------------------------------
     html.Div(html.Section([
-    html.H2("RQ4: Do multi-category news spikes amplify market returns?"),
+    html.H2([html.Span("RQ4", className="rq-section-number"), html.Span(" — Do simultaneous spikes across multiple news categories amplify 3-day returns compared to isolated single-category spikes?", className="rq-section-title-text")]),
     html.P("Comparing abnormal returns after single-category vs multi-category Trump news spikes."),
     #chart 1
     html.Div([
@@ -378,7 +381,7 @@ layout = html.Div([
 
     # ── RQ 5 ──────────────────────────────────────────────────────────────────
     html.Div(html.Section([
-        html.H2("RQ5: At which article volume does a measurable market reaction first appear?"),
+        html.H2([html.Span("RQ5", className="rq-section-number"), html.Span(" — Above which daily article volume does a return exceeding 1% first consistently appear — and does this threshold differ by category?", className="rq-section-title-text")]),
         html.P(
             "Days are grouped into equal-frequency bins by article count. "
             "The top panel shows average forward returns per bin; the bottom panel "
@@ -444,7 +447,7 @@ layout = html.Div([
 
     # ── RQ 6 ──────────────────────────────────────────────────────────────────
     html.Div(html.Section([
-        html.H2("RQ6: How quickly do different assets react to a news spike?"),
+        html.H2([html.Span("RQ6", className="rq-section-number"), html.Span(" — Within a 5-day post-spike window, how quickly does each asset reach its peak return — and does the lag differ across news categories?", className="rq-section-title-text")]),
         html.P(
             "For every spike day, the cumulative return is tracked over the following "
             "5 trading days. The line chart shows the average return profile per asset; "
@@ -488,7 +491,7 @@ layout = html.Div([
 
     # ── RQ 7 ──────────────────────────────────────────────────────────────────
     html.Div(html.Section([
-        html.H2("RQ7: Which news category generates the highest average daily article volume, and how does the ranking by coverage volume compare to the ranking by strength of correlation with cumulative 3-day price returns?"),
+        html.H2([html.Span("RQ7", className="rq-section-number"), html.Span(" — Which category generates the most daily coverage — and does the volume ranking match the ranking by correlation strength with asset returns?", className="rq-section-title-text")]),
         html.P("Compares each category's share of total article volume (left) against its market correlation strength (right). A mismatch means niche but politically sensitive topics drive stronger market reactions than high-volume general coverage."),
 
         html.Div([
