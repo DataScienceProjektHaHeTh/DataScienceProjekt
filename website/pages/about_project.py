@@ -32,41 +32,43 @@ layout = html.Div([
         html.Div([
             definition_box(
                 term="Spike Day",
-                formula="\\( \\text{spike\\_day} \\iff \\text{article\\_count} > \\mu_{30} + 1 \\times \\sigma_{30} \\)",
+                formula="\\( \\text{count}(t) \\;>\\; \\mu_{30}(t) + k \\cdot \\sigma_{30}(t) \\)",
                 description=(
                     "A calendar day on which the article count in a given news category exceeds "
-                    "the rolling 30-day mean by more than one standard deviation. "
-                    "Used to identify days of unusually high coverage intensity."
+                    "its rolling 30-day mean by more than k standard deviations. "
+                    "The multiplier k = 1 is the default used across all seven research questions; "
+                    "higher values of k (e.g. 1.5 or 2) isolate only the most extreme news days "
+                    "and can be set via the spike threshold slider on the Analysis page."
                 ),
             ),
             definition_box(
-                term="3-Day Price Return",
-                formula="\\( r(t) = \\dfrac{P_{t+3} - P_{t}}{P_{t}} \\times 100 \\)",
+                term="x-Day Price Return",
+                formula="\\( r_x(t) = \\frac{P_{t+x} - P_t}{P_t} \\times 100 \\)",
                 description=(
-                    "The cumulative percentage change in a daily closing price over the three "
-                    "trading days following reference day t. "
-                    "This is the default return window specified by the research questions; "
-                    "the interactive controls on the Analysis page allow wider windows (5, 7, 14 days)."
+                    "The cumulative percentage change in a daily closing price over x trading days "
+                    "following reference day t. The default window is x = 3 as specified by the "
+                    "research questions; the Analysis page provides a dropdown to switch to "
+                    "x ∈ {3, 5, 7, 10, 14} days to test how findings depend on this assumption."
                 ),
             ),
             definition_box(
                 term="Response Day",
-                formula="\\( \\text{response\\_day} = \\underset{d \\,\\in\\, [1,5]}{\\arg\\max} \\; \\left| r_{\\text{cum}}(t,\\, t+d) \\right| \\)",
+                formula="\\( d^{*} = \\arg\\max_{d \\,\\in\\, \\{1,\\ldots,5\\}} \\bigl|\\, r_{\\text{cum}}(t,\\, t+d) \\,\\bigr| \\)",
                 description=(
-                    "The number of trading days between a spike day and the day within the "
-                    "following 5-day window on which the cumulative return reaches its maximum "
-                    "absolute value. Used in RQ6 to measure how quickly each asset class reacts "
-                    "to a news shock."
+                    "The number of trading days d* between a spike day t and the day within "
+                    "the following 5-day window on which the cumulative return reaches its "
+                    "maximum absolute value. Used in RQ6 to measure how quickly each asset "
+                    "class reacts to a news shock."
                 ),
             ),
             definition_box(
                 term="Measurable Price Movement",
-                formula="\\( \\left| r(t) \\right| > 1\\% \\)",
+                formula="\\( \\bigl|\\, r_x(t) \\,\\bigr| > 1\\% \\)",
                 description=(
-                    "A cumulative 3-day price return exceeding ±1 % in absolute terms. "
-                    "Returns below this threshold are treated as market noise and not counted "
-                    "as a meaningful market response. Used as the default threshold in RQ5; "
-                    "the slider on that page lets you adjust the cutoff from 0.5 % to 3 %."
+                    "A cumulative x-day price return exceeding ±1 % in absolute terms. "
+                    "Returns below this threshold are treated as market noise and excluded "
+                    "from threshold analysis in RQ5. The cutoff is adjustable from 0.5 % to 3 % "
+                    "via the slider on the Analysis page."
                 ),
             ),
         ], className="definition-grid"),
