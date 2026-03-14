@@ -327,7 +327,7 @@ a.card-link-wrapper {
     flex-shrink: 0;
 }
 
-.step h3 { font-size: 1rem; margin-bottom: 0.3rem; color: #1a1a2e; }
+.step h3 { font-size: 1rem; margin-bottom: 0.3rem; color: #052962; font-family: 'Playfair Display', Georgia, serif; }
 .step p  { font-size: 0.9rem; color: #666; }
 
 /* ── RQ List ──────────────────────────────────────────────────────────────── */
