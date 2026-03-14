@@ -125,14 +125,75 @@ body {
     font-family: 'Playfair Display', Georgia, serif;
     font-size: 2.4rem;
     font-weight: 900;
-    margin-bottom: 0.4rem;
+    margin-bottom: 0.6rem;
     line-height: 1.15;
 }
 
 .page-h1-accent { color: #6DACDA; }
 .page-h1-main   { color: #052962; }
 
-.page-subtitle { color: #666; margin-bottom: 2rem; }
+.page-subtitle {
+    color: #666;
+    font-family: 'Merriweather', Georgia, serif;
+    font-size: 0.92rem;
+    font-style: italic;
+    margin-bottom: 2.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(5,41,98,0.15);
+}
+
+/* ── Definition boxes ─────────────────────────────────────────────────────── */
+.definition-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 1.2rem;
+}
+
+.definition-box {
+    background: rgba(5,41,98,0.025);
+    border: 1px solid rgba(5,41,98,0.12);
+    border-left: 4px solid #6DACDA;
+    border-radius: 8px;
+    padding: 1.2rem 1.5rem;
+}
+
+.def-label {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: #6DACDA;
+    font-weight: 700;
+    font-family: 'Merriweather', Georgia, serif;
+    margin-bottom: 0.35rem;
+}
+
+.def-term {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #052962;
+    margin-bottom: 0.55rem;
+}
+
+.def-formula {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.9rem;
+    color: #052962;
+    background: rgba(5,41,98,0.07);
+    padding: 0.4rem 0.9rem;
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: 0.7rem;
+    letter-spacing: 0.02em;
+}
+
+.def-description {
+    font-family: 'Merriweather', Georgia, serif;
+    font-size: 0.83rem;
+    color: #555;
+    line-height: 1.75;
+    margin: 0;
+}
 
 /* ── Sections ─────────────────────────────────────────────────────────────── */
 .section { margin-bottom: 3rem; }

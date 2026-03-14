@@ -1,56 +1,105 @@
 import dash
 from dash import html
 
-dash.register_page(__name__, path="/about-project", name="About Project")
+dash.register_page(__name__, path="/about-project", name="Approach & Assumptions")
+
+def definition_box(term, formula, description):
+    return html.Div([
+        html.Div("Definition", className="def-label"),
+        html.Div(term, className="def-term"),
+        html.Div(formula, className="def-formula"),
+        html.P(description, className="def-description"),
+    ], className="definition-box")
 
 layout = html.Div([
     html.H1([
-        html.Span("About ", className="page-h1-accent"),
-        html.Span("the Project", className="page-h1-main"),
+        html.Span("Approach ", className="page-h1-accent"),
+        html.Span("& Assumptions", className="page-h1-main"),
     ]),
-
-
+    html.P(
+        "Methodology, data sources, and the formal definitions shared across all seven research questions.",
+        className="page-subtitle"
+    ),
 
     html.Section([
-        html.H2("Continuous Definitions within the RQs"),
-        html.Ul([
-            html.Li("pike:=  spike_day = article_count > (mean + 1 * std_deviation)"),
-            html.Li("3-day price return:= return = (close_day+3 - close_day0) / close_day0 * 100"),
-            html.Li("response day:= number of trading days between a spike day and the day within the following 5-day window where the cumulative price return reaches its maximum absolute value"),
-            html.Li("Measurable price movement:= A cumulative 3-day price return exceeding ±1% in absolute terms. Movements below this threshold are treated as market noise and not counted as a meaningful response.")
-    ], className="rq-list"),
-    ], className="Continious definitions within the RQs"),
+        html.H2("Core Definitions"),
+        html.P(
+            "The following terms are used consistently across all research questions. "
+            "They are defined here once to avoid repetition and to make the analytical choices explicit.",
+            className="section-text",
+            style={"marginBottom": "1.5rem"},
+        ),
+        html.Div([
+            definition_box(
+                term="Spike Day",
+                formula="spike_day  ≡  article_count > μ + 1 × σ",
+                description=(
+                    "A calendar day on which the article count in a given news category exceeds "
+                    "the rolling 30-day mean by more than one standard deviation. "
+                    "Used to identify days of unusually high coverage intensity."
+                ),
+            ),
+            definition_box(
+                term="3-Day Price Return",
+                formula="r(t) = ( P_{t+3} − P_t ) / P_t × 100",
+                description=(
+                    "The cumulative percentage change in a daily closing price over the three "
+                    "trading days following reference day t. "
+                    "This is the default return window specified by the research questions; "
+                    "the interactive controls on the Analysis page allow wider windows (5, 7, 14 days)."
+                ),
+            ),
+            definition_box(
+                term="Response Day",
+                formula="response_day  =  argmax_{d ∈ [1,5]}  | r_cumulative(t, t+d) |",
+                description=(
+                    "The number of trading days between a spike day and the day within the "
+                    "following 5-day window on which the cumulative return reaches its maximum "
+                    "absolute value. Used in RQ6 to measure how quickly each asset class reacts "
+                    "to a news shock."
+                ),
+            ),
+            definition_box(
+                term="Measurable Price Movement",
+                formula="| r(t) | > 1%",
+                description=(
+                    "A cumulative 3-day price return exceeding ±1 % in absolute terms. "
+                    "Returns below this threshold are treated as market noise and not counted "
+                    "as a meaningful market response. Used as the default threshold in RQ5; "
+                    "the slider on that page lets you adjust the cutoff from 0.5 % to 3 %."
+                ),
+            ),
+        ], className="definition-grid"),
+    ], className="section"),
 
-
-    #balance Text length better
     html.Section([
         html.H2("Datasets"),
         html.Div([
             html.Div([
                 html.H3("The Guardian"),
-                html.P("The articles were collected using the Guardian Open Platform API, which provides access to their news content. We focused on articles published since the start of the second term that contained Trump-related keywords."),
+                html.P("Articles collected via the Guardian Open Platform API using category-specific keyword queries combining 'Trump' with topic-relevant terms. Coverage begins 1 January 2025."),
             ], className="dataset-card"),
             html.Div([
-                html.H3("Size"),
-                html.P("We get around 20.000 articles from the Guardian API")
+                html.H3("Volume"),
+                html.P("≈ 20,000 articles across three categories: Trade Policy, Geopolitics, and Domestic Politics.")
             ], className="dataset-card"),
             html.Div([
-                html.H3("Type"),
-                html.P("Here we have the text data of the articles, including metadata such as publication date, etc..")
+                html.H3("Content"),
+                html.P("Article headline, body text (first 512 chars for VADER), publication date, and section tag.")
             ], className="dataset-card"),
         ], className="dataset-grid"),
         html.Div([
             html.Div([
                 html.H3("Yahoo Finance"),
-                html.P("The market data was collected using the Yahoo Finance API, which provides historical price data for various financial investments.")
+                html.P("Daily closing prices downloaded via yfinance for MSCI World ETF (URTH), Gold Futures (GC=F), and Bitcoin (BTC-USD).")
             ], className="dataset-card"),
             html.Div([
-                html.H3("Size"),
-                html.P("We collected hourly price data for MSCI World, Gold, and Bitcoin from the start of Trump's second term until the end of our data collection period.")
+                html.H3("Period"),
+                html.P("20 January 2025 (start of Trump's second term) through the data collection cut-off.")
             ], className="dataset-card"),
             html.Div([
-                html.H3("Type"),
-                html.P("Here we have the historical price data for our three selected asset classes, including open, close, high, low prices, and trading volume.")
+                html.H3("Fields"),
+                html.P("Open, high, low, close prices and trading volume. Resampled from hourly to daily; forward-filled on market holidays only.")
             ], className="dataset-card"),
         ], className="dataset-grid"),
     ], className="section"),

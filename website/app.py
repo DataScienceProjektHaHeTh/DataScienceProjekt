@@ -21,8 +21,8 @@ app.layout = html.Div([
                 dcc.Link("RQ7 — Volume vs Correlation",     href="/visualizations?rq=rq7", className="nav-dropdown-item"),
             ], className="nav-dropdown-menu"),
         ], className="nav-dropdown"),
-        dcc.Link("About Project",   href="/about-project",   className="nav-link"),
-        dcc.Link("Team",            href="/about-team",      className="nav-link"),
+        dcc.Link("Approach & Assumptions", href="/about-project", className="nav-link"),
+        dcc.Link("Meet the Team",            href="/about-team",      className="nav-link"),
     ], className="navbar"),
 
     # Page content
@@ -65,7 +65,7 @@ app.layout = html.Div([
                 html.H4("Navigation", className="footer-heading"),
                 dcc.Link("Home",               href="/",                className="footer-link"),
                 dcc.Link("Analysis & Results", href="/visualizations",  className="footer-link"),
-                dcc.Link("About Project",      href="/about-project",   className="footer-link"),
+                dcc.Link("Approach & Assumptions", href="/about-project", className="footer-link"),
                 dcc.Link("Team",               href="/about-team",      className="footer-link"),
             ], className="footer-col"),
 
