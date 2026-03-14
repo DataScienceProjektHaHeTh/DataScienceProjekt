@@ -4,6 +4,37 @@ import dash
 app = Dash(__name__, use_pages=True, suppress_callback_exceptions=True)
 server = app.server  # expose Flask server for gunicorn
 
+# Inject MathJax config before the CDN script so delimiters are set correctly.
+app.index_string = '''<!DOCTYPE html>
+<html>
+    <head>
+        {%metas%}
+        <title>{%title%}</title>
+        {%favicon%}
+        {%css%}
+        <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['\\\\(', '\\\\)']],
+                displayMath: [['\\\\[', '\\\\]']]
+            },
+            options: { skipHtmlTags: ['script','noscript','style','textarea','pre'] }
+        };
+        </script>
+        <script id="MathJax-script" async
+            src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js">
+        </script>
+    </head>
+    <body>
+        {%app_entry%}
+        <footer>
+            {%config%}
+            {%scripts%}
+            {%renderer%}
+        </footer>
+    </body>
+</html>'''
+
 #define the app layout, like the top navbar)
 app.layout = html.Div([
     # Navigation Bar

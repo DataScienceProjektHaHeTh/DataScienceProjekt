@@ -32,7 +32,7 @@ layout = html.Div([
         html.Div([
             definition_box(
                 term="Spike Day",
-                formula="spike_day  ≡  article_count > μ + 1 × σ",
+                formula="\\( \\text{spike\\_day} \\iff \\text{article\\_count} > \\mu_{30} + 1 \\times \\sigma_{30} \\)",
                 description=(
                     "A calendar day on which the article count in a given news category exceeds "
                     "the rolling 30-day mean by more than one standard deviation. "
@@ -41,7 +41,7 @@ layout = html.Div([
             ),
             definition_box(
                 term="3-Day Price Return",
-                formula="r(t) = ( P_{t+3} − P_t ) / P_t × 100",
+                formula="\\( r(t) = \\dfrac{P_{t+3} - P_{t}}{P_{t}} \\times 100 \\)",
                 description=(
                     "The cumulative percentage change in a daily closing price over the three "
                     "trading days following reference day t. "
@@ -51,7 +51,7 @@ layout = html.Div([
             ),
             definition_box(
                 term="Response Day",
-                formula="response_day  =  argmax_{d ∈ [1,5]}  | r_cumulative(t, t+d) |",
+                formula="\\( \\text{response\\_day} = \\underset{d \\,\\in\\, [1,5]}{\\arg\\max} \\; \\left| r_{\\text{cum}}(t,\\, t+d) \\right| \\)",
                 description=(
                     "The number of trading days between a spike day and the day within the "
                     "following 5-day window on which the cumulative return reaches its maximum "
@@ -61,7 +61,7 @@ layout = html.Div([
             ),
             definition_box(
                 term="Measurable Price Movement",
-                formula="| r(t) | > 1%",
+                formula="\\( \\left| r(t) \\right| > 1\\% \\)",
                 description=(
                     "A cumulative 3-day price return exceeding ±1 % in absolute terms. "
                     "Returns below this threshold are treated as market noise and not counted "

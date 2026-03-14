@@ -176,15 +176,15 @@ body {
 }
 
 .def-formula {
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 0.9rem;
+    display: block;
     color: #052962;
-    background: rgba(5,41,98,0.07);
-    padding: 0.4rem 0.9rem;
+    background: rgba(5,41,98,0.05);
+    padding: 0.65rem 1rem;
     border-radius: 4px;
-    display: inline-block;
     margin-bottom: 0.7rem;
-    letter-spacing: 0.02em;
+    font-size: 1.05rem;
+    text-align: center;
+    overflow-x: auto;
 }
 
 .def-description {
@@ -296,7 +296,7 @@ a.card-link-wrapper {
     border-radius: 10px;
     padding: 1.2rem;
     box-shadow: 0 2px 6px rgba(0,0,0,0.06);
-    border-top: 3px solid #052962;
+    border-top: 3px solid #6DACDA;
 }
 
 .dataset-card h3 { font-size: 1rem; color: #052962; margin-bottom: 0.4rem; }
