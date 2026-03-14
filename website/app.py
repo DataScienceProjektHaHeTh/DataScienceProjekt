@@ -28,7 +28,54 @@ app.layout = html.Div([
     # Page content
     html.Main([
         dash.page_container
-    ], className="main-content")
+    ], className="main-content"),
+
+    # Footer
+    html.Footer([
+        html.Div([
+
+            html.Div([
+                html.H4("Impressum", className="footer-heading"),
+                html.P("Hansen, Jan Ole", className="footer-text"),
+                html.P("Hempel, Fridjoff", className="footer-text"),
+                html.P("Thielert, Nico", className="footer-text"),
+                html.P("Christian-Albrechts-Universität zu Kiel", className="footer-text"),
+                html.P("Data Science Project · WiSe 2025/26 · Group 11", className="footer-text"),
+                html.P(
+                    "This website was produced for academic purposes only and does not "
+                    "constitute financial advice.",
+                    className="footer-disclaimer"
+                ),
+            ], className="footer-col"),
+
+            html.Div(className="footer-separator"),
+
+            html.Div([
+                html.H4("Data Sources", className="footer-heading"),
+                html.P("News: The Guardian Open Platform API", className="footer-text"),
+                html.P("Market data: Yahoo Finance (yfinance)", className="footer-text"),
+                html.P("Assets: MSCI World (URTH), Gold (GC=F), Bitcoin (BTC-USD)", className="footer-text"),
+                html.P("Period: January 2025 – present", className="footer-text"),
+                html.P("Sentiment: VADER (NLTK)", className="footer-text"),
+            ], className="footer-col"),
+
+            html.Div(className="footer-separator"),
+
+            html.Div([
+                html.H4("Navigation", className="footer-heading"),
+                dcc.Link("Home",               href="/",                className="footer-link"),
+                dcc.Link("Analysis & Results", href="/visualizations",  className="footer-link"),
+                dcc.Link("About Project",      href="/about-project",   className="footer-link"),
+                dcc.Link("Team",               href="/about-team",      className="footer-link"),
+            ], className="footer-col"),
+
+        ], className="footer-inner"),
+
+        html.Div(
+            "© 2025 · CAU Kiel · Data Science Project · Group 11",
+            className="footer-bottom"
+        ),
+    ], className="site-footer"),
 ])
 
 if __name__ == '__main__':

@@ -6,28 +6,6 @@ dash.register_page(__name__, path="/about-project", name="About Project")
 layout = html.Div([
     html.H1("About the Project"),
 
-    html.Section([
-        html.H2("Motivation"),
-        html.P(
-            "Donald Trump's second presidency has been marked ba an unusually high pace of politically consequential decisions: sweeping tariff announcements, shifts in Nato commitments, executive orders targeting federal agencies, and ongoing geopolitical crises. Each of these events generate a wave of media coverage and often a visible reaction in financial markets. \n But the relationship between political news and asset prices is rarely straightforward and in our minds just a thought thats hasn't been investigated. Does more coverage move markets, or does it just create noise? Does negative news reliably send prices down? Do different asset classes react in the same way or are there different patterns to be seen? \n We chose this topic because is sits at the intersection of three trends that define the current moment: an unusually media intensive presidency, an era of very high participation in financial markets and the growing role of alternative assets like Bitcoin.",
-            className="section-text"
-        ),
-    ], className="section"),
-
-    #RQs
-    html.Section([
-        html.H2("Goals & Research Questions"),
-        html.P("This project aims to answer the following research questions:"),
-        html.Ul([
-            html.Li("RQ1: To what extent does the daily frequency of Trump-related news coverage in the guardian, categorized by topic (trade policy, geopolitics, domestic politics), correlate with cumulative 3-day price return of MSCI World, Gold, and Bitcoin following a coverage spike?"),
-            html.Li("RQ2: How do MSCI World, Gold, and Bitcoin differ in the direction and magnitude of their cumulative 3-day price returns following identical Trump-related news events in the Guardian across all three news categories?"),
-            html.Li("RQ3: How does the average daily sentiment score of Trump-related Guardian articles within each news category relate to the direction and magnitude of the cumulative 3-day price return across all three asset classes?"),
-            html.Li("RQ4: To what degree does the co-occurrence of spikes across multiple news categories in the Guardian on the same day amplify the cumulative 3-day price return compared to days with an isolated single-category spike, and which asset class shows the greatest sensitivity to this multi-category overlap effect?"),
-            html.Li("RQ5: Above which daily article volume threshold per news category does a measurable cumulative 3-day price return exceeding 1% first consistently appear across MSCI World, Gold, and Bitcoin, and how does this threshold differ between the three news categories?"),
-            html.Li("RQ6: Within a 5-day window following a Trump-related Guardian coverage spike, how does the average price response lag to peak cumulative return differ across trade policy, geopolitics, and domestic politics – and which asset class (MSCI World, Gold, Bitcoin) consistently reaches its peak return fastest?"),
-            html.Li("RQ7: Which of the three news categories (trade policy, geopolitics, domestic politics) generates the highest average daily article volume in the Guardian during Trump's current legislative period, and how does the ranking by coverage volume compare to the ranking by strength of correlation with cumulative 3-day price returns across MSCI World, Gold, and Bitcoin?"),
-        ], className="rq-list"),
-    ], className="section"),
 
 
     html.Section([
