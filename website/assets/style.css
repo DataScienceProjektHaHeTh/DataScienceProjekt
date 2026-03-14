@@ -184,9 +184,13 @@ body {
 .card-clickable:hover { transform: translateY(-5px); box-shadow: 0 6px 18px rgba(0,0,0,0.12); }
 .card-clickable h3, .card-clickable p { text-decoration: none; }
 
-/* Suppress underline on the <a> tag that dcc.Link generates around cards */
-a.card-link-wrapper { text-decoration: none; display: block; }
-a.card-link-wrapper, a.card-link-wrapper * { text-decoration: none !important; }
+/* Suppress underline on all text inside any clickable card */
+.newspaper-card h3,
+.newspaper-card p,
+.newspaper-card span,
+.card-clickable h3,
+.card-clickable p,
+.card-clickable span { text-decoration: none !important; }
 
 .card-stat {
     font-size: 1.05rem;
