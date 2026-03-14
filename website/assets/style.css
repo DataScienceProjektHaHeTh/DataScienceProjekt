@@ -180,17 +180,15 @@ body {
 .card h3 { margin-bottom: 0.5rem; color: #1a1a2e; }
 .card p { color: #666; font-size: 0.95rem; line-height: 1.6; }
 
-.card-clickable { cursor: pointer; text-decoration: none; display: block; color: inherit; }
+.card-clickable { cursor: pointer; display: block; color: inherit; }
 .card-clickable:hover { transform: translateY(-5px); box-shadow: 0 6px 18px rgba(0,0,0,0.12); }
-.card-clickable h3, .card-clickable p { text-decoration: none; }
 
-/* Suppress underline on all text inside any clickable card */
-.newspaper-card h3,
-.newspaper-card p,
-.newspaper-card span,
-.card-clickable h3,
-.card-clickable p,
-.card-clickable span { text-decoration: none !important; }
+/* Suppress underline on card wrapper <a> tags */
+a.card-link-wrapper {
+    text-decoration: none !important;
+    color: inherit;
+    display: block;
+}
 
 .card-stat {
     font-size: 1.05rem;

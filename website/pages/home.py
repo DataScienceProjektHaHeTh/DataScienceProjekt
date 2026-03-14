@@ -106,7 +106,7 @@ layout = html.Div([
                 html.H2("Key Findings", className="newspaper-section-title"),
                 html.Div([
 
-                    dcc.Link(html.Div([
+                    html.A(html.Div([
                         html.H3("Trade Policy Triggers Flight to Safety"),
                         html.P(
                             "Spikes in Trade Policy coverage correlate strongly with falling equities "
@@ -116,7 +116,7 @@ layout = html.Div([
                         html.Span("→ RQ1 & RQ7", className="card-rq-link"),
                     ], className="card card-clickable newspaper-card"), href="/visualizations?rq=rq1", className="card-link-wrapper"),
 
-                    dcc.Link(html.Div([
+                    html.A(html.Div([
                         html.H3("Sentiment Does Not Predict Returns"),
                         html.P(
                             "VADER sentiment scores averaged across daily articles show near-zero "
@@ -126,7 +126,7 @@ layout = html.Div([
                         html.Span("→ RQ3", className="card-rq-link"),
                     ], className="card card-clickable newspaper-card"), href="/visualizations?rq=rq3", className="card-link-wrapper"),
 
-                    dcc.Link(html.Div([
+                    html.A(html.Div([
                         html.H3("Volume Does Not Equal Impact"),
                         html.P(
                             "Domestic Politics generates the most coverage (≈30 articles/day) yet has the "
