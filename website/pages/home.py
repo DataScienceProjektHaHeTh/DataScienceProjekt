@@ -114,7 +114,7 @@ layout = html.Div([
                             "(r = +0.40). No such signal exists for Geopolitics or Domestic Politics."
                         ),
                         html.Span("→ RQ1 & RQ7", className="card-rq-link"),
-                    ], className="card card-clickable newspaper-card"), href="/visualizations?rq=rq1"),
+                    ], className="card card-clickable newspaper-card"), href="/visualizations?rq=rq1", className="card-link-wrapper"),
 
                     dcc.Link(html.Div([
                         html.H3("Sentiment Does Not Predict Returns"),
@@ -124,7 +124,7 @@ layout = html.Div([
                             "The news tone in The Guardian carries no measurable short-term market signal."
                         ),
                         html.Span("→ RQ3", className="card-rq-link"),
-                    ], className="card card-clickable newspaper-card"), href="/visualizations?rq=rq3"),
+                    ], className="card card-clickable newspaper-card"), href="/visualizations?rq=rq3", className="card-link-wrapper"),
 
                     dcc.Link(html.Div([
                         html.H3("Volume Does Not Equal Impact"),
@@ -134,7 +134,7 @@ layout = html.Div([
                             "the strongest correlations. Content specificity beats quantity."
                         ),
                         html.Span("→ RQ7", className="card-rq-link"),
-                    ], className="card card-clickable newspaper-card"), href="/visualizations?rq=rq7"),
+                    ], className="card card-clickable newspaper-card"), href="/visualizations?rq=rq7", className="card-link-wrapper"),
 
                 ], className="findings-col"),
             ], className="home-block"),

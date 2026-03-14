@@ -524,7 +524,6 @@ def show_section(selected):
 @callback(
     Output("rq-selector", "value"),
     Input("_pages_location", "search"),
-    prevent_initial_call=True,
 )
 def set_rq_from_url(search):
     if search:
