@@ -1,5 +1,5 @@
 import dash
-from dash import html
+from dash import html, dcc
 
 dash.register_page(__name__, path="/about-project", name="Approach & Assumptions")
 
@@ -20,6 +20,20 @@ layout = html.Div([
         "Methodology, data sources, and the formal definitions shared across all seven research questions.",
         className="page-subtitle"
     ),
+
+    html.Div([
+        "This page covers the core analytical vocabulary used throughout the project. "
+        "Additional terms — such as standard error (SE) and abnormal returns — are explained in context "
+        "within the takeaway boxes on the ",
+        dcc.Link("Analysis & Results page", href="/visualizations",
+                 style={"color": "#4a9eda", "fontWeight": "600"}),
+        ".",
+    ], style={
+        "backgroundColor": "#f0f8ff", "border": "1px solid #c8dff5",
+        "borderLeft": "3px solid #4a9eda", "borderRadius": "6px",
+        "padding": "10px 16px", "fontSize": "13.5px", "color": "#333",
+        "marginBottom": "1.5rem",
+    }),
 
     html.Section([
         html.H2("Core Definitions"),

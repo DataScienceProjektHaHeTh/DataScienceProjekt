@@ -37,6 +37,9 @@ app.index_string = '''<!DOCTYPE html>
 
 #define the app layout, like the top navbar)
 app.layout = html.Div([
+    # Brand title — top-left, always links to home
+    dcc.Link("Trump & Markets", href="/", className="site-title-link"),
+
     # Navigation Bar
     html.Nav([
         dcc.Link("Home",            href="/",                className="nav-link"),
