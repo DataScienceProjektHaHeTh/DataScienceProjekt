@@ -210,17 +210,23 @@ def fig_rq1_scatter(
 
 # ── RQ7: Volume and ranking overview ──────────────────────────────────────────
 
-def fig_rq7_overview(master: pd.DataFrame, method: str = "spearman") -> go.Figure:
+def fig_rq7_overview(
+    master: pd.DataFrame,
+    raw_master: pd.DataFrame = None,
+    method: str = "spearman",
+) -> go.Figure:
     """
     Two-panel figure:
       Left panel  — donut chart showing each category's share of total article volume
       Right panel — scatter plot: avg volume (X) vs mean absolute correlation (Y),
                     one labelled point per category
 
-    The donut answers "which category dominates coverage?"
-    The scatter directly asks "does more coverage mean stronger market impact?"
+    raw_master: if provided, volume (pie chart x-axis) is taken from raw_master so
+                the pie always shows actual articles/day even in z-score mode.
+                Correlations are always computed from master (normalised if applicable).
     """
-    volumes = {CAT_LABELS[c]: master[f"{c}_count"].mean() for c in CATEGORIES}
+    vol_source = raw_master if raw_master is not None else master
+    volumes = {CAT_LABELS[c]: vol_source[f"{c}_count"].mean() for c in CATEGORIES}
 
     correlations, _, _ = compute_correlations(master, method=method)
     mean_abs_r = {CAT_LABELS[c]: correlations.loc[c].abs().mean() for c in CATEGORIES}

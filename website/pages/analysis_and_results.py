@@ -126,10 +126,10 @@ layout = html.Div([
     ),
 
     html.Div([
-        "Core analytical terms — spike day, x-day return, VADER score, Spearman correlation — are defined on the ",
+        "Core analytical terms are defined on the ",
         dcc.Link("Approach & Assumptions page", href="/about-project",
                  style={"color": "#4a9eda", "fontWeight": "600"}),
-        ". Additional vocabulary (SE, abnormal returns, lag) is explained in the takeaway boxes below.",
+        ". Additional vocabulary is explained in the takeaway boxes below.",
     ], style={
         "backgroundColor": "#f0f8ff", "border": "1px solid #c8dff5",
         "borderLeft": "3px solid #4a9eda", "borderRadius": "6px",
@@ -593,16 +593,46 @@ layout = html.Div([
         html.P("Compares each category's share of total article volume (left) against its market correlation strength (right). A mismatch means niche but politically sensitive topics drive stronger market reactions than high-volume general coverage."),
 
         html.Div([
+            html.Div([
+                html.Div([
+                    html.Label("Return window (days)"),
+                    dcc.Dropdown(
+                        id="rq7-window",
+                        options=[{"label": f"{d} days", "value": d} for d in [3, 5, 7, 10, 14]],
+                        value=7,
+                        clearable=False,
+                        className="dropdown",
+                    ),
+                ], style={"width": "180px"}),
+                html.Div([
+                    html.Label("Spike threshold (× std)"),
+                    dcc.Slider(
+                        id="rq7-threshold",
+                        min=0.5, max=3.0, step=0.25, value=1.0,
+                        marks={v: str(v) for v in [0.5, 1.0, 1.5, 2.0, 2.5, 3.0]},
+                    ),
+                ], style={"width": "320px"}),
+                html.Div([
+                    html.Label("Count normalisation"),
+                    dcc.RadioItems(
+                        id="rq7-normalize",
+                        options=[{"label": "Raw count", "value": "raw"}, {"label": "30-day normalised", "value": "zscore"}],
+                        value="zscore",
+                        inline=True,
+                        style={"marginTop": "6px"},
+                    ),
+                ], style={"width": "260px"}),
+            ], style={"display": "flex", "gap": "30px", "alignItems": "flex-end", "marginBottom": "16px"}),
+
             html.H3("Volume vs Correlation Ranking"),
-            html.P("Uses the same return window and normalisation selected in RQ1.", style={"color": "#888", "fontSize": "13px"}),
             dcc.Graph(id="rq7-overview"),
             html.P(
-                "The pie chart always shows raw article volumes (average articles per day), independent of the normalisation mode selected above. "
+                "The pie chart always shows raw article volumes (average articles per day) regardless of normalisation mode. "
                 "Domestic Politics dominates coverage (≈ 30 articles/day), followed by Geopolitics (≈ 26) and Trade Policy (≈ 18). "
-                "The correlation ranking in the scatter is almost exactly reversed: Trade Policy has by far the strongest market signal (mean |r| ≈ 0.41 in the 7-day / 30-day normalised configuration), "
-                "while the two higher-volume categories have negligible correlations (|r| < 0.09). "
-                "This inversion shows that coverage volume alone does not predict market impact — "
-                "trade policy articles carry direct economic consequences (tariff announcements, WTO rulings) that markets respond to, whereas general political commentary does not.",
+                "The correlation scatter uses the selected return window and normalisation — switching to 30-day normalised and a 7-day window maximises the contrast between Trade Policy and the other two. "
+                "Trade Policy has by far the strongest market signal (mean |r| ≈ 0.41 in that configuration), while Geopolitics and Domestic Politics have negligible correlations (|r| < 0.09). "
+                "This inversion holds across all parameter combinations: trade policy articles carry direct economic consequences that markets respond to, whereas general political commentary does not. "
+                "Tightening the spike threshold (e.g. 2×) reduces the number of qualifying events and may narrow confidence, but the ranking rarely changes.",
                 className="takeaway-box",
             ),
         ], className="viz-box"),
@@ -663,21 +693,30 @@ def _build_master(n_days, threshold, normalize):
 @callback(
     Output("rq1-heatmap", "figure"),
     Output("rq1-scatter",  "figure"),
-    Output("rq7-overview", "figure"),
     Input("rq1-window",    "value"),
     Input("rq1-threshold", "value"),
     Input("rq1-normalize", "value"),
 )
-def update_rq1_rq7(n_days, threshold, normalize):
+def update_rq1(n_days, threshold, normalize):
     label  = f"{n_days}-day return | {'30-day normalised' if normalize == 'zscore' else 'raw count'} | threshold={threshold}"
     master = _build_master(n_days, threshold, normalize)
-    # RQ7 volume panel always needs raw article counts — not z-scores — for the pie chart
-    master_raw = _build_master(n_days, threshold, "raw") if normalize == "zscore" else master
     return (
-        fig_rq1_heatmap(master,     config_label=label),
-        fig_rq1_scatter(master,     config_label=label),
-        fig_rq7_overview(master_raw),
+        fig_rq1_heatmap(master, config_label=label),
+        fig_rq1_scatter(master, config_label=label),
     )
+
+
+@callback(
+    Output("rq7-overview", "figure"),
+    Input("rq7-window",    "value"),
+    Input("rq7-threshold", "value"),
+    Input("rq7-normalize", "value"),
+)
+def update_rq7(n_days, threshold, normalize):
+    master = _build_master(n_days, threshold, normalize)
+    # Volume (pie) always shows raw articles/day; correlations use the selected normalisation
+    raw_master = _build_master(n_days, threshold, "raw") if normalize == "zscore" else master
+    return fig_rq7_overview(master, raw_master=raw_master)
 
 
 # ── RQ3 callbacks ─────────────────────────────────────────────────────────────
