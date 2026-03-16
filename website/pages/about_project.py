@@ -31,6 +31,17 @@ layout = html.Div([
         ),
         html.Div([
             definition_box(
+                term="Spearman Rank Correlation",
+                formula="\\( r_s = 1 - \\frac{6 \\sum d_i^2}{n(n^2-1)} \\)",
+                description=(
+                    "A non-parametric measure of the monotonic relationship between two variables, ranging from −1 (perfect inverse) to +1 (perfect positive). "
+                    "Unlike Pearson correlation, Spearman converts both variables to ranks before computing the correlation, making it robust to outliers and non-normal distributions. "
+                    "In this project, r_s measures whether high-coverage spike days (ranked by article count) tend to coincide with high or low asset returns (ranked by return magnitude). "
+                    "d_i is the rank difference for observation i and n is the number of observations. "
+                    "Significance is assessed via a t-test: * p < 0.05, ** p < 0.01, *** p < 0.001."
+                ),
+            ),
+            definition_box(
                 term="Spike Day",
                 formula="\\( \\text{count}(t) \\;>\\; \\mu_{30}(t) + k \\cdot \\sigma_{30}(t) \\)",
                 description=(
