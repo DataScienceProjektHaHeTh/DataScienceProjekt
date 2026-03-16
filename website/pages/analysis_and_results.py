@@ -125,6 +125,18 @@ layout = html.Div([
         className="page-subtitle"
     ),
 
+    html.Div([
+        "Core analytical terms — spike day, x-day return, VADER score, Spearman correlation — are defined on the ",
+        dcc.Link("Approach & Assumptions page", href="/about-project",
+                 style={"color": "#4a9eda", "fontWeight": "600"}),
+        ". Additional vocabulary (SE, abnormal returns, lag) is explained in the takeaway boxes below.",
+    ], style={
+        "backgroundColor": "#f0f8ff", "border": "1px solid #c8dff5",
+        "borderLeft": "3px solid #4a9eda", "borderRadius": "6px",
+        "padding": "10px 16px", "fontSize": "13px", "color": "#555",
+        "marginBottom": "1.5rem",
+    }),
+
     # ── RQ selector buttons ───────────────────────────────────────────────────
     html.Div([
         *[html.Button(
