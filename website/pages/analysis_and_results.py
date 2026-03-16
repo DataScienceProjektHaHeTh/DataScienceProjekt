@@ -544,7 +544,7 @@ def show_section(selected):
 )
 def set_rq(search, *_btn_clicks):
     triggered = ctx.triggered_id
-    if triggered == "_pages_location":
+    if triggered is None or triggered == "_pages_location":
         if search:
             params = urllib.parse.parse_qs(search.lstrip("?"))
             rq = params.get("rq", [None])[0]
