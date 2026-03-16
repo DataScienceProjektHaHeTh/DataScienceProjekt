@@ -88,7 +88,7 @@ layout = html.Div([
                 formula="\\( S_{\\text{compound}}(t) = \\frac{1}{N_t} \\sum_{i=1}^{N_t} \\text{compound}(a_{i,t}) \\)",
                 description=(
                     "The VADER (Valence Aware Dictionary and sEntiment Reasoner) compound score "
-                    "is a normalised sum of lexicon-based token valences, squashed to the range [−1, +1] "
+                    "is a normalized sum of lexicon-based token valences, squashed to the range [−1, +1] "
                     "via a non-linear scaling rule. A score above +0.05 is classified as positive, "
                     "below −0.05 as negative, and in between as neutral. "
                     "The daily category score S_compound(t) is computed by averaging the compound "

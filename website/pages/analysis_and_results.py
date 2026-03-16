@@ -183,7 +183,7 @@ layout = html.Div([
                     html.Label("Count normalisation"),
                     dcc.RadioItems(
                         id="rq1-normalize",
-                        options=[{"label": "Raw count", "value": "raw"}, {"label": "30-day normalised", "value": "zscore"}],
+                        options=[{"label": "Raw count", "value": "raw"}, {"label": "30-day normalized", "value": "zscore"}],
                         value="zscore",
                         inline=True,
                         style={"marginTop": "6px"},
@@ -207,8 +207,8 @@ layout = html.Div([
             html.P("Significance legend: * p < 0.05  ·  p < 0.10  (no marker = not significant, Spearman r)",
                    style={"fontSize": "11px", "color": "#888", "marginTop": "4px", "fontStyle": "italic"}),
             html.P(
-                "Each cell plots article count (or 30-day normalised z-score) on a spike day against the x-day forward return, with a linear trend line. "
-                "In the 7-day / 30-day normalised configuration, Trade Policy spike days show a clear negative trend for MSCI World and Bitcoin and a positive one for Gold — "
+                "Each cell plots article count (or 30-day normalized z-score) on a spike day against the x-day forward return, with a linear trend line. "
+                "In the 7-day / 30-day normalized configuration, Trade Policy spike days show a clear negative trend for MSCI World and Bitcoin and a positive one for Gold — "
                 "the r values annotated in each subplot quantify this; asterisks indicate statistical significance. "
                 "Geopolitics and Domestic Politics produce near-flat or noisy trend lines with no consistent direction, "
                 "even at stricter spike thresholds (2× std) that isolate only the most extreme news days.",
@@ -287,7 +287,7 @@ layout = html.Div([
             #graph to show price path for each asset class (gold, bitcoin, msci world) around the selected event, with x-axis as days relative to event and y-axis as normalized price (day -1 = 100%), and a vertical line at day 0 to indicate the event
             dcc.Graph(id="rq2-graph-chart2"),
             html.P(
-                "Each asset is normalised to 100 on the day before the event, so relative price movements are directly comparable across asset classes. "
+                "Each asset is normalized to 100 on the day before the event, so relative price movements are directly comparable across asset classes. "
                 "Try selecting different events — markets often begin adjusting 1–2 days before the official spike date, suggesting informed participants react to early signals. "
                 "Gold most often continues to rise after the event while MSCI World and Bitcoin frequently dip. "
                 "Widening the 'Days before' window reveals whether a spike was preceded by a price run-up; a short 'Days after' window focuses on the immediate shock reaction. "
@@ -616,7 +616,7 @@ layout = html.Div([
                     html.Label("Count normalisation"),
                     dcc.RadioItems(
                         id="rq7-normalize",
-                        options=[{"label": "Raw count", "value": "raw"}, {"label": "30-day normalised", "value": "zscore"}],
+                        options=[{"label": "Raw count", "value": "raw"}, {"label": "30-day normalized", "value": "zscore"}],
                         value="zscore",
                         inline=True,
                         style={"marginTop": "6px"},
@@ -629,7 +629,7 @@ layout = html.Div([
             html.P(
                 "The pie chart always shows raw article volumes (average articles per day) regardless of normalisation mode. "
                 "Domestic Politics dominates coverage (≈ 30 articles/day), followed by Geopolitics (≈ 26) and Trade Policy (≈ 18). "
-                "The correlation scatter uses the selected return window and normalisation — switching to 30-day normalised and a 7-day window maximises the contrast between Trade Policy and the other two. "
+                "The correlation scatter uses the selected return window and normalisation — switching to 30-day normalized and a 7-day window maximises the contrast between Trade Policy and the other two. "
                 "Trade Policy has by far the strongest market signal (mean |r| ≈ 0.41 in that configuration), while Geopolitics and Domestic Politics have negligible correlations (|r| < 0.09). "
                 "This inversion holds across all parameter combinations: trade policy articles carry direct economic consequences that markets respond to, whereas general political commentary does not. "
                 "Tightening the spike threshold (e.g. 2×) reduces the number of qualifying events and may narrow confidence, but the ranking rarely changes.",
@@ -698,7 +698,7 @@ def _build_master(n_days, threshold, normalize):
     Input("rq1-normalize", "value"),
 )
 def update_rq1(n_days, threshold, normalize):
-    label  = f"{n_days}-day return | {'30-day normalised' if normalize == 'zscore' else 'raw count'} | threshold={threshold}"
+    label  = f"{n_days}-day return | {'30-day normalized' if normalize == 'zscore' else 'raw count'} | threshold={threshold}"
     master = _build_master(n_days, threshold, normalize)
     return (
         fig_rq1_heatmap(master, config_label=label),

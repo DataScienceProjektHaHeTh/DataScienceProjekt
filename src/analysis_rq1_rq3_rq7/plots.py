@@ -223,7 +223,7 @@ def fig_rq7_overview(
 
     raw_master: if provided, volume (pie chart x-axis) is taken from raw_master so
                 the pie always shows actual articles/day even in z-score mode.
-                Correlations are always computed from master (normalised if applicable).
+                Correlations are always computed from master (normalized if applicable).
     """
     vol_source = raw_master if raw_master is not None else master
     volumes = {CAT_LABELS[c]: vol_source[f"{c}_count"].mean() for c in CATEGORIES}

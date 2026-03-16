@@ -341,7 +341,7 @@ def build_chart2(event, days_before, days_after):
  
     fig.update_layout(
         title=f"Price Action Around Spike Event: {event}<br>"
-              f"<sup>Normalised to 100 at day −1 &nbsp;·&nbsp; "
+              f"<sup>Normalized to 100 at day −1 &nbsp;·&nbsp; "
               f"Green candle = price ↑ from prev day &nbsp;·&nbsp; Red = price ↓</sup>",
         xaxis_title="Days relative to news spike",
         plot_bgcolor="rgba(0,0,0,0)",
