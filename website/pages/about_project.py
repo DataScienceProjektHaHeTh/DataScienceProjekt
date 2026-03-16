@@ -144,7 +144,7 @@ layout = html.Div([
             html.Div("2", className="step-number"),
             html.Div([
                 html.H3("Data Cleaning"),
-                html.P("Guardian publication timestamps were truncated to calendar dates and articles were counted per day per category. Missing days (market holidays with no articles) were filled with zero. Market prices were forward-filled only where strictly necessary to maintain a consistent daily index. For sentiment analysis, article body text was trimmed to the first 512 characters before scoring to avoid memory issues with longer texts. A rolling 30-day z-score normalisation was applied to article counts to correct for the steady upward trend in coverage volume over the study period — without this step, a day with 40 articles in January appears comparable to a day with 40 articles in October, even though the latter was unremarkable given the higher baseline.")
+                html.P("Guardian publication timestamps were truncated to calendar dates and articles were counted per day per category. Missing days (market holidays with no articles) were filled with zero. Market prices were forward-filled only where strictly necessary to maintain a consistent daily index. For sentiment analysis, article body text was trimmed to the first 512 characters before scoring to avoid memory issues with longer texts. A rolling 30-day z-score normalization was applied to article counts to correct for the steady upward trend in coverage volume over the study period — without this step, a day with 40 articles in January appears comparable to a day with 40 articles in October, even though the latter was unremarkable given the higher baseline.")
             ])
         ], className="step"),
         html.Div([
@@ -158,7 +158,7 @@ layout = html.Div([
             html.Div("4", className="step-number"),
             html.Div([
                 html.H3("Visualization"),
-                html.P("All visualizations are built with Plotly and served through a Dash multi-page web application. Every chart is interactive and tied to parameter controls (return window, spike threshold, sentiment cutoffs, lag window) so readers can explore how methodological assumptions affect the results. The key distinction between the 'default' configuration — which matches the literal specification of each research question — and the 'improved' configuration (7-day return window, z-score normalisation) is shown side by side throughout, making the sensitivity of our findings to analytical choices transparent and reproducible.")
+                html.P("All visualizations are built with Plotly and served through a Dash multi-page web application. Every chart is interactive and tied to parameter controls (return window, spike threshold, sentiment cutoffs, lag window) so readers can explore how methodological assumptions affect the results. The key distinction between the 'default' configuration — which matches the literal specification of each research question — and the 'improved' configuration (7-day return window, z-score normalization) is shown side by side throughout, making the sensitivity of our findings to analytical choices transparent and reproducible.")
             ])
         ], className="step"),
     ], className="section"),

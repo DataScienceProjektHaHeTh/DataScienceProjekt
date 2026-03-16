@@ -180,7 +180,7 @@ layout = html.Div([
                     ),
                 ], style={"width": "320px"}),
                 html.Div([
-                    html.Label("Count normalisation"),
+                    html.Label("Count normalization"),
                     dcc.RadioItems(
                         id="rq1-normalize",
                         options=[{"label": "Raw count", "value": "raw"}, {"label": "30-day normalized", "value": "zscore"}],
@@ -193,7 +193,7 @@ layout = html.Div([
             dcc.Graph(id="rq1-heatmap"),
             html.P(
                 "With a 3-day window and raw counts, no statistically significant correlation emerges across any category–asset pair. "
-                "Switching to a 7-day window with 30-day normalisation reveals a strong, significant flight-to-safety pattern — but exclusively in Trade Policy: "
+                "Switching to a 7-day window with 30-day normalization reveals a strong, significant flight-to-safety pattern — but exclusively in Trade Policy: "
                 "MSCI World (r = −0.45, p < 0.001) and Bitcoin (r = −0.38, p = 0.002) fall while Gold rises (r = +0.40, p = 0.001) on spike days. "
                 "Geopolitics and Domestic Politics remain statistically insignificant under all parameter configurations.",
                 className="takeaway-box",
@@ -613,7 +613,7 @@ layout = html.Div([
                     ),
                 ], style={"width": "320px"}),
                 html.Div([
-                    html.Label("Count normalisation"),
+                    html.Label("Count normalization"),
                     dcc.RadioItems(
                         id="rq7-normalize",
                         options=[{"label": "Raw count", "value": "raw"}, {"label": "30-day normalized", "value": "zscore"}],
@@ -627,9 +627,9 @@ layout = html.Div([
             html.H3("Volume vs Correlation Ranking"),
             dcc.Graph(id="rq7-overview"),
             html.P(
-                "The pie chart always shows raw article volumes (average articles per day) regardless of normalisation mode. "
+                "The pie chart always shows raw article volumes (average articles per day) regardless of normalization mode. "
                 "Domestic Politics dominates coverage (≈ 30 articles/day), followed by Geopolitics (≈ 26) and Trade Policy (≈ 18). "
-                "The correlation scatter uses the selected return window and normalisation — switching to 30-day normalized and a 7-day window maximises the contrast between Trade Policy and the other two. "
+                "The correlation scatter uses the selected return window and normalization — switching to 30-day normalized and a 7-day window maximises the contrast between Trade Policy and the other two. "
                 "Trade Policy has by far the strongest market signal (mean |r| ≈ 0.41 in that configuration), while Geopolitics and Domestic Politics have negligible correlations (|r| < 0.09). "
                 "This inversion holds across all parameter combinations: trade policy articles carry direct economic consequences that markets respond to, whereas general political commentary does not. "
                 "Tightening the spike threshold (e.g. 2×) reduces the number of qualifying events and may narrow confidence, but the ranking rarely changes.",
@@ -714,7 +714,7 @@ def update_rq1(n_days, threshold, normalize):
 )
 def update_rq7(n_days, threshold, normalize):
     master = _build_master(n_days, threshold, normalize)
-    # Volume (pie) always shows raw articles/day; correlations use the selected normalisation
+    # Volume (pie) always shows raw articles/day; correlations use the selected normalization
     raw_master = _build_master(n_days, threshold, "raw") if normalize == "zscore" else master
     return fig_rq7_overview(master, raw_master=raw_master)
 

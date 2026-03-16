@@ -27,12 +27,12 @@ layout = html.Div([
         ),
         team_card(
             name="Hempel, Fridjoff",
-            bio="Fridjoff built the core data infrastructure — the shared data loader, the processed CSV pipeline, and the Dash web application — and led the analysis for RQ5 and RQ6. He is studying computer science at CAU Kiel with a focus on data engineering and software development. His rolling z-score normalisation idea proved to be the single most impactful methodological improvement, unlocking the statistically significant flight-to-safety pattern in the data.",
+            bio="Fridjoff built the core data infrastructure — the shared data loader, the processed CSV pipeline, and the Dash web application — and led the analysis for RQ5 and RQ6. He is studying computer science at CAU Kiel with a focus on data engineering and software development. His rolling z-score normalization idea proved to be the single most impactful methodological improvement, unlocking the statistically significant flight-to-safety pattern in the data.",
             emoji="👤"
         ),
         team_card(
             name="Thielert, Nico",
-            bio="Nico was responsible for the correlation analysis underlying RQ1 and RQ7 as well as the VADER sentiment pipeline for RQ3. He is studying computer science at CAU Kiel and is interested in the intersection of political events and quantitative finance. His systematic parameter sweep — testing five return windows, four lag offsets, and two normalisation methods — revealed that the weak default correlations were an artefact of the 3-day window assumption rather than a true absence of market signal.",
+            bio="Nico was responsible for the correlation analysis underlying RQ1 and RQ7 as well as the VADER sentiment pipeline for RQ3. He is studying computer science at CAU Kiel and is interested in the intersection of political events and quantitative finance. His systematic parameter sweep — testing five return windows, four lag offsets, and two normalization methods — revealed that the weak default correlations were an artefact of the 3-day window assumption rather than a true absence of market signal.",
             emoji="👤"
         ),
     ], className="team-grid"),
