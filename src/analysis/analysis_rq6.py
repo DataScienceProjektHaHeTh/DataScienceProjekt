@@ -256,43 +256,110 @@ def fig_rq6_lag_profiles(
     return fig
 
 
-def fig_rq6_peak_heatmap(
+def fig_rq6_bubble(
     df:               pd.DataFrame,
     spike_multiplier: float = 1.0,
     max_lag:          int   = 5,
 ) -> go.Figure:
     """
-    Heatmap showing which lag day (1–max_lag) the cumulative return peaks for
-    each (category × asset) combination.  Darker = later peak response.
+    Bubble chart: for each (category × asset) pair, a bubble is placed at the
+    peak lag day on the X axis, with the news category on the Y axis.
 
-    This gives a bird's-eye view: is Bitcoin always fastest? Does trade policy
-    hit the market sooner than geopolitics?
+    Bubble size   = avg cumulative return magnitude at the peak lag day.
+    Bubble colour = asset class.
+
+    Bubbles within the same category row are offset slightly vertically so
+    they do not overlap.  This communicates two things simultaneously:
+      - WHERE the peak occurs (X position = lag day 1–5, i.e. how fast)
+      - HOW LARGE the peak return is (bubble size, i.e. how strong)
+    A plain heatmap can only show one of these at a time.
     """
     results    = run_rq6(df=df, spike_multiplier=spike_multiplier, max_lag=max_lag)
-    categories = list(results.keys())
+    categories = ["trade_policy", "geopolitics", "domestic_politics"]
     assets     = ["bitcoin", "gold", "msci_world"]
 
-    z      = [[results[c]["peak_lags"][a] for a in assets] for c in categories]
-    x_labs = [a.replace("_", " ").title() for a in assets]
-    y_labs = [CATEGORY_LABELS.get(c, c) for c in categories]
+    # Vertical positions for each category row (integer) plus small per-asset offsets
+    # so three bubbles in the same row don't sit on top of each other
+    cat_y     = {cat: i for i, cat in enumerate(categories)}
+    y_offsets = {"bitcoin": -0.22, "gold": 0.0, "msci_world": 0.22}
 
-    fig = go.Figure(go.Heatmap(
-        z=z,
-        x=x_labs,
-        y=y_labs,
-        text=[[f"Day +{v}" for v in row] for row in z],
-        texttemplate="%{text}",
-        colorscale="Blues",
-        zmin=1, zmax=max_lag,
-        colorbar=dict(title="Peak lag (day)", tickvals=list(range(1, max_lag + 1))),
-        hovertemplate="Category: %{y}<br>Asset: %{x}<br>Peak at day +%{z}<extra></extra>",
-    ))
+    # Bubble sizes are scaled from return magnitude; a minimum ensures tiny
+    # returns still produce a visible marker
+    SIZE_SCALE = 28
+    MIN_SIZE   = 12
+
+    fig = go.Figure()
+
+    for asset in assets:
+        label = asset.replace("_", " ").title()
+        color = ASSET_COLORS[asset]
+
+        x_vals, y_vals, sizes, hover_texts = [], [], [], []
+
+        for cat in categories:
+            data        = results[cat]
+            peak_lag    = data["peak_lags"][asset]
+            peak_return = float(data["lag_profiles"][asset].loc[peak_lag])
+
+            x_vals.append(peak_lag)
+            y_vals.append(cat_y[cat] + y_offsets[asset])
+            sizes.append(max(abs(peak_return) * SIZE_SCALE, MIN_SIZE))
+            hover_texts.append(
+                f"<b>{label}</b> after {CATEGORY_LABELS[cat]} spike<br>"
+                f"Peak lag: day +{peak_lag}<br>"
+                f"Avg cumulative return: {peak_return:+.2f}%"
+            )
+
+        fig.add_trace(go.Scatter(
+            x=x_vals,
+            y=y_vals,
+            mode="markers+text",
+            name=label,
+            marker=dict(
+                size=sizes,
+                color=color,
+                opacity=0.80,
+                line=dict(color="white", width=1.5),
+                sizemode="diameter",
+            ),
+            text=[f"+{x}" for x in x_vals],   # lag day label inside bubble
+            textposition="middle center",
+            textfont=dict(size=10, color="white"),
+            hovertext=hover_texts,
+            hovertemplate="%{hovertext}<extra></extra>",
+        ))
+
     fig.update_layout(
-        title="Peak response lag by category and asset (lower = faster reaction)",
+        title=dict(
+            text=(
+                "RQ6 — Peak response lag and magnitude by category and asset<br>"
+                "<sup>X-position = day of peak cumulative return · "
+                "bubble size = return magnitude at peak · colour = asset class</sup>"
+            ),
+            x=0.5,
+        ),
+        xaxis=dict(
+            title="Days after spike",
+            tickmode="array",
+            tickvals=list(range(1, max_lag + 1)),
+            ticktext=[f"Day +{i}" for i in range(1, max_lag + 1)],
+            showgrid=True,
+            gridcolor="#eee",
+            range=[0.3, max_lag + 0.7],
+        ),
+        yaxis=dict(
+            tickmode="array",
+            tickvals=list(range(len(categories))),
+            ticktext=[CATEGORY_LABELS[c] for c in categories],
+            showgrid=True,
+            gridcolor="#eee",
+            range=[-0.6, len(categories) - 0.4],
+        ),
+        legend=dict(orientation="h", yanchor="top", y=-0.18, x=0.5, xanchor="center"),
         plot_bgcolor="rgba(0,0,0,0)",
         paper_bgcolor="rgba(0,0,0,0)",
-        height=320,
-        margin=dict(t=60, b=40, l=160, r=80),
+        height=380,
+        margin=dict(t=110, b=80, l=160, r=30),
     )
     return fig
 

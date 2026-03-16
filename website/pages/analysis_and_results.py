@@ -44,8 +44,8 @@ from src.analysis_rq1_rq3_rq7.plots import (
 
 try:
     from src.analysis.data_loader import load_master_from_processed
-    from src.analysis.analysis_rq5 import fig_rq5_bins, fig_rq5_threshold_summary
-    from src.analysis.analysis_rq6 import fig_rq6_lag_profiles, fig_rq6_peak_heatmap
+    from src.analysis.analysis_rq5 import fig_rq5_bins, fig_rq5_radar
+    from src.analysis.analysis_rq6 import fig_rq6_lag_profiles, fig_rq6_bubble
     _df_rq5 = load_master_from_processed("master_rq5.csv")
     _df_rq6 = load_master_from_processed("master_rq6.csv")
     _rq56_available = True
@@ -54,9 +54,9 @@ except Exception as e:
     _rq56_available = False
     _df_rq5 = _df_rq6 = None
     def fig_rq5_bins(*a, **kw):              return go.Figure()
-    def fig_rq5_threshold_summary(*a, **kw): return go.Figure()
-    def fig_rq6_lag_profiles(*a, **kw):      return go.Figure()
-    def fig_rq6_peak_heatmap(*a, **kw):      return go.Figure()
+    def fig_rq5_radar(*a, **kw):         return go.Figure()
+    def fig_rq6_lag_profiles(*a, **kw): return go.Figure()
+    def fig_rq6_bubble(*a, **kw):       return go.Figure()
 
 # Load base data once at startup — callbacks reuse this without re-reading files
 _counts, _market, _returns_default, _sentiment = load_base_data()
@@ -667,8 +667,8 @@ def update_rq5(category, return_window, movement_threshold, n_bins):
     return (
         fig_rq5_bins(_df_rq5, category=category, return_window=return_window,
                      movement_threshold=movement_threshold, n_bins=n_bins),
-        fig_rq5_threshold_summary(_df_rq5, return_window=return_window,
-                                  movement_threshold=movement_threshold, n_bins=n_bins),
+        fig_rq5_radar(_df_rq5, return_window=return_window,
+                      movement_threshold=movement_threshold, n_bins=n_bins),
     )
 
 
@@ -684,5 +684,5 @@ def update_rq6(spike_multiplier, max_lag):
         return go.Figure(), go.Figure()
     return (
         fig_rq6_lag_profiles(_df_rq6, spike_multiplier=spike_multiplier, max_lag=max_lag),
-        fig_rq6_peak_heatmap(_df_rq6, spike_multiplier=spike_multiplier, max_lag=max_lag),
+        fig_rq6_bubble(_df_rq6, spike_multiplier=spike_multiplier, max_lag=max_lag),
     )

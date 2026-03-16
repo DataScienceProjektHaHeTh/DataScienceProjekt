@@ -10,15 +10,15 @@ DATA_RAW      = ROOT / "data" / "raw"
 DATA_PROCESSED = ROOT / "data" / "processed"
 
 GUARDIAN_FILES = {
-    "trade_policy":      DATA_RAW / "guardian_trade_policy.json",
-    "geopolitics":       DATA_RAW / "guardian_geopolitics.json",
-    "domestic_politics": DATA_RAW / "guardian_domestic_politics.json",
+    "trade_policy":      DATA_RAW / "news" / "guardian_trade_policy.json",
+    "geopolitics":       DATA_RAW / "news" / "guardian_geopolitics.json",
+    "domestic_politics": DATA_RAW / "news" / "guardian_domestic_politics.json",
 }
 
 MARKET_FILES = {
-    "bitcoin":    DATA_RAW / "bitcoin_raw.csv",
-    "gold":       DATA_RAW / "gold_raw.csv",
-    "msci_world": DATA_RAW / "msci_world_raw.csv",
+    "bitcoin":    DATA_RAW / "market" / "bitcoin.csv",
+    "gold":       DATA_RAW / "market" / "gold.csv",
+    "msci_world": DATA_RAW / "market" / "msci_world.csv",
 }
 
 # ── guardian loader ───────────────────────────────────────────────────────────
@@ -82,7 +82,18 @@ def load_market_prices() -> pd.DataFrame:
         # extract only the Close column
         close = df_raw["Close"].squeeze()  # squeeze drops the ticker sub-level
         close.name = asset
-        close.index = pd.to_datetime(close.index)
+
+        # New yfinance format uses tz-aware intraday timestamps
+        # (e.g. "2025-01-01 00:00:00+00:00") and includes a stray "Datetime"
+        # label row as the first data row.
+        # utc=True normalises mixed offsets; errors='coerce' turns the label → NaT.
+        close.index = pd.to_datetime(close.index, utc=True, errors="coerce")
+        close = close[close.index.notna()]          # drop the "Datetime" label row
+        close.index = close.index.tz_convert(None)  # strip tz → naive UTC timestamps
+
+        # Data is intraday → resample to daily closing price (last tick of each day)
+        close = close.resample("D").last().dropna()
+
         series_list.append(close)
 
     df = pd.concat(series_list, axis=1)

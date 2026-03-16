@@ -229,23 +229,23 @@ def fig_rq5_bins(
     return fig
 
 
-def fig_rq5_threshold_summary(
+def fig_rq5_radar(
     df:                 pd.DataFrame,
     return_window:      int   = 3,
     movement_threshold: float = 1.0,
     n_bins:             int   = 5,
 ) -> go.Figure:
     """
-    Heatmap showing, per news category × asset, the maximum percentage of days
-    that exceed the movement threshold (across all article-count bins).
+    Radar (spider) chart comparing the market reactivity profile of each
+    news category across all three assets.
 
-    The colour encodes reactivity (0–100 %).  Each cell is annotated with
-    - the first-bin threshold (articles/day) where that asset crosses the 50 % mark,
-    - or "< 50 %" if it never reaches that mark, plus the observed maximum.
+    Each category = one polygon. Each axis = one asset (Bitcoin, Gold, MSCI World).
+    The value on each axis = maximum % of days (across all article-count bins)
+    where |return| > movement_threshold for that (category, asset) pair.
 
-    Rationale for the redesign: the original "all-three-assets simultaneously >50 %"
-    criterion is almost never met because MSCI World rarely moves >1 % in 3 days.
-    Showing per-asset maxima makes the chart informative in all parameter settings.
+    Intuition: a larger polygon means that news category consistently moves
+    markets across more asset classes. The shape reveals which assets are
+    more or less sensitive to each category type.
     """
     categories = ["trade_policy", "geopolitics", "domestic_politics"]
     assets     = ["bitcoin", "gold", "msci_world"]
@@ -253,58 +253,86 @@ def fig_rq5_threshold_summary(
     results = run_rq5(df=df, return_window=return_window,
                       movement_threshold=movement_threshold, n_bins=n_bins)
 
-    z_pct  = []   # colour values (max % exceeding threshold)
-    texts  = []   # cell annotations
+    asset_labels = [a.replace("_", " ").title() for a in assets]
+    # Close the polygon by repeating the first axis at the end
+    theta = asset_labels + [asset_labels[0]]
+
+    # Hex colours + pre-computed rgba fill variants (low alpha so all layers show)
+    CATEGORY_COLORS = {
+        "trade_policy":      ("#2196F3", "rgba(33,150,243,0.12)"),   # blue
+        "geopolitics":       ("#FF9800", "rgba(255,152,0,0.12)"),     # orange
+        "domestic_politics": ("#4CAF50", "rgba(76,175,80,0.12)"),     # green
+    }
+
+    fig = go.Figure()
 
     for cat in categories:
-        bs       = results[cat]["bin_summary"]
-        row_pct  = []
-        row_text = []
+        bs     = results[cat]["bin_summary"]
+        r_vals = []
+        hover  = []
 
         for asset in assets:
             pct_col = f"{asset}_return_{return_window}d_pct_days_exceeding_threshold"
-            pct_vals = bs[pct_col]
-            max_pct  = pct_vals.max()
-            row_pct.append(round(max_pct, 1))
-
-            # find the first bin where THIS asset alone exceeds 50 %
-            exceeds = pct_vals > 50
+            max_pct = bs[pct_col].max()
+            r_vals.append(round(max_pct, 1))
+            exceeds = bs[pct_col] > 50
             if exceeds.any():
                 first_bin = bs[exceeds].index[0]
-                thresh    = first_bin.left
-                row_text.append(f"≥{thresh:.0f} art/d<br>({max_pct:.0f}% max)")
+                hover.append(
+                    f"{asset_labels[assets.index(asset)]}: {max_pct:.0f}% max<br>"
+                    f"(crosses 50% at ≥{first_bin.left:.0f} art/day)"
+                )
             else:
-                row_text.append(f"< 50 %<br>({max_pct:.0f}% max)")
+                hover.append(
+                    f"{asset_labels[assets.index(asset)]}: {max_pct:.0f}% max<br>"
+                    f"(never crosses 50%)"
+                )
 
-        z_pct.append(row_pct)
-        texts.append(row_text)
+        # Close the polygon
+        r_closed     = r_vals + [r_vals[0]]
+        hover_closed = hover  + [hover[0]]
+        line_color, fill_rgba = CATEGORY_COLORS[cat]
 
-    x_labs = [a.replace("_", " ").title() for a in assets]
-    y_labs = [CATEGORY_LABELS.get(c, c) for c in categories]
+        # opacity is NOT set on the trace so the line stays fully visible.
+        # fillcolor uses an rgba string to independently control fill transparency.
+        fig.add_trace(go.Scatterpolar(
+            r=r_closed,
+            theta=theta,
+            fill="toself",
+            name=CATEGORY_LABELS.get(cat, cat),
+            line=dict(color=line_color, width=2.5),
+            fillcolor=fill_rgba,
+            customdata=hover_closed,
+            hovertemplate="%{customdata}<extra>" + CATEGORY_LABELS.get(cat, cat) + "</extra>",
+        ))
 
-    fig = go.Figure(go.Heatmap(
-        z=z_pct,
-        x=x_labs,
-        y=y_labs,
-        text=texts,
-        texttemplate="%{text}",
-        colorscale="RdYlGn",
-        zmin=0, zmax=100,
-        colorbar=dict(title="Max % of days exceeding threshold", ticksuffix="%"),
-        hovertemplate=(
-            "Category: %{y}<br>Asset: %{x}<br>"
-            "Max reactivity: %{z:.1f}%<extra></extra>"
-        ),
-    ))
     fig.update_layout(
-        title=(
-            f"Market reactivity per category × asset "
-            f"(|{return_window}d return| > {movement_threshold}%)"
+        polar=dict(
+            radialaxis=dict(
+                visible=True,
+                range=[0, 100],
+                ticksuffix="%",
+                tickfont=dict(size=10),
+                gridcolor="#ddd",
+            ),
+            angularaxis=dict(
+                tickfont=dict(size=13),
+            ),
+            bgcolor="rgba(0,0,0,0)",
         ),
+        title=dict(
+            text=(
+                f"RQ5 — Market reactivity profile by news category<br>"
+                f"<sup>Max % of days with |{return_window}d return| > {movement_threshold}% "
+                f"in any article-count bin · Larger polygon = broader market impact</sup>"
+            ),
+            x=0.5,
+        ),
+        legend=dict(orientation="h", yanchor="top", y=-0.08, x=0.5, xanchor="center"),
         plot_bgcolor="rgba(0,0,0,0)",
         paper_bgcolor="rgba(0,0,0,0)",
-        height=340,
-        margin=dict(t=60, b=40, l=160, r=120),
+        height=460,
+        margin=dict(t=110, b=80, l=80, r=80),
     )
     return fig
 
