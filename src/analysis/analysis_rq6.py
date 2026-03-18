@@ -286,10 +286,19 @@ def fig_rq6_bubble(
     categories = ["trade_policy", "geopolitics", "domestic_politics"]
     assets     = ["bitcoin", "gold", "msci_world"]
 
-    # Vertical positions for each category row (integer) plus small per-asset offsets
-    # so three bubbles in the same row don't sit on top of each other
     cat_y     = {cat: i for i, cat in enumerate(categories)}
+    # Vertical offsets used only when multiple assets share the same (category, lag) position
     y_offsets = {"bitcoin": -0.22, "gold": 0.0, "msci_world": 0.22}
+
+    # Pre-compute which (cat, lag) positions are occupied by multiple assets
+    # so we only stagger when actually needed to avoid overlap
+    pos_count: dict = {}
+    for asset in assets:
+        for cat in categories:
+            if results[cat]["n_spikes"] == 0:
+                continue
+            lag = results[cat]["peak_lags"][asset]
+            pos_count[(cat, lag)] = pos_count.get((cat, lag), 0) + 1
 
     # Bubble sizes are scaled from return magnitude; a minimum ensures tiny
     # returns still produce a visible marker
@@ -305,18 +314,26 @@ def fig_rq6_bubble(
         x_vals, y_vals, sizes, hover_texts = [], [], [], []
 
         for cat in categories:
-            data        = results[cat]
+            data = results[cat]
+            if data["n_spikes"] == 0:
+                continue
             peak_lag    = data["peak_lags"][asset]
             peak_return = float(data["lag_profiles"][asset].loc[peak_lag])
 
+            # Only stagger vertically when multiple assets land at the same position
+            y_off = y_offsets[asset] if pos_count.get((cat, peak_lag), 1) > 1 else 0.0
+
             x_vals.append(peak_lag)
-            y_vals.append(cat_y[cat] + y_offsets[asset])
+            y_vals.append(cat_y[cat] + y_off)
             sizes.append(max(abs(peak_return) * SIZE_SCALE, MIN_SIZE))
             hover_texts.append(
                 f"<b>{label}</b> after {CATEGORY_LABELS[cat]} spike<br>"
                 f"Peak lag: day +{peak_lag}<br>"
                 f"Avg cumulative return: {peak_return:+.2f}%"
             )
+
+        if not x_vals:
+            continue
 
         fig.add_trace(go.Scatter(
             x=x_vals,
@@ -365,6 +382,7 @@ def fig_rq6_bubble(
             tickfont=dict(size=16),
             showgrid=True,
             gridcolor="#eee",
+            zeroline=False,
             range=[-0.6, len(categories) - 0.4],
         ),
         legend=dict(orientation="h", yanchor="top", y=-0.28, x=0.5, xanchor="center",
