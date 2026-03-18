@@ -236,16 +236,14 @@ def fig_rq5_radar(
     n_bins:             int   = 5,
 ) -> go.Figure:
     """
-    Radar (spider) chart comparing the market reactivity profile of each
-    news category across all three assets.
+    Three side-by-side radar (spider) charts, one per news category.
 
-    Each category = one polygon. Each axis = one asset (Bitcoin, Gold, MSCI World).
-    The value on each axis = maximum % of days (across all article-count bins)
-    where |return| > movement_threshold for that (category, asset) pair.
+    Each chart has n_bins axes (article-count bins, low→high volume) and three
+    polygons (Bitcoin, Gold, MSCI World).  Value on each axis = % of days in
+    that bin where |return| > movement_threshold.
 
-    Intuition: a larger polygon means that news category consistently moves
-    markets across more asset classes. The shape reveals which assets are
-    more or less sensitive to each category type.
+    Splitting by category keeps the asset polygons well-separated because asset
+    volatilities differ substantially (Bitcoin >> Gold > MSCI World).
     """
     categories = ["trade_policy", "geopolitics", "domestic_politics"]
     assets     = ["bitcoin", "gold", "msci_world"]
@@ -253,86 +251,83 @@ def fig_rq5_radar(
     results = run_rq5(df=df, return_window=return_window,
                       movement_threshold=movement_threshold, n_bins=n_bins)
 
-    asset_labels = [a.replace("_", " ").title() for a in assets]
-    # Close the polygon by repeating the first axis at the end
-    theta = asset_labels + [asset_labels[0]]
-
-    # Hex colours + pre-computed rgba fill variants (low alpha so all layers show)
-    CATEGORY_COLORS = {
-        "trade_policy":      ("#2196F3", "rgba(33,150,243,0.12)"),   # blue
-        "geopolitics":       ("#FF9800", "rgba(255,152,0,0.12)"),     # orange
-        "domestic_politics": ("#4CAF50", "rgba(76,175,80,0.12)"),     # green
+    ASSET_LINE_FILL = {
+        "bitcoin":    ("#F7931A", "rgba(247,147,26,0.15)"),
+        "gold":       ("#D4AF37", "rgba(212,175,55,0.15)"),
+        "msci_world": ("#003087", "rgba(0,48,135,0.15)"),
     }
 
-    fig = go.Figure()
+    fig = make_subplots(
+        rows=1, cols=3,
+        specs=[[{"type": "polar"}] * 3],
+        subplot_titles=[CATEGORY_LABELS.get(c, c) for c in categories],
+        horizontal_spacing=0.06,
+    )
 
-    for cat in categories:
-        bs     = results[cat]["bin_summary"]
-        r_vals = []
-        hover  = []
+    for col_idx, cat in enumerate(categories, start=1):
+        bs             = results[cat]["bin_summary"]
+        bin_intervals  = list(bs.index)
+        bin_labels     = [f"{iv.left:.0f}–{iv.right:.0f}" for iv in bin_intervals]
+        theta          = bin_labels + [bin_labels[0]]   # close polygon
+
+        show_legend = col_idx == 1
 
         for asset in assets:
-            pct_col = f"{asset}_return_{return_window}d_pct_days_exceeding_threshold"
-            max_pct = bs[pct_col].max()
-            r_vals.append(round(max_pct, 1))
-            exceeds = bs[pct_col] > 50
-            if exceeds.any():
-                first_bin = bs[exceeds].index[0]
-                hover.append(
-                    f"{asset_labels[assets.index(asset)]}: {max_pct:.0f}% max<br>"
-                    f"(crosses 50% at ≥{first_bin.left:.0f} art/day)"
-                )
-            else:
-                hover.append(
-                    f"{asset_labels[assets.index(asset)]}: {max_pct:.0f}% max<br>"
-                    f"(never crosses 50%)"
-                )
+            pct_col   = f"{asset}_return_{return_window}d_pct_days_exceeding_threshold"
+            r_vals    = [round(v, 1) for v in bs[pct_col].tolist()]
+            r_closed  = r_vals + [r_vals[0]]
+            line_color, fill_rgba = ASSET_LINE_FILL[asset]
+            asset_label = asset.replace("_", " ").title()
 
-        # Close the polygon
-        r_closed     = r_vals + [r_vals[0]]
-        hover_closed = hover  + [hover[0]]
-        line_color, fill_rgba = CATEGORY_COLORS[cat]
+            hover = [
+                f"{lbl} art/day<br>{v:.1f}% of days > {movement_threshold}%"
+                for lbl, v in zip(bin_labels, r_vals)
+            ] + [f"{bin_labels[0]} art/day<br>{r_vals[0]:.1f}% of days > {movement_threshold}%"]
 
-        # opacity is NOT set on the trace so the line stays fully visible.
-        # fillcolor uses an rgba string to independently control fill transparency.
-        fig.add_trace(go.Scatterpolar(
-            r=r_closed,
-            theta=theta,
-            fill="toself",
-            name=CATEGORY_LABELS.get(cat, cat),
-            line=dict(color=line_color, width=2.5),
-            fillcolor=fill_rgba,
-            customdata=hover_closed,
-            hovertemplate="%{customdata}<extra>" + CATEGORY_LABELS.get(cat, cat) + "</extra>",
-        ))
+            fig.add_trace(go.Scatterpolar(
+                r=r_closed,
+                theta=theta,
+                fill="toself",
+                name=asset_label,
+                line=dict(color=line_color, width=2.5),
+                fillcolor=fill_rgba,
+                showlegend=show_legend,
+                legendgroup=asset,
+                customdata=hover,
+                hovertemplate="%{customdata}<extra>" + asset_label + "</extra>",
+            ), row=1, col=col_idx)
+
+    polar_cfg = dict(
+        radialaxis=dict(
+            visible=True,
+            range=[0, 108],
+            ticksuffix="%",
+            tickfont=dict(size=9),
+            tickvals=[25, 50, 75, 100],
+            gridcolor="#ddd",
+        ),
+        angularaxis=dict(tickfont=dict(size=10)),
+        bgcolor="rgba(0,0,0,0)",
+    )
 
     fig.update_layout(
-        polar=dict(
-            radialaxis=dict(
-                visible=True,
-                range=[0, 100],
-                ticksuffix="%",
-                tickfont=dict(size=10),
-                gridcolor="#ddd",
-            ),
-            angularaxis=dict(
-                tickfont=dict(size=13),
-            ),
-            bgcolor="rgba(0,0,0,0)",
-        ),
+        polar=polar_cfg,
+        polar2=polar_cfg,
+        polar3=polar_cfg,
         title=dict(
             text=(
-                f"RQ5 — Market reactivity profile by news category<br>"
-                f"<sup>Max % of days with |{return_window}d return| > {movement_threshold}% "
-                f"in any article-count bin · Larger polygon = broader market impact</sup>"
+                f"RQ5 — % days exceeding {movement_threshold}% return by article-count bin<br>"
+                f"<sup>Axes = article-count bins (low → high volume) · "
+                f"Larger polygon = more market-moving days at that volume level · "
+                f"{return_window}-day forward return</sup>"
             ),
             x=0.5,
         ),
-        legend=dict(orientation="h", yanchor="top", y=-0.08, x=0.5, xanchor="center"),
+        legend=dict(orientation="h", yanchor="top", y=-0.05, x=0.5, xanchor="center"),
         plot_bgcolor="rgba(0,0,0,0)",
         paper_bgcolor="rgba(0,0,0,0)",
-        height=460,
-        margin=dict(t=110, b=80, l=80, r=80),
+        height=520,
+        margin=dict(t=130, b=80, l=30, r=30),
     )
     return fig
 
