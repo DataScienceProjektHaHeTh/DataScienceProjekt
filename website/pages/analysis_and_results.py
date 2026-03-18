@@ -573,15 +573,20 @@ layout = html.Div([
         ], className="viz-box"),
 
         html.Div([
-            html.H3("Peak lag heatmap — all categories × all assets"),
+            html.H3("Peak lag & return magnitude — all categories × all assets"),
             html.P("Same spike threshold as above applies.", style={"color": "#888", "fontSize": "13px"}),
             dcc.Graph(id="rq6-heatmap"),
             html.P(
-                "The heatmap shows the modal peak lag (in days) for every category × asset combination — the day within the post-spike window when the cumulative return reached its maximum absolute value. "
-                "Trade Policy is the most consistent driver across all three assets: Bitcoin peaks earliest (day 1), Gold and MSCI World on days 2–3. "
-                "Geopolitics shows a longer lag for equities (day 3–5), possibly because geopolitical developments require more time to translate into earnings expectations. "
-                "Domestic Politics shows sparse, inconsistent lag patterns, consistent with its weak correlation signal in RQ1. "
-                "Grey or empty cells indicate too few qualifying spike events at the selected threshold for a reliable estimate.",
+                "Each bubble represents one category × asset pair. "
+                "Its horizontal position shows the peak lag day (how many days after the spike the cumulative return peaked), "
+                "and its size encodes the average return magnitude at that peak — larger bubble means a stronger price reaction. "
+                "Gold shows the clearest pattern: all three bubbles cluster at day +5 regardless of category, suggesting a slow but consistent safe-haven inflow "
+                "that only fully materialises several days after a spike. "
+                "Bitcoin peaks earlier, typically around day +3, reflecting its faster price discovery — though the bubbles are smaller, indicating moderate return magnitudes. "
+                "MSCI World bubbles are noticeably smaller and spread across multiple lag days with no consistent pattern, "
+                "suggesting that equity markets are largely unaffected by Trump-related news spikes in terms of directional price movement. "
+                "The clearest actionable signal from this chart is therefore confined to Gold (slow, consistent reaction) and Bitcoin (faster but smaller reaction); "
+                "MSCI World does not exhibit a reliable lag structure.",
                 className="takeaway-box",
             ),
         ], className="viz-box"),
