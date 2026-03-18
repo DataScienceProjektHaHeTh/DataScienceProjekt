@@ -367,12 +367,12 @@ def fig_rq6_bubble(
             gridcolor="#eee",
             range=[-0.6, len(categories) - 0.4],
         ),
-        legend=dict(orientation="h", yanchor="top", y=-0.18, x=0.5, xanchor="center",
+        legend=dict(orientation="h", yanchor="top", y=-0.28, x=0.5, xanchor="center",
                     font=dict(size=16)),
         plot_bgcolor="rgba(0,0,0,0)",
         paper_bgcolor="rgba(0,0,0,0)",
         height=380,
-        margin=dict(t=110, b=80, l=160, r=30),
+        margin=dict(t=110, b=110, l=160, r=30),
     )
     return fig
 
