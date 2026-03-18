@@ -217,24 +217,24 @@ def fig_rq5_bins(
     fig.update_layout(
         title=dict(
             text=f"RQ5 — {cat_label}: article volume vs. market reaction",
-            font=dict(size=20),
+            font=dict(size=23),
         ),
         barmode="group",
         legend=dict(orientation="h", yanchor="top", y=-0.12, x=0.5, xanchor="center",
-                    font=dict(size=16)),
+                    font=dict(size=19)),
         plot_bgcolor="rgba(0,0,0,0)",
         paper_bgcolor="rgba(0,0,0,0)",
         height=560,
         margin=dict(t=70, b=70, l=60, r=30),
-        font = dict(size=20)
+        font = dict(size=23)
     )
     fig.update_xaxes(title_text="Daily article count (articles / day)",
-                     title_font=dict(size=16), tickfont=dict(size=16), row=2, col=1)
+                     title_font=dict(size=19), tickfont=dict(size=19), row=2, col=1)
     fig.update_yaxes(title_text="Avg return (%)",
-                     title_font=dict(size=16), tickfont=dict(size=16), row=1, col=1)
+                     title_font=dict(size=19), tickfont=dict(size=19), row=1, col=1)
     fig.update_yaxes(title_text="Days exceeding threshold (%)",
-                     title_font=dict(size=16), tickfont=dict(size=16), row=2, col=1)
-    fig.update_annotations(font_size=16)
+                     title_font=dict(size=19), tickfont=dict(size=19), row=2, col=1)
+    fig.update_annotations(font_size=19)
     return fig
 
 
@@ -311,11 +311,11 @@ def fig_rq5_radar(
             visible=True,
             range=[0, 108],
             ticksuffix="%",
-            tickfont=dict(size=16),
+            tickfont=dict(size=19),
             tickvals=[25, 50, 75, 100],
             gridcolor="#ddd",
         ),
-        angularaxis=dict(tickfont=dict(size=16)),
+        angularaxis=dict(tickfont=dict(size=19)),
         bgcolor="rgba(0,0,0,0)",
     )
 
@@ -331,16 +331,16 @@ def fig_rq5_radar(
                 f"{return_window}-day forward return</sup>"
             ),
             x=0.5,
-            font=dict(size=20),
+            font=dict(size=23),
         ),
         legend=dict(orientation="h", yanchor="top", y=-0.05, x=0.5, xanchor="center",
-                    font=dict(size=16)),
+                    font=dict(size=19)),
         plot_bgcolor="rgba(0,0,0,0)",
         paper_bgcolor="rgba(0,0,0,0)",
-        height=520,
-        margin=dict(t=130, b=80, l=30, r=30),
+        height=570,
+        margin=dict(t=170, b=80, l=30, r=30),
     )
-    fig.update_annotations(font_size=16)
+    fig.update_annotations(font_size=19, yshift=8)
     return fig
 
 

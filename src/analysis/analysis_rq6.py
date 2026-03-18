@@ -235,33 +235,33 @@ def fig_rq6_lag_profiles(
             yref=f"y{'' if col_idx == 1 else col_idx} domain",
             x=0.98, y=0.02,
             showarrow=False,
-            font=dict(size=16, color="#888"),
+            font=dict(size=19, color="#888"),
             xanchor="right",
         )
 
         fig.update_xaxes(
             tickmode="array", tickvals=tick_vals, ticktext=tick_text,
             title_text="Days after spike",
-            title_font=dict(size=16), tickfont=dict(size=16),
+            title_font=dict(size=19), tickfont=dict(size=19),
             row=1, col=col_idx,
         )
 
     fig.update_yaxes(title_text="Avg cumulative return (%)",
-                     title_font=dict(size=16), tickfont=dict(size=16), row=1, col=1)
+                     title_font=dict(size=19), tickfont=dict(size=19), row=1, col=1)
     fig.update_layout(
         title=dict(
             text="RQ6 — Avg cumulative return after spike by category",
-            font=dict(size=20),
+            font=dict(size=23),
         ),
         legend=dict(orientation="h", yanchor="top", y=-0.18, x=0.5, xanchor="center",
-                    font=dict(size=16)),
+                    font=dict(size=19)),
         plot_bgcolor="rgba(0,0,0,0)",
         paper_bgcolor="rgba(0,0,0,0)",
-        height=420,
-        margin=dict(t=70, b=90, l=60, r=30),
-        font = dict(size = 20)
+        height=460,
+        margin=dict(t=100, b=110, l=60, r=30),
+        font = dict(size = 23)
     )
-    fig.update_annotations(font_size=16)
+    fig.update_annotations(font_size=19, yshift=8)
     return fig
 
 
@@ -350,7 +350,7 @@ def fig_rq6_bubble(
             ),
             text=[f"+{x}" for x in x_vals],   # lag day label inside bubble
             textposition="middle center",
-            textfont=dict(size=14, color="white"),
+            textfont=dict(size=19, color="white"),
             hovertext=hover_texts,
             hovertemplate="%{hovertext}<extra></extra>",
         ))
@@ -363,15 +363,15 @@ def fig_rq6_bubble(
                 "bubble size = return magnitude at peak · colour = asset class</sup>"
             ),
             x=0.5,
-            font=dict(size=20),
+            font=dict(size=23),
         ),
         xaxis=dict(
             title="Days after spike",
-            title_font=dict(size=16),
+            title_font=dict(size=19),
             tickmode="array",
             tickvals=list(range(1, max_lag + 1)),
             ticktext=[f"Day +{i}" for i in range(1, max_lag + 1)],
-            tickfont=dict(size=16),
+            tickfont=dict(size=19),
             showgrid=True,
             gridcolor="#eee",
             range=[0.3, max_lag + 0.7],
@@ -380,18 +380,18 @@ def fig_rq6_bubble(
             tickmode="array",
             tickvals=list(range(len(categories))),
             ticktext=[CATEGORY_LABELS[c] for c in categories],
-            tickfont=dict(size=16),
+            tickfont=dict(size=19),
             showgrid=True,
             gridcolor="#eee",
             zeroline=False,
             range=[-0.6, len(categories) - 0.4],
         ),
         legend=dict(orientation="h", yanchor="top", y=-0.28, x=0.5, xanchor="center",
-                    font=dict(size=16)),
+                    font=dict(size=19)),
         plot_bgcolor="rgba(0,0,0,0)",
         paper_bgcolor="rgba(0,0,0,0)",
-        height=380,
-        margin=dict(t=110, b=110, l=160, r=30),
+        height=400,
+        margin=dict(t=110, b=140, l=170, r=30),
     )
     return fig
 
