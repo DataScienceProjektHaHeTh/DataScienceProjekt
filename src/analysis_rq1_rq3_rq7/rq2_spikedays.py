@@ -253,6 +253,7 @@ def build_chart1(days_after):
         legend=dict(orientation="h", y=-0.18),
         xaxis=dict(showgrid=True, gridcolor="#eee"),
         yaxis=dict(showgrid=True, gridcolor="#eee", zeroline=False),
+        font = dict(size = 22)
     )
     return fig
 
@@ -336,7 +337,7 @@ def build_chart2(event, days_before, days_after):
     fig.add_annotation(
         x=0, y=1.02, xref="x", yref="paper",
         text="📰 News spike", showarrow=False,
-        font=dict(color="red", size=11),
+        font=dict(color="red", size=18),
     )
  
     fig.update_layout(
@@ -348,6 +349,7 @@ def build_chart2(event, days_before, days_after):
         paper_bgcolor="rgba(0,0,0,0)",
         height=220 * n_assets + 80,
         xaxis=dict(showgrid=True, gridcolor="#eee"),
+        font = dict(size = 22)
     )
 
     fig.update_xaxes(rangeslider_visible=False)
@@ -452,5 +454,6 @@ def build_chart3(event, days_after):
         plot_bgcolor="rgba(0,0,0,0)",
         paper_bgcolor="rgba(0,0,0,0)",
         height=480,
+        font=dict(size=22)
     )
     return fig

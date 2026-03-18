@@ -177,6 +177,7 @@ def build_chart_rq4(days_after):
         legend=dict(orientation="h", y=-0.15),
         xaxis=dict(showgrid=True, gridcolor="#eee"),
         yaxis=dict(showgrid=True, gridcolor="#eee", zeroline=False),
+        font = dict(size = 22)
     )
     return fig
 
@@ -339,6 +340,7 @@ def build_chart_rq4_category_breakdown(asset_name, days_after):
         paper_bgcolor="rgba(0,0,0,0)",
         height=460,
         legend=dict(orientation="h", y=-0.18),
+        font = dict(size=22)
     )
     return fig
 
