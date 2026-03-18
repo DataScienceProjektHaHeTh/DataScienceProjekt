@@ -222,6 +222,7 @@ def fig_rq5_bins(
         paper_bgcolor="rgba(0,0,0,0)",
         height=560,
         margin=dict(t=70, b=70, l=60, r=30),
+        font = dict(size=20)
     )
     fig.update_xaxes(title_text="Daily article count (articles / day)", row=2, col=1)
     fig.update_yaxes(title_text="Avg return (%)", row=1, col=1)
@@ -312,11 +313,11 @@ def fig_rq5_radar(
                 visible=True,
                 range=[0, 100],
                 ticksuffix="%",
-                tickfont=dict(size=10),
+                tickfont=dict(size=16),
                 gridcolor="#ddd",
             ),
             angularaxis=dict(
-                tickfont=dict(size=13),
+                tickfont=dict(size=16),
             ),
             bgcolor="rgba(0,0,0,0)",
         ),

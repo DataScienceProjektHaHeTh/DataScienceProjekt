@@ -37,6 +37,7 @@ from analysis_rq1_rq3_rq7.rq3_sentiment import compute_sentiment_correlations, c
 pio.templates["newspaper"] = pio.templates["plotly_white"]
 pio.templates["newspaper"].layout.paper_bgcolor = "rgba(0,0,0,0)"
 pio.templates["newspaper"].layout.plot_bgcolor  = "rgba(0,0,0,0)"
+pio.templates["newspaper"].layout.font = dict(size = 20)
 TEMPLATE = "newspaper"
 
 CAT_COLORS = {
@@ -101,7 +102,7 @@ def fig_rq1_heatmap(
         y=cat_labels,
         text=text,
         texttemplate="%{text}",
-        textfont={"size": 13},
+        textfont={"size": 20},
         colorscale="RdBu",
         zmid=0,
         zmin=-0.5,
@@ -187,7 +188,7 @@ def fig_rq1_scatter(
                 x=0.97, y=0.97,
                 text=f"r={r:.2f}{star(p)}",
                 showarrow=False,
-                font=dict(size=11, color=ASSET_COLORS[asset]),
+                font=dict(size=17, color=ASSET_COLORS[asset]),
                 xanchor="right", yanchor="top",
                 row=row_i + 1, col=col_j + 1,
             )
@@ -203,8 +204,8 @@ def fig_rq1_scatter(
         margin=dict(t=90),
     )
     x_label = "Z-score (rolling 30d)" if "z-score" in config_label.lower() else "Articles on spike day"
-    fig.update_xaxes(title_text=x_label, title_font_size=11)
-    fig.update_yaxes(title_text="Return (%)", title_font_size=11)
+    fig.update_xaxes(title_text=x_label, title_font_size=17)
+    fig.update_yaxes(title_text="Return (%)", title_font_size=17)
     return fig
 
 

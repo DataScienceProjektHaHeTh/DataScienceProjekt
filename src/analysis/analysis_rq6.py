@@ -206,7 +206,7 @@ def fig_rq6_lag_profiles(
                 legendgroup=label,
                 showlegend=(col_idx == 1),   # only show in legend once
                 line=dict(color=color, width=2),
-                marker=dict(size=6, color=color),
+                marker=dict(size=14, color=color),
                 hovertemplate=f"Day +%{{x}}<br>{label}: %{{y:.2f}}%<extra>{cat}</extra>",
             ), row=1, col=col_idx)
 
@@ -216,7 +216,7 @@ def fig_rq6_lag_profiles(
                 y=[float(y_vals.loc[peak])],
                 mode="markers",
                 showlegend=False,
-                marker=dict(symbol="star", size=13, color=color,
+                marker=dict(symbol="star", size=16, color=color,
                             line=dict(color="white", width=1)),
                 hovertemplate=(
                     f"{label} peak: day +{peak} "
@@ -235,7 +235,7 @@ def fig_rq6_lag_profiles(
             yref=f"y{'' if col_idx == 1 else col_idx} domain",
             x=0.98, y=0.02,
             showarrow=False,
-            font=dict(size=11, color="#888"),
+            font=dict(size=15, color="#888"),
             xanchor="right",
         )
 
@@ -252,6 +252,7 @@ def fig_rq6_lag_profiles(
         paper_bgcolor="rgba(0,0,0,0)",
         height=420,
         margin=dict(t=70, b=90, l=60, r=30),
+        font = dict(size = 20)
     )
     return fig
 
@@ -324,7 +325,7 @@ def fig_rq6_bubble(
             ),
             text=[f"+{x}" for x in x_vals],   # lag day label inside bubble
             textposition="middle center",
-            textfont=dict(size=10, color="white"),
+            textfont=dict(size=14, color="white"),
             hovertext=hover_texts,
             hovertemplate="%{hovertext}<extra></extra>",
         ))

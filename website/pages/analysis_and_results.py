@@ -190,7 +190,7 @@ layout = html.Div([
                     ),
                 ], style={"width": "260px"}),
             ], style={"display": "flex", "gap": "30px", "alignItems": "flex-end", "marginBottom": "16px"}),
-            dcc.Graph(id="rq1-heatmap"),
+            dcc.Graph(id="rq1-heatmap", config={"toImageButtonOptions": {"format": "svg", "scale": 2}}),
             html.P(
                 "With a 3-day window and raw counts, no statistically significant correlation emerges across any category–asset pair. "
                 "Switching to a 7-day window with 30-day normalization reveals a strong, significant flight-to-safety pattern — but exclusively in Trade Policy: "
@@ -203,7 +203,7 @@ layout = html.Div([
         html.Div([
             html.H3("Scatter Grid — Spike Days"),
             html.P("Same parameters as above apply.", style={"color": "#888", "fontSize": "13px"}),
-            dcc.Graph(id="rq1-scatter"),
+            dcc.Graph(id="rq1-scatter", config={"toImageButtonOptions": {"format": "svg", "scale": 2}}),
             html.P("Significance legend: * p < 0.05  ·  p < 0.10  (no marker = not significant, Spearman r)",
                    style={"fontSize": "11px", "color": "#888", "marginTop": "4px", "fontStyle": "italic"}),
             html.P(
@@ -235,7 +235,7 @@ layout = html.Div([
                 clearable = False
             ),
             #graph to show abnormal returns per event, with bars for each asset class (gold, bitcoin, msci world) and hover info showing z-score and significance
-            dcc.Graph(id="rq2-graph-chart1"),
+            dcc.Graph(id="rq2-graph-chart1", config={"toImageButtonOptions": {"format": "svg", "scale": 2}}),
             html.P(
                 "An abnormal return is the difference between the actual market return and what a 5-day linear trend predicted — isolating the shock-driven component of price movement. "
                 "Across most shared spike events, Gold shows a positive abnormal return while MSCI World and Bitcoin tend negative, consistent with a flight-to-safety rotation. "
@@ -285,7 +285,7 @@ layout = html.Div([
                 ], style = {"width": "25%"}),
             ], style = {"display": "flex", "gap": "20px", "marginBottom": "10px"}),
             #graph to show price path for each asset class (gold, bitcoin, msci world) around the selected event, with x-axis as days relative to event and y-axis as normalized price (day -1 = 100%), and a vertical line at day 0 to indicate the event
-            dcc.Graph(id="rq2-graph-chart2"),
+            dcc.Graph(id="rq2-graph-chart2", config={"toImageButtonOptions": {"format": "svg", "scale": 2}}),
             html.P(
                 "Each asset is normalized to 100 on the day before the event, so relative price movements are directly comparable across asset classes. "
                 "Try selecting different events — markets often begin adjusting 1–2 days before the official spike date, suggesting informed participants react to early signals. "
@@ -314,7 +314,7 @@ layout = html.Div([
                         id = "rq2-chart3-da", className="dropdown", clearable=False),
                 ], style = {"width": "25%"}),
             ], style = {"display": "flex", "gap": "20px", "marginBottom": "10px"}),
-            dcc.Graph(id = "rq2-graph-chart3"),
+            dcc.Graph(id = "rq2-graph-chart3", config={"toImageButtonOptions": {"format": "svg", "scale": 2}}),
             html.P(
                 "The waterfall breaks down the cumulative abnormal return day by day, showing whether the market reaction builds gradually (momentum) or reverses quickly (mean reversion). "
                 "For Gold, most events accumulate positive abnormal returns over the first 2–3 days with diminishing gains thereafter. "
@@ -362,7 +362,7 @@ layout = html.Div([
 
         html.Div([
             html.H3("Return Distribution by Sentiment"),
-            dcc.Graph(id="rq3-heatmap"),
+            dcc.Graph(id="rq3-heatmap", config={"toImageButtonOptions": {"format": "svg", "scale": 2}}),
             html.P(
                 "The return distributions for negative, neutral and positive sentiment days overlap almost entirely across all categories and assets, "
                 "indicating that VADER sentiment scores do not meaningfully separate high- from low-return days. "
@@ -376,7 +376,7 @@ layout = html.Div([
 
         html.Div([
             html.H3("Average Return by Sentiment Bucket (± 1 SE)"),
-            dcc.Graph(id="rq3-buckets"),
+            dcc.Graph(id="rq3-buckets", config={"toImageButtonOptions": {"format": "svg", "scale": 2}}),
             html.P(
                 "Error bars show ±1 SE (Standard Error = standard deviation ÷ √n, where n is the number of days in that bucket). "
                 "When two bars' error intervals overlap, the difference between them is not statistically reliable. "
@@ -404,7 +404,7 @@ layout = html.Div([
             value=5,
             id="rq4-da1", className="dropdown", clearable=False
         ),
-        dcc.Graph(id="rq4-graph-chart1"),
+        dcc.Graph(id="rq4-graph-chart1", config={"toImageButtonOptions": {"format": "svg", "scale": 2}}),
         html.P(
             "Multi-category spikes — days when two or more news categories simultaneously exceed their 30-day rolling baseline — produce meaningfully larger abnormal returns than isolated single-category spikes. "
             "For Gold, multi-category spike days average roughly 0.5–0.8 percentage points higher abnormal returns than single-category days; for MSCI World, the negative reaction deepens by a similar margin. "
@@ -434,7 +434,7 @@ layout = html.Div([
                     id="rq4-da2", className="dropdown", clearable=False
                 ),], style={"width": "25%"}),
             ], style={"display": "flex", "gap": "20px", "marginBottom": "10px"}),
-            dcc.Graph(id="rq4-graph2"),
+            dcc.Graph(id="rq4-graph2", config={"toImageButtonOptions": {"format": "svg", "scale": 2}}),
             html.P(
                 "This chart breaks down which news category drives the most abnormal return for the selected asset on spike days. "
                 "For Gold, Trade Policy spikes consistently produce the strongest positive abnormal return regardless of the days-after window. "
@@ -503,7 +503,7 @@ layout = html.Div([
 
         html.Div([
             html.H3("Article volume vs. market reaction"),
-            dcc.Graph(id="rq5-bins-chart"),
+            dcc.Graph(id="rq5-bins-chart", config={"toImageButtonOptions": {"format": "svg", "scale": 2}}),
             html.P(
                 "Days are sorted into equal-frequency bins by article count (e.g. 5 bins = bottom 20%, 20–40%, …, top 20%). "
                 "The upper panel shows average forward returns per bin; the lower panel shows the fraction of days in each bin where the return exceeds the movement threshold. "
@@ -516,7 +516,7 @@ layout = html.Div([
 
         html.Div([
             html.H3("Estimated threshold per news category"),
-            dcc.Graph(id="rq5-summary-chart"),
+            dcc.Graph(id="rq5-summary-chart", config={"toImageButtonOptions": {"format": "svg", "scale": 2}}),
             html.P(
                 "The estimated threshold is the lower bound of the first bin where more than 50% of days exceed the movement threshold — the article count from which market reactions become the norm rather than the exception. "
                 "Trade Policy consistently shows the lowest threshold: fewer articles per day are needed to trigger a measurable market reaction compared to Geopolitics or Domestic Politics. "
@@ -561,7 +561,7 @@ layout = html.Div([
 
         html.Div([
             html.H3("Average cumulative return after spike (line per asset)"),
-            dcc.Graph(id="rq6-lag-chart"),
+            dcc.Graph(id="rq6-lag-chart", config={"toImageButtonOptions": {"format": "svg", "scale": 2}}),
             html.P(
                 "The lag profile shows the average cumulative return in the days following a spike, with a star marker indicating the day of peak absolute return. "
                 "Bitcoin reaches its peak fastest — typically within day 1 or 2 — reflecting its 24/7 market and predominantly retail-driven price discovery. "
@@ -575,7 +575,7 @@ layout = html.Div([
         html.Div([
             html.H3("Peak lag heatmap — all categories × all assets"),
             html.P("Same spike threshold as above applies.", style={"color": "#888", "fontSize": "13px"}),
-            dcc.Graph(id="rq6-heatmap"),
+            dcc.Graph(id="rq6-heatmap", config={"toImageButtonOptions": {"format": "svg", "scale": 2}}),
             html.P(
                 "The heatmap shows the modal peak lag (in days) for every category × asset combination — the day within the post-spike window when the cumulative return reached its maximum absolute value. "
                 "Trade Policy is the most consistent driver across all three assets: Bitcoin peaks earliest (day 1), Gold and MSCI World on days 2–3. "
@@ -625,7 +625,7 @@ layout = html.Div([
             ], style={"display": "flex", "gap": "30px", "alignItems": "flex-end", "marginBottom": "16px"}),
 
             html.H3("Volume vs Correlation Ranking"),
-            dcc.Graph(id="rq7-overview"),
+            dcc.Graph(id="rq7-overview", config={"toImageButtonOptions": {"format": "svg", "scale": 2}}),
             html.P(
                 "The pie chart always shows raw article volumes (average articles per day) regardless of normalization mode. "
                 "Domestic Politics dominates coverage (≈ 30 articles/day), followed by Geopolitics (≈ 26) and Trade Policy (≈ 18). "
