@@ -41,15 +41,15 @@ app.layout = html.Div([
     html.Nav([
         dcc.Link("Home",            href="/",                className="nav-link"),
         html.Div([
-            dcc.Link("Analysis & Results", href="/visualizations", className="nav-link"),
+            dcc.Link("Analysis & Results", href="/analysis-and-results", className="nav-link"),
             html.Div([
-                dcc.Link("RQ1 — News Frequency vs Returns",  href="/visualizations?rq=rq1", className="nav-dropdown-item"),
-                dcc.Link("RQ2 — Asset Response to Spikes",  href="/visualizations?rq=rq2", className="nav-dropdown-item"),
-                dcc.Link("RQ3 — Sentiment vs Returns",      href="/visualizations?rq=rq3", className="nav-dropdown-item"),
-                dcc.Link("RQ4 — Multi-Category Spikes",     href="/visualizations?rq=rq4", className="nav-dropdown-item"),
-                dcc.Link("RQ5 — Article Volume Threshold",  href="/visualizations?rq=rq5", className="nav-dropdown-item"),
-                dcc.Link("RQ6 — Asset Reaction Speed",      href="/visualizations?rq=rq6", className="nav-dropdown-item"),
-                dcc.Link("RQ7 — Volume vs Correlation",     href="/visualizations?rq=rq7", className="nav-dropdown-item"),
+                dcc.Link("RQ1 — News Frequency vs Returns",  href="/analysis-and-results?rq=rq1", className="nav-dropdown-item"),
+                dcc.Link("RQ2 — Asset Response to Spikes",  href="/analysis-and-results?rq=rq2", className="nav-dropdown-item"),
+                dcc.Link("RQ3 — Sentiment vs Returns",      href="/analysis-and-results?rq=rq3", className="nav-dropdown-item"),
+                dcc.Link("RQ4 — Multi-Category Spikes",     href="/analysis-and-results?rq=rq4", className="nav-dropdown-item"),
+                dcc.Link("RQ5 — Article Volume Threshold",  href="/analysis-and-results?rq=rq5", className="nav-dropdown-item"),
+                dcc.Link("RQ6 — Asset Reaction Speed",      href="/analysis-and-results?rq=rq6", className="nav-dropdown-item"),
+                dcc.Link("RQ7 — Volume vs Correlation",     href="/analysis-and-results?rq=rq7", className="nav-dropdown-item"),
             ], className="nav-dropdown-menu"),
         ], className="nav-dropdown"),
         dcc.Link("Approach & Assumptions", href="/about-project", className="nav-link"),
@@ -96,7 +96,7 @@ app.layout = html.Div([
             html.Div([
                 html.H4("Navigation", className="footer-heading"),
                 dcc.Link("Home",               href="/",                className="footer-link"),
-                dcc.Link("Analysis & Results", href="/visualizations",  className="footer-link"),
+                dcc.Link("Analysis & Results", href="/analysis-and-results",  className="footer-link"),
                 dcc.Link("Approach & Assumptions", href="/about-project", className="footer-link"),
                 dcc.Link("Team",               href="/about-team",      className="footer-link"),
             ], className="footer-col"),

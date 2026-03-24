@@ -96,7 +96,7 @@ Loads article counts and sentiment scores, aligns them with market closing price
 
 ### Stage 4 — Per-RQ Analysis
 
-Each research question has a dedicated analysis module:
+Each research question has a dedicated analysis module (all located in `src/analysis_and_plots/`):
 
 | File | Analysis |
 |------|----------|
@@ -104,9 +104,9 @@ Each research question has a dedicated analysis module:
 | `rq2_spikedays.py` | Event-study: abnormal returns (actual minus 5-day trend prediction) around shared spike days per asset |
 | `rq3_sentiment.py` | Sentiment bucket analysis: mean returns and ±1 SE bars across negative / neutral / positive VADER days |
 | `rq4_spikedays.py` | Compares abnormal returns on single-category vs. multi-category spike days |
-| `src/analysis_and_plots/rq5_analysis.py` | Volume threshold analysis: % of days exceeding a 1% movement threshold, binned by article count |
-| `src/analysis_and_plots/rq6_analysis.py` | Lag profile: mean cumulative return at each day +1 through +5 after a spike, per asset and category |
-| `rq7_ranking.py` | Compares volume ranking (avg articles/day) with correlation-strength ranking (avg |r| across assets) |
+| `rq5_analysis.py` | Volume threshold analysis: % of days exceeding a 1% price movement threshold, binned by article count |
+| `rq6_analysis.py` | Lag profile: mean cumulative return at days +1 through +5 after a spike, per asset and category |
+| `rq7_ranking.py` | Compares volume ranking (avg articles/day) with correlation-strength ranking (avg absolute Spearman r across assets) |
 
 ### Stage 5 — Processed Data
 
@@ -118,7 +118,7 @@ All results are cached in `data/processed/` as CSV files. The website reads thes
 
 ### Framework
 
-The web application is built with **Plotly Dash** (v4), a Python framework that renders interactive React-based UIs from pure Python. Dash uses Flask internally as its WSGI layer — the team did not write Flask routes directly, but `server = app.server` exposes the underlying Flask instance for gunicorn.
+The web application is built with **Plotly Dash** (v4), a Python framework that renders interactive React-based UIs from pure Python.
 
 ```
 website/
@@ -147,9 +147,8 @@ On startup, `analysis_and_results.py` imports the analysis modules, which read t
 The app is deployed on **Render.com** as a web service with auto-deploy on every push to the `main` branch.
 
 - **Start command**: `gunicorn website.app:server`
-- **Entry point**: `website/app.py` exposes `server = app.server` (the Flask WSGI object)
-- **Port**: read from the `PORT` environment variable (set automatically by Render)
-- **Dependencies**: installed from `requirements.txt` by Render's build step
+- **Entry point**: `website/app.py` exposes `server = app.server` (the underlying Flask WSGI instance that Dash wraps)
+- **Port**: read from the `PORT` environment variable set automatically by Render
 
 Files in `data/processed/` are committed to the repository so the deployed instance can serve pre-computed results without API keys or a running data pipeline on the server.
 
@@ -157,17 +156,13 @@ Files in `data/processed/` are committed to the repository so the deployed insta
 
 ## 4. Using the Web Application
 
-### Navigation
-
-A fixed navy sidebar on the right-hand side of every page provides navigation. The **Analysis & Results** dropdown lists all seven research questions (RQ1–RQ7) and navigates directly to the selected question. A small home icon at the top of each page navigates back to the landing page.
-
 ### Home Page (`/`)
 
 The landing page gives a newspaper-style overview:
 - **Left column**: project headline, brief motivation, and clickable research question cards — each links directly to the corresponding RQ analysis
 - **Right column**: three Key Findings cards summarising the most important results
 
-### Analysis & Results Page (`/visualizations?rq=rqN`)
+### Analysis & Results Page (`/analysis-and-results?rq=rqN`)
 
 The main interactive dashboard. Select any RQ via the blue button row at the top.
 
@@ -176,12 +171,6 @@ Each RQ section contains:
 2. **Parameter controls** — adjust return window, spike threshold, normalization mode, and more to explore robustness
 3. **Interactive Plotly charts** — hover for exact values, click legend items to toggle series, zoom by dragging
 4. **Takeaway** — a concise interpretation of the main finding below each chart
-
-**Highlights to explore:**
-- **RQ1 Heatmap**: switch from *Raw count* to *30-day normalized* and increase the return window to 7 days to watch the Trade Policy flight-to-safety signal emerge
-- **RQ2 Event Window**: select individual spike events and adjust the pre/post window to compare how each asset reacts to the same news day
-- **RQ3 Bucket Chart**: tighten the VADER thresholds to see how isolating strongly negative days still produces no reliable return signal
-- **RQ5 Radar**: toggle between *Average reactivity* and *Per asset* to see which news category consistently triggers movement across all assets
 
 ### Approach & Assumptions Page (`/about-project`)
 
@@ -202,16 +191,16 @@ Beyond code review, AI was used for:
 | Use case | Description |
 |----------|-------------|
 | **Debugging** | Diagnosing runtime errors in the Render deployment (e.g. missing processed files causing `KeyError`, incorrect colour names in Plotly) |
-| **Frontend development** | CSS layout (Guardian colour scheme, fixed navbar), Dash component trees |
+| **Frontend development** | CSS layout (Guardian colour scheme, fixed navbar) |
 | **Statistical sanity checks** | Confirming Spearman correlation is appropriate for non-normal return distributions, verifying the SE formula |
-| **Documentation** | code comments, commit messages, and this README |
+| **Documentation** | Code comments, commit messages, and this README |
 
 ### Attribution
 
 Code that was **directly generated by or substantially co-written with an LLM** carries an inline comment at the top of the relevant function or block:
 
 ```python
-# LLM-assisted: logic reviewed and simplified
+# LLM-assisted: <explanation>
 ```
 
 Code that was **developed by the team and only reviewed by AI** does not carry an LLM comment — the AI acted as a linter and sounding board, not as an author. The core statistical analysis logic (Spearman correlation, VADER pipeline, spike-day definition, event-study abnormal return calculation) was developed independently by the team.
@@ -236,7 +225,8 @@ DataScienceProjekt/
 │   ├── assets/                # CSS, JS, images
 │   └── pages/                 # One Python file per page
 ├── presentation/              # LaTeX beamer slides + exported plot PNGs
-├── requirements.txt           # Python dependencies
+├── Pipfile                    # Python dependencies (Pipenv, Python 3.12)
+├── requirements.txt           # Mirror of dependencies for Render deployment
 └── README.md                  # This file
 ```
 
@@ -244,17 +234,18 @@ DataScienceProjekt/
 
 ## 7. Local Setup
 
+The project uses **Pipenv** (Python 3.12) for dependency management.
+
 ```bash
 # 1. Clone the repository
 git clone https://github.com/DataScienceProjektHaHeTh/DataScienceProjekt.git
 cd DataScienceProjekt
 
-# 2. Create and activate a virtual environment
-python -m venv .venv
-source .venv/bin/activate   # Windows: .venv\Scripts\activate
+# 2. Install dependencies from Pipfile
+pipenv install
 
-# 3. Install dependencies
-pip install -r requirements.txt
+# 3. Activate the Pipenv shell
+pipenv shell
 
 # 4. Run the app locally (pre-processed data is already committed)
 python website/app.py

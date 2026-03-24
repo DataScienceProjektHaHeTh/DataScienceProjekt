@@ -61,7 +61,7 @@ except Exception as e:
 # Load base data once at startup — callbacks reuse this without re-reading files
 _counts, _market, _returns_default, _sentiment = load_base_data()
 
-dash.register_page(__name__, path="/visualizations", name="Analysis & Results")
+dash.register_page(__name__, path="/analysis-and-results", name="Analysis & Results")
 
 RQS = ["rq1", "rq2", "rq3", "rq4", "rq5", "rq6", "rq7"]
 _SHOW = {"display": "block"}

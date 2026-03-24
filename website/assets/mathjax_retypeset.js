@@ -1,3 +1,5 @@
+// LLM-assisted: This file is Co-Authored by a LLM and reviewed by the Team
+
 // Re-trigger MathJax typesetting after Dash/React re-renders on page navigation.
 // Uses a MutationObserver on the Dash page container so any content update causes
 // a debounced typesetPromise() call — no Dash callbacks or layout changes needed.

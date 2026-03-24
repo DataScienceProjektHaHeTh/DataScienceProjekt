@@ -62,37 +62,37 @@ layout = html.Div([
                     dcc.Link(html.Div([
                         html.Span("RQ1", className="rq-number"),
                         html.Span("Does daily news frequency — split by topic — correlate with 3-day returns in MSCI World, Gold, and Bitcoin following a coverage spike?", className="rq-label"),
-                    ], className="rq-link-item"), href="/visualizations?rq=rq1"),
+                    ], className="rq-link-item"), href="/analysis-and-results?rq=rq1"),
 
                     dcc.Link(html.Div([
                         html.Span("RQ2", className="rq-number"),
                         html.Span("How do the three assets differ in direction and magnitude of 3-day abnormal returns following identical news spikes across all categories?", className="rq-label"),
-                    ], className="rq-link-item"), href="/visualizations?rq=rq2"),
+                    ], className="rq-link-item"), href="/analysis-and-results?rq=rq2"),
 
                     dcc.Link(html.Div([
                         html.Span("RQ3", className="rq-number"),
                         html.Span("Does the average daily VADER sentiment score of Guardian articles predict the direction and magnitude of 3-day returns across assets?", className="rq-label"),
-                    ], className="rq-link-item"), href="/visualizations?rq=rq3"),
+                    ], className="rq-link-item"), href="/analysis-and-results?rq=rq3"),
 
                     dcc.Link(html.Div([
                         html.Span("RQ4", className="rq-number"),
                         html.Span("Do simultaneous spikes across multiple news categories amplify 3-day returns compared to isolated single-category spikes?", className="rq-label"),
-                    ], className="rq-link-item"), href="/visualizations?rq=rq4"),
+                    ], className="rq-link-item"), href="/analysis-and-results?rq=rq4"),
 
                     dcc.Link(html.Div([
                         html.Span("RQ5", className="rq-number"),
                         html.Span("Above which daily article volume does a return exceeding 1% first consistently appear — and does this threshold differ by news category?", className="rq-label"),
-                    ], className="rq-link-item"), href="/visualizations?rq=rq5"),
+                    ], className="rq-link-item"), href="/analysis-and-results?rq=rq5"),
 
                     dcc.Link(html.Div([
                         html.Span("RQ6", className="rq-number"),
                         html.Span("Within a 5-day post-spike window, how quickly does each asset reach its peak return — and does the lag differ across the three news categories?", className="rq-label"),
-                    ], className="rq-link-item"), href="/visualizations?rq=rq6"),
+                    ], className="rq-link-item"), href="/analysis-and-results?rq=rq6"),
 
                     dcc.Link(html.Div([
                         html.Span("RQ7", className="rq-number"),
                         html.Span("Which category generates the most daily coverage — and does the volume ranking match the ranking by correlation strength with asset returns?", className="rq-label"),
-                    ], className="rq-link-item"), href="/visualizations?rq=rq7"),
+                    ], className="rq-link-item"), href="/analysis-and-results?rq=rq7"),
 
                 ], className="rq-link-list"),
             ], className="home-block"),
@@ -114,7 +114,7 @@ layout = html.Div([
                             "(r = +0.40). No such signal exists for Geopolitics or Domestic Politics."
                         ),
                         html.Span("→ RQ1 & RQ7", className="card-rq-link"),
-                    ], className="card card-clickable newspaper-card"), href="/visualizations?rq=rq1", className="card-link-wrapper", style={"textDecoration": "none", "color": "inherit"}),
+                    ], className="card card-clickable newspaper-card"), href="/analysis-and-results?rq=rq1", className="card-link-wrapper", style={"textDecoration": "none", "color": "inherit"}),
 
                     html.A(html.Div([
                         html.H3("Sentiment Does Not Predict Returns"),
@@ -124,7 +124,7 @@ layout = html.Div([
                             "The news tone in The Guardian carries no measurable short-term market signal."
                         ),
                         html.Span("→ RQ3", className="card-rq-link"),
-                    ], className="card card-clickable newspaper-card"), href="/visualizations?rq=rq3", className="card-link-wrapper", style={"textDecoration": "none", "color": "inherit"}),
+                    ], className="card card-clickable newspaper-card"), href="/analysis-and-results?rq=rq3", className="card-link-wrapper", style={"textDecoration": "none", "color": "inherit"}),
 
                     html.A(html.Div([
                         html.H3("Volume Does Not Equal Impact"),
@@ -134,7 +134,7 @@ layout = html.Div([
                             "the strongest correlations. Content specificity beats quantity."
                         ),
                         html.Span("→ RQ7", className="card-rq-link"),
-                    ], className="card card-clickable newspaper-card"), href="/visualizations?rq=rq7", className="card-link-wrapper", style={"textDecoration": "none", "color": "inherit"}),
+                    ], className="card card-clickable newspaper-card"), href="/analysis-and-results?rq=rq7", className="card-link-wrapper", style={"textDecoration": "none", "color": "inherit"}),
 
                 ], className="findings-col"),
             ], className="home-block"),
