@@ -63,14 +63,14 @@ data/raw/news/          data/raw/market/
           (VADER scoring per article -> daily mean per category)
                    |
                    v
-          src/analysis_rq1_rq3_rq7/data_prep.py
+          src/analysis_and_plots/data_prep.py
           (merge counts + sentiment + prices -> master.csv)
                    |
           +--------+------------------+
           |                           |
           v                           v
-   rq1_correlation.py       analysis_rq5.py
-   rq2_spikedays.py         analysis_rq6.py
+   rq1_correlation.py       rq5_analysis.py
+   rq2_spikedays.py         rq6_analysis.py
    rq3_sentiment.py         (-> master_rq5.csv,
    rq4_spikedays.py             master_rq6.csv)
    rq7_ranking.py
@@ -91,7 +91,7 @@ Applies the VADER (Valence Aware Dictionary and sEntiment Reasoner) rule-based s
 
 ### Stage 3 — Master Dataset Construction
 
-**`src/analysis_rq1_rq3_rq7/data_prep.py`**
+**`src/analysis_and_plots/data_prep.py`**
 Loads article counts and sentiment scores, aligns them with market closing prices on a common trading-day index, computes x-day forward returns for each asset, and applies 30-day rolling z-score normalization to article counts. The merged DataFrame is persisted as `data/processed/master.csv`.
 
 ### Stage 4 — Per-RQ Analysis
@@ -104,8 +104,8 @@ Each research question has a dedicated analysis module:
 | `rq2_spikedays.py` | Event-study: abnormal returns (actual minus 5-day trend prediction) around shared spike days per asset |
 | `rq3_sentiment.py` | Sentiment bucket analysis: mean returns and ±1 SE bars across negative / neutral / positive VADER days |
 | `rq4_spikedays.py` | Compares abnormal returns on single-category vs. multi-category spike days |
-| `src/analysis/analysis_rq5.py` | Volume threshold analysis: % of days exceeding a 1% movement threshold, binned by article count |
-| `src/analysis/analysis_rq6.py` | Lag profile: mean cumulative return at each day +1 through +5 after a spike, per asset and category |
+| `src/analysis_and_plots/rq5_analysis.py` | Volume threshold analysis: % of days exceeding a 1% movement threshold, binned by article count |
+| `src/analysis_and_plots/rq6_analysis.py` | Lag profile: mean cumulative return at each day +1 through +5 after a spike, per asset and category |
 | `rq7_ranking.py` | Compares volume ranking (avg articles/day) with correlation-strength ranking (avg |r| across assets) |
 
 ### Stage 5 — Processed Data
@@ -118,7 +118,7 @@ All results are cached in `data/processed/` as CSV files. The website reads thes
 
 ### Framework
 
-The web application is built with **Plotly Dash** (v4), a Python framework that renders interactive React-based UIs from pure Python. Dash is built on top of **Flask**, which serves as the underlying WSGI application.
+The web application is built with **Plotly Dash** (v4), a Python framework that renders interactive React-based UIs from pure Python. Dash uses Flask internally as its WSGI layer — the team did not write Flask routes directly, but `server = app.server` exposes the underlying Flask instance for gunicorn.
 
 ```
 website/
@@ -230,8 +230,7 @@ DataScienceProjekt/
 ├── src/
 │   ├── data_collection/       # Guardian API & Yahoo Finance fetchers
 │   ├── processing/            # VADER sentiment scoring pipeline
-│   ├── analysis/              # RQ5 & RQ6 analysis modules
-│   └── analysis_rq1_rq3_rq7/ # RQ1-RQ4 & RQ7 analysis modules + plots
+│   └── analysis_and_plots/    # All RQ analysis modules + plots
 ├── website/
 │   ├── app.py                 # Dash application entry point
 │   ├── assets/                # CSS, JS, images

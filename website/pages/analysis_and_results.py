@@ -7,7 +7,7 @@ import plotly.graph_objects as go
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
 try:
-    from src.analysis_rq1_rq3_rq7.rq2_spikedays import (
+    from src.analysis_and_plots.rq2_spikedays import (
         calculate_price_return, load_price_data,
         shared_spike_days, all_daily_closes,
         build_chart1, build_chart2, build_chart3
@@ -21,7 +21,7 @@ except Exception as e:
     def build_chart2(*a, **kw): return go.Figure()
 
 try:
-    from src.analysis_rq1_rq3_rq7.rq4_spikedays import (
+    from src.analysis_and_plots.rq4_spikedays import (
         build_chart_rq4,
         build_chart_rq4_category_breakdown,
         all_daily_returns
@@ -34,18 +34,18 @@ except Exception as e:
     def build_chart_rq4_category_breakdown(*a, **kw): return go.Figure()
 
 
-from src.analysis_rq1_rq3_rq7.data_prep import (
+from src.analysis_and_plots.data_prep import (
     load_base_data, build_master_dynamic, compute_3d_returns, compute_normalized_counts,
 )
-from src.analysis_rq1_rq3_rq7.plots import (
+from src.analysis_and_plots.plots import (
     fig_rq1_heatmap, fig_rq1_scatter, fig_rq7_overview,
     fig_rq3_violin, fig_rq3_buckets,
 )
 
 try:
-    from src.analysis.data_loader import load_master_from_processed
-    from src.analysis.analysis_rq5 import fig_rq5_bins, fig_rq5_radar
-    from src.analysis.analysis_rq6 import fig_rq6_lag_profiles, fig_rq6_bubble
+    from src.analysis_and_plots.data_loader import load_master_from_processed
+    from src.analysis_and_plots.rq5_analysis import fig_rq5_bins, fig_rq5_radar
+    from src.analysis_and_plots.rq6_analysis import fig_rq6_lag_profiles, fig_rq6_bubble
     _df_rq5 = load_master_from_processed("master_rq5.csv")
     _df_rq6 = load_master_from_processed("master_rq6.csv")
     _rq56_available = True

@@ -7,7 +7,7 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 # Make "from data_loader import ..." work whether this module is run directly
-# from src/analysis/ or imported as src.analysis.analysis_rq6 from the website.
+# from src/analysis_and_plots/ or imported as src.analysis_and_plots.rq6_analysis from the website.
 _HERE = Path(__file__).resolve().parent
 if str(_HERE) not in sys.path:
     sys.path.insert(0, str(_HERE))

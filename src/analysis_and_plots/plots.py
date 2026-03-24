@@ -29,8 +29,8 @@ from plotly.subplots import make_subplots
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "src"))
 
-from analysis_rq1_rq3_rq7.rq1_correlation import compute_correlations, CATEGORIES, ASSETS, CAT_LABELS, ASSET_LABELS
-from analysis_rq1_rq3_rq7.rq3_sentiment import compute_sentiment_correlations, compute_sentiment_buckets
+from analysis_and_plots.rq1_correlation import compute_correlations, CATEGORIES, ASSETS, CAT_LABELS, ASSET_LABELS
+from analysis_and_plots.rq3_sentiment import compute_sentiment_correlations, compute_sentiment_buckets
 
 # ── Shared style constants ─────────────────────────────────────────────────────
 
@@ -447,7 +447,7 @@ def fig_rq3_buckets(
 # ── Entry point: show all figures ─────────────────────────────────────────────
 
 if __name__ == "__main__":
-    from analysis_rq1_rq3_rq7.data_prep import (
+    from analysis_and_plots.data_prep import (
         load_base_data, build_master_dynamic,
         compute_3d_returns, compute_normalized_counts,
     )
